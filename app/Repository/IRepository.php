@@ -97,7 +97,7 @@ abstract class IRepository
     public function saveById(mixed $id, array $data): mixed
     {
         $model = $this->getQuery()->whereKey($id)->first();
-        if ($model) {
+        if ($model instanceof Model) {
             $model->fill($data)->save();
             return $model;
         }
@@ -120,7 +120,8 @@ abstract class IRepository
      */
     public function findById(mixed $id): mixed
     {
-        return $this->getQuery()->whereKey($id)->first();
+        $model = $this->getQuery()->whereKey($id)->first();
+        return $model instanceof Model ? $model : null;
     }
 
     public function findByField(mixed $id, string $field): mixed
@@ -133,7 +134,8 @@ abstract class IRepository
      */
     public function findByFilter(array $params): mixed
     {
-        return $this->perQuery($this->getQuery(), $params)->first();
+        $model = $this->perQuery($this->getQuery(), $params)->first();
+        return $model instanceof Model ? $model : null;
     }
 
     public function perQuery(Builder $query, array $params): Builder

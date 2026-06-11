@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Feature\Education\Foundation;
 
@@ -10,7 +18,6 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationTenant;
 use Hyperf\HttpServer\Annotation\Middleware;
-use ReflectionClass;
 
 /**
  * @internal
@@ -50,7 +57,7 @@ final class TenantCampusPermissionTest extends EducationAdminControllerCase
 
     private function controllerHasOperationMiddleware(string $controller): bool
     {
-        foreach ((new ReflectionClass($controller))->getAttributes(Middleware::class) as $attribute) {
+        foreach ((new \ReflectionClass($controller))->getAttributes(Middleware::class) as $attribute) {
             if (($attribute->getArguments()['middleware'] ?? null) === OperationMiddleware::class) {
                 return true;
             }

@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Service\Education\Foundation;
 
@@ -15,8 +23,7 @@ final class CampusService
 {
     public function __construct(
         private readonly CampusRepository $repository
-    ) {
-    }
+    ) {}
 
     public function page(array $params, int $page, int $pageSize): array
     {
@@ -94,7 +101,10 @@ final class CampusService
 
     private function normalizeStatus(string $status): string
     {
-        return CampusStatus::tryFrom($status)?->value
-            ?? throw new BusinessException(ResultCode::UNPROCESSABLE_ENTITY, 'invalid campus status');
+        if (CampusStatus::tryFrom($status) === null) {
+            throw new BusinessException(ResultCode::UNPROCESSABLE_ENTITY, 'invalid campus status');
+        }
+
+        return CampusStatus::from($status)->value;
     }
 }

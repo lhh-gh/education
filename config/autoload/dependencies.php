@@ -9,9 +9,9 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
-use App\Service\PassportService;
 use App\Contract\Education\Foundation\TenantContextInterface;
 use App\Service\Education\Foundation\TenantContext;
+use App\Service\PassportService;
 use Mine\JwtAuth\Interfaces\CheckTokenInterface;
 use Mine\Upload\Factory;
 use Mine\Upload\UploadInterface;

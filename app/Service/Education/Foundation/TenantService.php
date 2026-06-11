@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Service\Education\Foundation;
 
@@ -16,8 +24,7 @@ final class TenantService
 {
     public function __construct(
         private readonly TenantRepository $repository
-    ) {
-    }
+    ) {}
 
     public function page(array $params, int $page, int $pageSize): array
     {
@@ -106,7 +113,10 @@ final class TenantService
 
     private function normalizeStatus(string $status): string
     {
-        return TenantStatus::tryFrom($status)?->value
-            ?? throw new BusinessException(ResultCode::UNPROCESSABLE_ENTITY, 'invalid tenant status');
+        if (TenantStatus::tryFrom($status) === null) {
+            throw new BusinessException(ResultCode::UNPROCESSABLE_ENTITY, 'invalid tenant status');
+        }
+
+        return TenantStatus::from($status)->value;
     }
 }

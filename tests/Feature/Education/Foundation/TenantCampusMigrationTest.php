@@ -1,15 +1,27 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Feature\Education\Foundation;
 
 use Hyperf\Database\Schema\Schema;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class TenantCampusMigrationTest extends TestCase
 {
-    public function test_tenant_and_campus_tables_exist_with_required_columns(): void
+    public function testTenantAndCampusTablesExistWithRequiredColumns(): void
     {
         self::assertTrue(Schema::hasTable('edu_tenants'));
         self::assertTrue(Schema::hasTable('edu_campuses'));

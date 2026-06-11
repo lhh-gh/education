@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Repository\Education\Foundation;
 
@@ -15,12 +23,11 @@ final class CampusRepository extends IRepository
 {
     public function __construct(
         protected readonly EducationCampus $model
-    ) {
-    }
+    ) {}
 
     public function handleSearch(Builder $query, array $params): Builder
     {
-        return $query
+        $query
             ->where('tenant_id', (int) $params['tenant_id'])
             ->when(isset($params['keyword']) && $params['keyword'] !== '', static function (Builder $query) use ($params): void {
                 $query->where(static function (Builder $query) use ($params): void {
@@ -35,6 +42,8 @@ final class CampusRepository extends IRepository
                 $query->where('status', $params['status']);
             })
             ->orderByDesc('id');
+
+        return $query;
     }
 
     public function existsByTenantCode(int $tenantId, string $code, ?int $ignoreId = null): bool
@@ -48,9 +57,11 @@ final class CampusRepository extends IRepository
 
     public function findInTenant(int $tenantId, int $id): ?EducationCampus
     {
-        return $this->getQuery()
+        $campus = $this->getQuery()
             ->where('tenant_id', $tenantId)
             ->whereKey($id)
             ->first();
+
+        return $campus instanceof EducationCampus ? $campus : null;
     }
 }

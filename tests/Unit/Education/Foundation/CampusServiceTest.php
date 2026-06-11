@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Unit\Education\Foundation;
 
@@ -11,6 +19,10 @@ use App\Model\Education\Foundation\EducationTenant;
 use App\Service\Education\Foundation\CampusService;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class CampusServiceTest extends TestCase
 {
     protected function setUp(): void
@@ -20,7 +32,7 @@ final class CampusServiceTest extends TestCase
         EducationTenant::query()->forceDelete();
     }
 
-    public function test_create_campus_uses_context_tenant_and_allows_same_code_in_different_tenants(): void
+    public function testCreateCampusUsesContextTenantAndAllowsSameCodeInDifferentTenants(): void
     {
         $tenantA = EducationTenant::query()->create(['name' => 'Tenant A', 'code' => 'tenant_a', 'status' => 'enabled']);
         $tenantB = EducationTenant::query()->create(['name' => 'Tenant B', 'code' => 'tenant_b', 'status' => 'enabled']);
@@ -40,7 +52,7 @@ final class CampusServiceTest extends TestCase
         self::assertSame((int) $tenantB->id, (int) $campusB->tenant_id);
     }
 
-    public function test_duplicate_campus_code_in_same_tenant_throws_conflict(): void
+    public function testDuplicateCampusCodeInSameTenantThrowsConflict(): void
     {
         $tenant = EducationTenant::query()->create(['name' => 'Tenant', 'code' => 'tenant', 'status' => 'enabled']);
         $service = make(CampusService::class);

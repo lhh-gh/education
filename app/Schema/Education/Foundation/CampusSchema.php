@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Schema\Education\Foundation;
 
@@ -60,7 +68,7 @@ final class CampusSchema implements \JsonSerializable
         $this->contactName = $model->contact_name;
         $this->contactPhone = $model->contact_phone;
         $this->address = $model->address;
-        $this->status = $model->status?->value ?? $model->status;
+        $this->status = $model->status->value ?? $model->status;
         $this->settings = $model->settings;
         $this->createdBy = $model->created_by;
         $this->updatedBy = $model->updated_by;

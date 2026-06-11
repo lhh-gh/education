@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Http\Common\Controller;
 
@@ -10,15 +18,13 @@ use Hyperf\DbConnection\Db;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\Redis\Redis;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use Throwable;
 
 final class HealthController
 {
     public function __construct(
         private readonly ResponseInterface $response,
         private readonly Redis $redis
-    ) {
-    }
+    ) {}
 
     public function index(): PsrResponseInterface
     {
@@ -45,7 +51,7 @@ final class HealthController
         try {
             Db::select('SELECT 1 AS ok');
             return 'ok';
-        } catch (Throwable) {
+        } catch (\Throwable) {
             return 'failed';
         }
     }
@@ -54,8 +60,8 @@ final class HealthController
     {
         try {
             $pong = $this->redis->ping();
-            return in_array($pong, ['PONG', '+PONG', true], true) ? 'ok' : 'failed';
-        } catch (Throwable) {
+            return \in_array($pong, ['PONG', '+PONG', true], true) ? 'ok' : 'failed';
+        } catch (\Throwable) {
             return 'failed';
         }
     }

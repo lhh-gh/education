@@ -1,16 +1,28 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Unit\Education\Foundation;
 
-use App\Http\Common\ResultCode;
 use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Service\Education\Foundation\TenantService;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class TenantServiceTest extends TestCase
 {
     protected function setUp(): void
@@ -20,12 +32,12 @@ final class TenantServiceTest extends TestCase
         EducationTenant::query()->forceDelete();
     }
 
-    public function test_conflict_result_code_is_available_for_duplicate_tenant_failures(): void
+    public function testConflictResultCodeIsAvailableForDuplicateTenantFailures(): void
     {
         self::assertSame(409, ResultCode::CONFLICT->value);
     }
 
-    public function test_create_tenant_rejects_duplicate_code(): void
+    public function testCreateTenantRejectsDuplicateCode(): void
     {
         $service = make(TenantService::class);
         $service->createTenant(['name' => 'Demo Tenant', 'code' => 'demo']);
@@ -38,7 +50,7 @@ final class TenantServiceTest extends TestCase
         }
     }
 
-    public function test_delete_tenant_rejects_tenant_with_campuses(): void
+    public function testDeleteTenantRejectsTenantWithCampuses(): void
     {
         $service = make(TenantService::class);
         $tenant = $service->createTenant(['name' => 'Demo Tenant', 'code' => 'demo']);

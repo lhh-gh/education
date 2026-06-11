@@ -30,27 +30,36 @@ final class RoleService extends IService
 
     public function getRolePermission(int $id): Collection
     {
-        // @phpstan-ignore-next-line
-        return $this->repository->findById($id)->menus()->get();
+        $role = $this->repository->findById($id);
+        if (! $role instanceof Role) {
+            return new Collection();
+        }
+
+        return $role->menus()->get();
     }
 
     public function batchGrantPermissionsForRole(int $id, array $permissionsCode): void
     {
         if (\count($permissionsCode) === 0) {
-            // @phpstan-ignore-next-line
-            $this->repository->findById($id)->menus()->detach();
+            $role = $this->repository->findById($id);
+            if ($role instanceof Role) {
+                $role->menus()->detach();
+            }
             return;
         }
-        // @phpstan-ignore-next-line
-        $this->repository->findById($id)
-            ->menus()
-            ->sync(
-                $this->menuRepository
-                    ->list([
-                        'code' => $permissionsCode,
-                    ])
-                    ->map(static fn ($item) => $item->id)
-                    ->toArray()
-            );
+
+        $role = $this->repository->findById($id);
+        if (! $role instanceof Role) {
+            return;
+        }
+
+        $role->menus()->sync(
+            $this->menuRepository
+                ->list([
+                    'code' => $permissionsCode,
+                ])
+                ->map(static fn ($item) => $item->id)
+                ->toArray()
+        );
     }
 }

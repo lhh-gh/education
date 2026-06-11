@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace App\Schema\Education\Foundation;
 
@@ -62,7 +70,7 @@ final class TenantSchema implements \JsonSerializable
         $this->shortName = $model->short_name;
         $this->contactName = $model->contact_name;
         $this->contactPhone = $model->contact_phone;
-        $this->status = $model->status?->value ?? $model->status;
+        $this->status = $model->status->value ?? $model->status;
         $this->settings = $model->settings;
         $this->enabledAt = $this->formatDate($model->enabled_at);
         $this->disabledAt = $this->formatDate($model->disabled_at);

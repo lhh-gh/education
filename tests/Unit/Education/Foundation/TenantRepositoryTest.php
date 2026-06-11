@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Unit\Education\Foundation;
 
@@ -9,6 +17,10 @@ use App\Model\Education\Foundation\EducationTenant;
 use App\Repository\Education\Foundation\TenantRepository;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class TenantRepositoryTest extends TestCase
 {
     protected function setUp(): void
@@ -18,7 +30,7 @@ final class TenantRepositoryTest extends TestCase
         EducationTenant::query()->forceDelete();
     }
 
-    public function test_exists_by_code_can_ignore_current_tenant(): void
+    public function testExistsByCodeCanIgnoreCurrentTenant(): void
     {
         $tenant = EducationTenant::query()->create([
             'name' => 'Demo Tenant',
