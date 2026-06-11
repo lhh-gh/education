@@ -16,6 +16,7 @@
     "lint:tsc": "vue-tsc --noEmit --noCheck",
     "lint:eslint": "eslint . --cache --quiet || true",
     "lint:stylelint": "stylelint \"src/**/*.{css,scss,vue}\" --cache --quiet || true",
+    "test": "vitest run --config vitest.config.ts",
     "test:e2e": "playwright test --config=playwright.config.ts"
   },
   "dependencies": {
@@ -71,6 +72,7 @@
     "@vitejs/plugin-legacy": "^8.0.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vitejs/plugin-vue-jsx": "^5.1.5",
+    "vitest": "^4.0.15",
     "ace-builds": "^1.43.6",
     "archiver": "^7.0.1",
     "autoprefixer": "^10.4.27",
