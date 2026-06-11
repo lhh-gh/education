@@ -26,14 +26,14 @@ backend-smoke: env
 	bash scripts/smoke-backend.sh
 
 admin-install: env
-	cd web && corepack enable && pnpm install --frozen-lockfile
+	cd web && (command -v pnpm >/dev/null 2>&1 || corepack enable) && pnpm install --frozen-lockfile
 
 admin-build: env
 	bash scripts/smoke-admin-web.sh
 
 mobile-install: env
 	test -f mobile-uniapp/package.json || npx degit dcloudio/uni-preset-vue#vite-ts mobile-uniapp
-	cd mobile-uniapp && corepack enable && pnpm install
+	cd mobile-uniapp && (command -v pnpm >/dev/null 2>&1 || corepack enable) && pnpm install
 
 mobile-build: env
 	bash scripts/smoke-mobile.sh
