@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controller;
+namespace App\Http\Common\Controller;
 
 use App\Http\Common\Result;
 use App\Http\Common\ResultCode;

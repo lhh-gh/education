@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
-use App\Http\Controller\HealthController;
+use App\Http\Common\Controller\HealthController;
 use Hyperf\HttpServer\Router\Router;
 
 Router::get('/', static function () {
@@ -17,10 +17,6 @@ Router::get('/', static function () {
 });
 
 Router::get('/health', [HealthController::class, 'index']);
-
-Router::get('/.well-known/appspecific/com.chrome.devtools.json', static function () {
-    return '';
-});
 
 Router::get('/favicon.ico', static function () {
     return '';
