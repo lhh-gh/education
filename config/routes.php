@@ -18,6 +18,10 @@ Router::get('/', static function () {
 
 Router::get('/health', [HealthController::class, 'index']);
 
+Router::get('/.well-known/appspecific/com.chrome.devtools.json', static function () {
+    return '';
+});
+
 Router::get('/favicon.ico', static function () {
     return '';
 });
