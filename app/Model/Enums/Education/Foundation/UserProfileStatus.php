@@ -9,6 +9,11 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
-return [
-    App\Command\SeedCommand::class,
-];
+
+namespace App\Model\Enums\Education\Foundation;
+
+enum UserProfileStatus: string
+{
+    case Enabled = 'enabled';
+    case Disabled = 'disabled';
+}
