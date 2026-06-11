@@ -10,6 +10,8 @@ declare(strict_types=1);
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
 use App\Service\PassportService;
+use App\Contract\Education\Foundation\TenantContextInterface;
+use App\Service\Education\Foundation\TenantContext;
 use Mine\JwtAuth\Interfaces\CheckTokenInterface;
 use Mine\Upload\Factory;
 use Mine\Upload\UploadInterface;
@@ -17,4 +19,5 @@ use Mine\Upload\UploadInterface;
 return [
     UploadInterface::class => Factory::class,
     CheckTokenInterface::class => PassportService::class,
+    TenantContextInterface::class => TenantContext::class,
 ];

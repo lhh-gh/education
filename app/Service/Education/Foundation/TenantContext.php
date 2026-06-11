@@ -18,7 +18,7 @@ final class TenantContext implements TenantContextInterface
 
     public function id(): int
     {
-        $tenantId = (int) $this->request->header('X-Tenant-Id', 0);
+        $tenantId = (int) $this->request->header('X-Tenant-Id');
         if ($tenantId <= 0) {
             throw new BusinessException(
                 ResultCode::UNPROCESSABLE_ENTITY,
