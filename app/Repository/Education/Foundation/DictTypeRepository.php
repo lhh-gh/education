@@ -28,6 +28,7 @@ final class DictTypeRepository extends IRepository
     public function handleSearch(Builder $query, array $params): Builder
     {
         $query
+            ->withCount(['items as item_count'])
             ->when(isset($params['owner_type']) && $params['owner_type'] !== '', static function (Builder $query) use ($params): void {
                 $query->where('owner_type', $params['owner_type']);
             })

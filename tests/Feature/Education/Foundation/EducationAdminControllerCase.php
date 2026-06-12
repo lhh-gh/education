@@ -13,6 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Feature\Education\Foundation;
 
 use App\Model\Education\Foundation\EducationCampus;
+use App\Model\Education\Foundation\EducationDictItem;
+use App\Model\Education\Foundation\EducationDictType;
+use App\Model\Education\Foundation\EducationFeatureFlag;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Education\Foundation\EducationUserCampusScope;
 use App\Model\Education\Foundation\EducationUserProfile;
@@ -43,6 +46,9 @@ abstract class EducationAdminControllerCase extends ControllerCase
 
     protected function cleanEducationData(): void
     {
+        EducationDictItem::query()->whereRaw('1=1')->forceDelete();
+        EducationDictType::query()->whereRaw('1=1')->forceDelete();
+        EducationFeatureFlag::query()->whereRaw('1=1')->forceDelete();
         EducationUserCampusScope::query()->delete();
         EducationUserProfile::query()->forceDelete();
         EducationCampus::query()->forceDelete();
