@@ -143,7 +143,7 @@ final class UserProfileService
         return $tenantId === null ? 'platform:' . $userId : 'tenant:' . $tenantId . ':' . $userId;
     }
 
-    private function findProfileOrFail(int $id): EducationUserProfile
+    public function findProfileOrFail(int $id): EducationUserProfile
     {
         $profile = $this->repository->findById($id);
         if (! $profile instanceof EducationUserProfile) {
