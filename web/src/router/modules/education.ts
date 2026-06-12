@@ -9,7 +9,7 @@ const educationRoutes: RouteRecordRaw[] = [
       title: '教务 SaaS',
       icon: 'material-symbols:school-outline-rounded',
       type: 'M',
-      auth: ['education:foundation:tenant:page', 'education:foundation:campus:page'],
+      auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page'],
     },
     children: [
       {
@@ -20,7 +20,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: '基础设置',
           icon: 'material-symbols:settings-outline-rounded',
           type: 'M',
-          auth: ['education:foundation:tenant:page', 'education:foundation:campus:page'],
+          auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page'],
         },
         children: [
           {
@@ -44,6 +44,18 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:location-city-outline-rounded',
               type: 'M',
               auth: ['education:foundation:campus:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/foundation/user-profiles',
+            name: 'EducationFoundationUserProfileList',
+            component: () => import('~/education/views/foundation/UserProfileList.vue'),
+            meta: {
+              title: '人员权限',
+              icon: 'material-symbols:manage-accounts-outline-rounded',
+              type: 'M',
+              auth: ['education:foundation:user-profile:page'],
               cache: true,
             },
           },

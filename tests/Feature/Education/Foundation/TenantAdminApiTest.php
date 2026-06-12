@@ -23,6 +23,7 @@ final class TenantAdminApiTest extends EducationAdminControllerCase
 {
     public function testPlatformAdminCanCreateUpdateStatusAndPageTenant(): void
     {
+        $this->createEducationProfile();
         $this->grantPermissions(
             'education:foundation:tenant:create',
             'education:foundation:tenant:update',
@@ -76,6 +77,7 @@ final class TenantAdminApiTest extends EducationAdminControllerCase
 
     public function testDuplicateTenantCodeReturnsConflict(): void
     {
+        $this->createEducationProfile();
         $this->forAddPermission('education:foundation:tenant:create');
 
         EducationTenant::query()->create([

@@ -26,6 +26,7 @@ final class TenantCampusIsolationTest extends EducationAdminControllerCase
     {
         $this->forAddPermission('education:foundation:campus:page');
         [$tenantA, $tenantB] = $this->createTenantPair();
+        $this->createEducationProfile((int) $tenantA->id, 'tenant_admin');
 
         EducationCampus::query()->create([
             'tenant_id' => $tenantA->id,
@@ -53,6 +54,7 @@ final class TenantCampusIsolationTest extends EducationAdminControllerCase
     {
         $this->forAddPermission('education:foundation:campus:update');
         [$tenantA, $tenantB] = $this->createTenantPair();
+        $this->createEducationProfile((int) $tenantA->id, 'tenant_admin');
 
         $campus = EducationCampus::query()->create([
             'tenant_id' => $tenantB->id,
@@ -78,6 +80,7 @@ final class TenantCampusIsolationTest extends EducationAdminControllerCase
     {
         $this->forAddPermission('education:foundation:campus:create');
         [$tenantA] = $this->createTenantPair();
+        $this->createEducationProfile((int) $tenantA->id, 'tenant_admin');
 
         $result = $this->post('/admin/education/foundation/campuses', [
             'tenant_id' => 999,

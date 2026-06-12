@@ -36,6 +36,7 @@ final class CampusAdminApiTest extends EducationAdminControllerCase
             'code' => 'tenant',
             'status' => 'enabled',
         ]);
+        $this->createEducationProfile((int) $tenant->id, 'tenant_admin');
 
         $create = $this->post('/admin/education/foundation/campuses', [
             'name' => 'Main Campus',
@@ -84,6 +85,7 @@ final class CampusAdminApiTest extends EducationAdminControllerCase
 
     public function testMissingTenantHeaderReturnsValidationFailure(): void
     {
+        $this->createEducationProfile();
         $this->forAddPermission('education:foundation:campus:page');
 
         $result = $this->get('/admin/education/foundation/campuses/page', ['token' => $this->token]);

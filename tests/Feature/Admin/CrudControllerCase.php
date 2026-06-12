@@ -43,9 +43,9 @@ class CrudControllerCase extends ControllerCase
     {
         $token = $this->token;
         $result = $this->post($uri);
-        $this->assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        $this->assertSame($result['code'], ResultCode::UNAUTHORIZED->value);
         $result = $this->post($uri, [], ['Authorization' => 'Bearer ' . $token]);
-        $this->assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        $this->assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $result = $this->post($uri, $fillable, ['Authorization' => 'Bearer ' . $token]);
         $this->assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $this->assertFalse($this->hasPermissions($roleCode));
@@ -88,9 +88,9 @@ class CrudControllerCase extends ControllerCase
     {
         $token = $this->token;
         $result = $this->put($uri . $entity->getKey());
-        $this->assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        $this->assertSame($result['code'], ResultCode::UNAUTHORIZED->value);
         $result = $this->put($uri . $entity->id, [], ['Authorization' => 'Bearer ' . $token]);
-        $this->assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        $this->assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $result = $this->put($uri . $entity->getKey(), $fillable, ['Authorization' => 'Bearer ' . $token]);
         $this->assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $this->assertFalse($this->hasPermissions($roleCode));
