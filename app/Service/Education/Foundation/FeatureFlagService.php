@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Foundation;
 
-use App\Exception\BusinessException;
 use App\Event\Education\Foundation\EducationAuditEvent;
+use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationFeatureFlag;
 use App\Model\Enums\Education\Foundation\FeatureFlagStatus;
@@ -86,7 +86,7 @@ final class FeatureFlagService
                 before: [],
                 after: $flag->toArray(),
                 metadata: $this->flagMetadata($flag),
-                summary: sprintf('Feature flag %s created', $flag->feature_code)
+                summary: \sprintf('Feature flag %s created', $flag->feature_code)
             );
 
             return $flag;
@@ -122,7 +122,7 @@ final class FeatureFlagService
                 before: $before,
                 after: $flag->toArray(),
                 metadata: $this->flagMetadata($flag),
-                summary: sprintf('Feature flag %s updated', $flag->feature_code)
+                summary: \sprintf('Feature flag %s updated', $flag->feature_code)
             );
 
             return $flag;
@@ -150,7 +150,7 @@ final class FeatureFlagService
                 before: $before,
                 after: $flag->toArray(),
                 metadata: $this->flagMetadata($flag),
-                summary: sprintf('Feature flag %s status changed', $flag->feature_code)
+                summary: \sprintf('Feature flag %s status changed', $flag->feature_code)
             );
 
             return $flag;

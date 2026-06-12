@@ -28,10 +28,8 @@ final class AuditLogRepository extends IRepository
 
     public function createLog(array $data): EducationAuditLog
     {
-        /** @var EducationAuditLog $log */
-        $log = $this->create($data);
-
-        return $log;
+        /* @var EducationAuditLog $log */
+        return $this->create($data);
     }
 
     public function pageByContext(array $filters, EducationUserContext $context): array
@@ -49,7 +47,7 @@ final class AuditLogRepository extends IRepository
             ->orderByDesc('id')
             ->paginate(
                 perPage: $pageSize,
-                pageName: static::PER_PAGE_PARAM_NAME,
+                pageName: self::PER_PAGE_PARAM_NAME,
                 page: $page
             );
 

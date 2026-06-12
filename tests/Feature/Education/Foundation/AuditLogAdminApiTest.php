@@ -92,8 +92,8 @@ final class AuditLogAdminApiTest extends EducationAdminControllerCase
 
     private function createLog(array $overrides = []): EducationAuditLog
     {
-        /** @var EducationAuditLog $log */
-        $log = EducationAuditLog::query()->create(array_merge([
+        /* @var EducationAuditLog $log */
+        return EducationAuditLog::query()->create(array_merge([
             'tenant_id' => 1001,
             'campus_id' => null,
             'actor_user_id' => $this->user->id,
@@ -111,7 +111,5 @@ final class AuditLogAdminApiTest extends EducationAdminControllerCase
             'summary' => 'Tenant updated',
             'created_at' => '2026-06-10 10:00:00',
         ], $overrides));
-
-        return $log;
     }
 }

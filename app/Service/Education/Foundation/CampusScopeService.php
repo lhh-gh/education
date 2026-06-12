@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Foundation;
 
-use App\Exception\BusinessException;
 use App\Event\Education\Foundation\EducationAuditEvent;
+use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationUserProfile;
@@ -85,7 +85,7 @@ final class CampusScopeService
                 before: ['campus_ids' => $beforeCampusIds],
                 after: ['campus_ids' => $campusIds],
                 metadata: ['tenant_id' => $tenantId, 'user_profile_id' => $profileId],
-                summary: sprintf('Campus scopes for profile %s saved', $profile->profile_key)
+                summary: \sprintf('Campus scopes for profile %s saved', $profile->profile_key)
             );
         });
 

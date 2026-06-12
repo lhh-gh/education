@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Foundation;
 
-use App\Exception\BusinessException;
 use App\Event\Education\Foundation\EducationAuditEvent;
+use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationDictItem;
 use App\Model\Education\Foundation\EducationDictType;
@@ -85,7 +85,7 @@ final class DictionaryService
                 before: [],
                 after: $type->toArray(),
                 metadata: $this->dictTypeMetadata($type),
-                summary: sprintf('Dictionary type %s created', $type->code)
+                summary: \sprintf('Dictionary type %s created', $type->code)
             );
 
             return $type;
@@ -119,7 +119,7 @@ final class DictionaryService
                 before: $before,
                 after: $type->toArray(),
                 metadata: $this->dictTypeMetadata($type),
-                summary: sprintf('Dictionary type %s updated', $type->code)
+                summary: \sprintf('Dictionary type %s updated', $type->code)
             );
 
             return $type;
@@ -149,7 +149,7 @@ final class DictionaryService
                 before: $before,
                 after: $type->toArray(),
                 metadata: $this->dictTypeMetadata($type),
-                summary: sprintf('Dictionary type %s status changed', $type->code)
+                summary: \sprintf('Dictionary type %s status changed', $type->code)
             );
 
             return $type;
@@ -204,7 +204,7 @@ final class DictionaryService
                 before: [],
                 after: $item->toArray(),
                 metadata: $this->dictItemMetadata($type, $item),
-                summary: sprintf('Dictionary item %s created', $item->value)
+                summary: \sprintf('Dictionary item %s created', $item->value)
             );
 
             return $item;
@@ -243,7 +243,7 @@ final class DictionaryService
                 before: $before,
                 after: $item->toArray(),
                 metadata: $this->dictItemMetadata($type, $item),
-                summary: sprintf('Dictionary item %s updated', $item->value)
+                summary: \sprintf('Dictionary item %s updated', $item->value)
             );
 
             return $item;
@@ -274,7 +274,7 @@ final class DictionaryService
                 before: $before,
                 after: $item->toArray(),
                 metadata: $this->dictItemMetadata($type, $item),
-                summary: sprintf('Dictionary item %s status changed', $item->value)
+                summary: \sprintf('Dictionary item %s status changed', $item->value)
             );
 
             return $item;

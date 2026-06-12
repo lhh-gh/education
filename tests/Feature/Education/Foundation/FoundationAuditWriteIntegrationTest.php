@@ -159,14 +159,12 @@ final class FoundationAuditWriteIntegrationTest extends TestCase
 
     private function createTenant(): EducationTenant
     {
-        /** @var EducationTenant $tenant */
-        $tenant = EducationTenant::query()->create([
+        /* @var EducationTenant $tenant */
+        return EducationTenant::query()->create([
             'name' => 'Tenant A',
             'code' => 'tenant_a',
             'status' => 'enabled',
         ]);
-
-        return $tenant;
     }
 
     private function latestLog(string $action): EducationAuditLog

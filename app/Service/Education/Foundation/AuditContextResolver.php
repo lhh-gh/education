@@ -46,7 +46,7 @@ final class AuditContextResolver
 
         $forwardedFor = trim($request->getHeaderLine('X-Forwarded-For'));
         if ($forwardedFor !== '') {
-            $first = trim(explode(',', $forwardedFor)[0] ?? '');
+            $first = trim(explode(',', $forwardedFor)[0]);
 
             return $first === '' ? null : $first;
         }

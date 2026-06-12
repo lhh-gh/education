@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Foundation;
 
-use App\Exception\BusinessException;
 use App\Event\Education\Foundation\EducationAuditEvent;
+use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
@@ -73,7 +73,7 @@ final class UserProfileService
                 before: [],
                 after: $profile->toArray(),
                 metadata: $this->profileMetadata($profile),
-                summary: sprintf('User profile %s created', $profile->profile_key)
+                summary: \sprintf('User profile %s created', $profile->profile_key)
             );
 
             return $profile;
@@ -111,7 +111,7 @@ final class UserProfileService
                 before: $before,
                 after: $profile->toArray(),
                 metadata: $this->profileMetadata($profile),
-                summary: sprintf('User profile %s updated', $profile->profile_key)
+                summary: \sprintf('User profile %s updated', $profile->profile_key)
             );
 
             return $profile;
@@ -138,7 +138,7 @@ final class UserProfileService
                 before: $before,
                 after: $profile->toArray(),
                 metadata: $this->profileMetadata($profile),
-                summary: sprintf('User profile %s status changed', $profile->profile_key)
+                summary: \sprintf('User profile %s status changed', $profile->profile_key)
             );
 
             return $profile;

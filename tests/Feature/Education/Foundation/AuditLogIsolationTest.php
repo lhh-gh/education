@@ -62,8 +62,8 @@ final class AuditLogIsolationTest extends EducationAdminControllerCase
 
     private function createLog(array $overrides = []): EducationAuditLog
     {
-        /** @var EducationAuditLog $log */
-        $log = EducationAuditLog::query()->create(array_merge([
+        /* @var EducationAuditLog $log */
+        return EducationAuditLog::query()->create(array_merge([
             'tenant_id' => 1001,
             'campus_id' => null,
             'actor_type' => 'admin',
@@ -74,7 +74,5 @@ final class AuditLogIsolationTest extends EducationAdminControllerCase
             'business_id' => '2001',
             'created_at' => '2026-06-10 10:00:00',
         ], $overrides));
-
-        return $log;
     }
 }

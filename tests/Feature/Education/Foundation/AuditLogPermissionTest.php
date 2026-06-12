@@ -55,8 +55,8 @@ final class AuditLogPermissionTest extends EducationAdminControllerCase
 
     private function createLog(): EducationAuditLog
     {
-        /** @var EducationAuditLog $log */
-        $log = EducationAuditLog::query()->create([
+        /* @var EducationAuditLog $log */
+        return EducationAuditLog::query()->create([
             'tenant_id' => 1001,
             'actor_type' => 'admin',
             'module' => 'foundation',
@@ -66,7 +66,5 @@ final class AuditLogPermissionTest extends EducationAdminControllerCase
             'business_id' => '1001',
             'created_at' => '2026-06-10 10:00:00',
         ]);
-
-        return $log;
     }
 }

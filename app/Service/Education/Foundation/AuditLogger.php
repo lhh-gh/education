@@ -15,9 +15,6 @@ namespace App\Service\Education\Foundation;
 use App\Contract\Education\Foundation\AuditLoggerInterface;
 use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Model\Education\Foundation\EducationAuditLog;
-use DateTimeInterface;
-use JsonSerializable;
-use Stringable;
 
 final class AuditLogger implements AuditLoggerInterface
 {
@@ -47,8 +44,8 @@ final class AuditLogger implements AuditLoggerInterface
 
     public function record(EducationAuditEvent $event): EducationAuditLog
     {
-        /** @var EducationAuditLog $log */
-        $log = EducationAuditLog::query()->create([
+        /* @var EducationAuditLog $log */
+        return EducationAuditLog::query()->create([
             'tenant_id' => $this->contextResolver->resolveTenantId($event->context),
             'campus_id' => $this->contextResolver->resolveCampusId($event->context, $event->metadata),
             'actor_user_id' => $event->context?->userId,
@@ -71,8 +68,6 @@ final class AuditLogger implements AuditLoggerInterface
             'metadata' => $this->sanitize($event->metadata),
             'created_at' => date('Y-m-d H:i:s'),
         ]);
-
-        return $log;
     }
 
     private function sanitize(array $payload): array
@@ -132,17 +127,17 @@ final class AuditLogger implements AuditLoggerInterface
             return $this->sanitize($value);
         }
 
-        if ($value instanceof DateTimeInterface) {
+        if ($value instanceof \DateTimeInterface) {
             return $value->format('Y-m-d H:i:s');
         }
 
-        if ($value instanceof JsonSerializable) {
+        if ($value instanceof \JsonSerializable) {
             $jsonValue = $value->jsonSerialize();
 
             return \is_array($jsonValue) ? $this->sanitize($jsonValue) : $this->sanitizeValue($jsonValue);
         }
 
-        if ($value instanceof Stringable) {
+        if ($value instanceof \Stringable) {
             return $this->truncateString((string) $value, 1000);
         }
 
@@ -159,7 +154,7 @@ final class AuditLogger implements AuditLoggerInterface
 
     private function normalizeKey(string $key): string
     {
-        return strtolower(str_replace(['-', '.'], '_', $key));
+        return mb_strtolower(str_replace(['-', '.'], '_', $key));
     }
 
     private function shouldDrop(string $normalizedKey): bool
@@ -186,7 +181,7 @@ final class AuditLogger implements AuditLoggerInterface
 
     private function maskValue(mixed $value, string $normalizedKey): string
     {
-        if (! \is_scalar($value) && ! $value instanceof Stringable) {
+        if (! \is_scalar($value) && ! $value instanceof \Stringable) {
             return '***';
         }
 

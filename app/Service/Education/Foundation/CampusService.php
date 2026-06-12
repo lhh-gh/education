@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Foundation;
 
-use App\Exception\BusinessException;
 use App\Event\Education\Foundation\EducationAuditEvent;
+use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
@@ -52,7 +52,7 @@ final class CampusService
                 before: [],
                 after: $campus->toArray(),
                 metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
-                summary: sprintf('Campus %s created', $campus->name)
+                summary: \sprintf('Campus %s created', $campus->name)
             );
 
             return $campus;
@@ -78,7 +78,7 @@ final class CampusService
                 before: $before,
                 after: $campus->toArray(),
                 metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
-                summary: sprintf('Campus %s updated', $campus->name)
+                summary: \sprintf('Campus %s updated', $campus->name)
             );
 
             return $campus;
@@ -105,7 +105,7 @@ final class CampusService
                 before: $before,
                 after: $campus->toArray(),
                 metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
-                summary: sprintf('Campus %s status changed', $campus->name)
+                summary: \sprintf('Campus %s status changed', $campus->name)
             );
 
             return $campus;

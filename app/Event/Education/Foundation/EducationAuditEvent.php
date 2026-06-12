@@ -14,7 +14,6 @@ namespace App\Event\Education\Foundation;
 
 use App\Model\Enums\Education\Foundation\AuditActorType;
 use App\Service\Education\Foundation\EducationUserContext;
-use InvalidArgumentException;
 
 final class EducationAuditEvent
 {
@@ -38,16 +37,16 @@ final class EducationAuditEvent
             'businessType' => $businessType,
         ] as $name => $value) {
             if (trim($value) === '') {
-                throw new InvalidArgumentException($name . ' must not be empty');
+                throw new \InvalidArgumentException($name . ' must not be empty');
             }
         }
 
         if (AuditActorType::tryFrom($actorType) === null) {
-            throw new InvalidArgumentException('actorType must be one of admin, teacher, guardian, system');
+            throw new \InvalidArgumentException('actorType must be one of admin, teacher, guardian, system');
         }
 
         if ($context === null && $actorType !== AuditActorType::System->value) {
-            throw new InvalidArgumentException('context can be null only for system audit events');
+            throw new \InvalidArgumentException('context can be null only for system audit events');
         }
     }
 }
