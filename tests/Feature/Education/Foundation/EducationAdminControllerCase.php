@@ -14,6 +14,9 @@ namespace HyperfTests\Feature\Education\Foundation;
 
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
+use App\Model\Education\Foundation\EducationUserCampusScope;
+use App\Model\Education\Foundation\EducationUserProfile;
+use Hyperf\Context\Context;
 use Hyperf\Context\ApplicationContext;
 use HyperfTests\Feature\Admin\ControllerCase;
 use Psr\SimpleCache\CacheInterface;
@@ -23,6 +26,8 @@ abstract class EducationAdminControllerCase extends ControllerCase
     protected function setUp(): void
     {
         parent::setUp();
+        Context::destroy('current_user');
+        Context::destroy('education.user_context');
         $this->clearCurrentUserCache();
         $this->cleanEducationData();
     }
@@ -30,12 +35,16 @@ abstract class EducationAdminControllerCase extends ControllerCase
     protected function tearDown(): void
     {
         $this->cleanEducationData();
+        Context::destroy('current_user');
+        Context::destroy('education.user_context');
         $this->clearCurrentUserCache();
         parent::tearDown();
     }
 
     protected function cleanEducationData(): void
     {
+        EducationUserCampusScope::query()->delete();
+        EducationUserProfile::query()->forceDelete();
         EducationCampus::query()->forceDelete();
         EducationTenant::query()->forceDelete();
     }
@@ -57,5 +66,17 @@ abstract class EducationAdminControllerCase extends ControllerCase
         ApplicationContext::getContainer()
             ->get(CacheInterface::class)
             ->delete((string) $this->user->id);
+    }
+
+    protected function createEducationProfile(?int $tenantId = null, string $roleCode = 'platform_operator', string $status = 'enabled'): EducationUserProfile
+    {
+        return EducationUserProfile::query()->create([
+            'profile_key' => $tenantId === null ? 'platform:' . $this->user->id : 'tenant:' . $tenantId . ':' . $this->user->id,
+            'tenant_id' => $tenantId,
+            'user_id' => $this->user->id,
+            'role_code' => $roleCode,
+            'display_name' => 'Education User',
+            'status' => $status,
+        ]);
     }
 }

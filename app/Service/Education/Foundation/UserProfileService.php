@@ -99,7 +99,9 @@ final class UserProfileService
 
     public function resolveForUser(int $userId, ?int $requestedTenantId): EducationUserContext
     {
-        $profiles = $this->repository->listEnabledByUser($userId);
+        $profiles = $this->repository->getQuery()
+            ->where('user_id', $userId)
+            ->get();
         if ($profiles->isEmpty()) {
             throw new BusinessException(ResultCode::FORBIDDEN, 'education user profile is missing', ['user_id' => $userId]);
         }

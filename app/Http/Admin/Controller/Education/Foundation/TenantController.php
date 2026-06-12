@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Http\Admin\Controller\Education\Foundation;
 
 use App\Http\Admin\Controller\AbstractController;
+use App\Http\Admin\Middleware\Education\Foundation\ResolveEducationContextMiddleware;
 use App\Http\Admin\Middleware\PermissionMiddleware;
 use App\Http\Admin\Request\Education\Foundation\TenantPageRequest;
 use App\Http\Admin\Request\Education\Foundation\TenantSaveRequest;
@@ -38,7 +39,8 @@ use Mine\Swagger\Attributes\ResultResponse;
 #[HyperfServer(name: 'http')]
 #[Middleware(middleware: AccessTokenMiddleware::class, priority: 100)]
 #[Middleware(middleware: PermissionMiddleware::class, priority: 99)]
-#[Middleware(middleware: OperationMiddleware::class, priority: 98)]
+#[Middleware(middleware: ResolveEducationContextMiddleware::class, priority: 98)]
+#[Middleware(middleware: OperationMiddleware::class, priority: 97)]
 final class TenantController extends AbstractController
 {
     public function __construct(
