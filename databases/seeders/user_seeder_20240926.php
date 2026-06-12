@@ -20,9 +20,8 @@ class user_seeder_20240926 extends Seeder
      */
     public function run(): void
     {
-        User::truncate();
-        Role::truncate();
-        $entity = User::create([
+        $entity = User::query()->firstOrNew(['username' => 'admin']);
+        $entity->fill([
             'username' => 'admin',
             'user_type' => '100',
             'nickname' => '创始人',
@@ -35,10 +34,19 @@ class user_seeder_20240926 extends Seeder
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
-        $role = Role::create([
+
+        if (! $entity->exists) {
+            $entity->password = 123456;
+        }
+        $entity->save();
+
+        $role = Role::query()->updateOrCreate([
+            'code' => 'SuperAdmin',
+        ], [
             'name' => '超级管理员',
             'code' => 'SuperAdmin',
+            'status' => 1,
         ]);
-        $entity->roles()->sync($role);
+        $entity->roles()->sync($role, false);
     }
 }
