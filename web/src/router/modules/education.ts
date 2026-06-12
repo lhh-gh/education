@@ -9,7 +9,7 @@ const educationRoutes: RouteRecordRaw[] = [
       title: '教务 SaaS',
       icon: 'material-symbols:school-outline-rounded',
       type: 'M',
-      auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page', 'education:foundation:dictionary:page', 'education:foundation:feature-flag:page'],
+      auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page', 'education:foundation:dictionary:page', 'education:foundation:feature-flag:page', 'education:foundation:audit-log:page'],
     },
     children: [
       {
@@ -20,7 +20,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: '基础设置',
           icon: 'material-symbols:settings-outline-rounded',
           type: 'M',
-          auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page', 'education:foundation:dictionary:page', 'education:foundation:feature-flag:page'],
+          auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page', 'education:foundation:dictionary:page', 'education:foundation:feature-flag:page', 'education:foundation:audit-log:page'],
         },
         children: [
           {
@@ -80,6 +80,18 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:toggle-on-outline-rounded',
               type: 'M',
               auth: ['education:foundation:feature-flag:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/foundation/audit-logs',
+            name: 'EducationFoundationAuditLogList',
+            component: () => import('~/education/views/foundation/AuditLogList.vue'),
+            meta: {
+              title: 'Audit Logs',
+              icon: 'i-lucide-file-clock',
+              type: 'M',
+              auth: ['education:foundation:audit-log:page'],
               cache: true,
             },
           },
