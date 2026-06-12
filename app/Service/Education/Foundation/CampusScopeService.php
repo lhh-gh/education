@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Foundation;
 
 use App\Exception\BusinessException;
+use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationUserProfile;
@@ -20,12 +21,15 @@ use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Model\Enums\Education\Foundation\UserProfileStatus;
 use App\Repository\Education\Foundation\UserCampusScopeRepository;
 use App\Repository\Education\Foundation\UserProfileRepository;
+use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class CampusScopeService
 {
     public function __construct(
         private readonly UserProfileRepository $profileRepository,
-        private readonly UserCampusScopeRepository $scopeRepository
+        private readonly UserCampusScopeRepository $scopeRepository,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     /**
@@ -48,7 +52,7 @@ final class CampusScopeService
      * @param int[] $campusIds
      * @return int[]
      */
-    public function saveScopes(int $profileId, int $tenantId, array $campusIds, ?int $operatorId): array
+    public function saveScopes(int $profileId, int $tenantId, array $campusIds, ?int $operatorId, ?EducationUserContext $context = null): array
     {
         $profile = $this->profileRepository->findById($profileId);
         if (! $profile instanceof EducationUserProfile) {
@@ -66,13 +70,24 @@ final class CampusScopeService
             $this->assertCampusInTenant($tenantId, $campusId);
         }
 
-        $this->scopeRepository->replaceScopes(
-            tenantId: $tenantId,
-            profileId: $profileId,
-            userId: (int) $profile->user_id,
-            campusIds: $campusIds,
-            operatorId: $operatorId
-        );
+        Db::transaction(function () use ($tenantId, $profileId, $profile, $campusIds, $operatorId, $context): void {
+            $beforeCampusIds = $this->scopeRepository->campusIdsForProfile($tenantId, $profileId);
+            $this->scopeRepository->replaceScopes(
+                tenantId: $tenantId,
+                profileId: $profileId,
+                userId: (int) $profile->user_id,
+                campusIds: $campusIds,
+                operatorId: $operatorId
+            );
+            $this->dispatchAudit(
+                context: $context,
+                businessId: $profileId,
+                before: ['campus_ids' => $beforeCampusIds],
+                after: ['campus_ids' => $campusIds],
+                metadata: ['tenant_id' => $tenantId, 'user_profile_id' => $profileId],
+                summary: sprintf('Campus scopes for profile %s saved', $profile->profile_key)
+            );
+        });
 
         return $campusIds;
     }
@@ -129,5 +144,31 @@ final class CampusScopeService
                 ['campus_id' => $campusId]
             );
         }
+    }
+
+    private function dispatchAudit(
+        ?EducationUserContext $context,
+        int $businessId,
+        array $before,
+        array $after,
+        array $metadata,
+        string $summary
+    ): void {
+        if (! $context instanceof EducationUserContext) {
+            return;
+        }
+
+        $this->eventDispatcher->dispatch(new EducationAuditEvent(
+            module: 'foundation',
+            resource: 'campus_scope',
+            action: 'education.foundation.campus_scope.saved',
+            businessType: 'campus_scope',
+            businessId: $businessId,
+            context: $context,
+            beforeSnapshot: $before,
+            afterSnapshot: $after,
+            metadata: $metadata,
+            summary: $summary
+        ));
     }
 }

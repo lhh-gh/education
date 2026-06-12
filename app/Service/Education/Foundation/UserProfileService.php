@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Foundation;
 
 use App\Exception\BusinessException;
+use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
@@ -23,12 +24,15 @@ use App\Model\Permission\User;
 use App\Repository\Education\Foundation\UserCampusScopeRepository;
 use App\Repository\Education\Foundation\UserProfileRepository;
 use Hyperf\Database\Model\Model;
+use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class UserProfileService
 {
     public function __construct(
         private readonly UserProfileRepository $repository,
-        private readonly UserCampusScopeRepository $scopeRepository
+        private readonly UserCampusScopeRepository $scopeRepository,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function page(array $params, int $page, int $pageSize, EducationUserContext $context): array
@@ -40,7 +44,7 @@ final class UserProfileService
         return $this->repository->page($params, $page, $pageSize);
     }
 
-    public function createProfile(array $data, ?int $operatorId): EducationUserProfile
+    public function createProfile(array $data, ?int $operatorId, ?EducationUserContext $context = null): EducationUserProfile
     {
         $roleCode = $this->normalizeRoleCode((string) $data['role_code']);
         $tenantId = $this->normalizeTenantId($data['tenant_id'] ?? null);
@@ -59,10 +63,24 @@ final class UserProfileService
         $data['created_by'] = $operatorId;
         $data['updated_by'] = $operatorId;
 
-        return $this->repository->create($data);
+        return Db::transaction(function () use ($data, $context): EducationUserProfile {
+            $profile = $this->repository->create($data);
+            $profile = $profile->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.user_profile.created',
+                businessId: (int) $profile->id,
+                context: $context,
+                before: [],
+                after: $profile->toArray(),
+                metadata: $this->profileMetadata($profile),
+                summary: sprintf('User profile %s created', $profile->profile_key)
+            );
+
+            return $profile;
+        });
     }
 
-    public function updateProfile(int $id, array $data, ?int $operatorId): EducationUserProfile
+    public function updateProfile(int $id, array $data, ?int $operatorId, ?EducationUserContext $context = null): EducationUserProfile
     {
         $profile = $this->findProfileOrFail($id);
         $roleCode = $this->normalizeRoleCode((string) $data['role_code']);
@@ -80,22 +98,51 @@ final class UserProfileService
         $data['role_code'] = $roleCode->value;
         $data['status'] = $this->normalizeStatus((string) ($data['status'] ?? $profile->status->value));
         $data['updated_by'] = $operatorId;
-        $profile->fill($data);
-        $profile->save();
 
-        return $profile->refresh();
+        return Db::transaction(function () use ($profile, $data, $context): EducationUserProfile {
+            $before = $profile->toArray();
+            $profile->fill($data);
+            $profile->save();
+            $profile = $profile->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.user_profile.updated',
+                businessId: (int) $profile->id,
+                context: $context,
+                before: $before,
+                after: $profile->toArray(),
+                metadata: $this->profileMetadata($profile),
+                summary: sprintf('User profile %s updated', $profile->profile_key)
+            );
+
+            return $profile;
+        });
     }
 
-    public function changeStatus(int $id, string $status, ?int $operatorId): EducationUserProfile
+    public function changeStatus(int $id, string $status, ?int $operatorId, ?EducationUserContext $context = null): EducationUserProfile
     {
         $profile = $this->findProfileOrFail($id);
-        $profile->fill([
+        $data = [
             'status' => $this->normalizeStatus($status),
             'updated_by' => $operatorId,
-        ]);
-        $profile->save();
+        ];
 
-        return $profile->refresh();
+        return Db::transaction(function () use ($profile, $data, $context): EducationUserProfile {
+            $before = $profile->toArray();
+            $profile->fill($data);
+            $profile->save();
+            $profile = $profile->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.user_profile.status_changed',
+                businessId: (int) $profile->id,
+                context: $context,
+                before: $before,
+                after: $profile->toArray(),
+                metadata: $this->profileMetadata($profile),
+                summary: sprintf('User profile %s status changed', $profile->profile_key)
+            );
+
+            return $profile;
+        });
     }
 
     public function resolveForUser(int $userId, ?int $requestedTenantId): EducationUserContext
@@ -233,5 +280,40 @@ final class UserProfileService
                 ['profile_key' => $profileKey]
             );
         }
+    }
+
+    private function profileMetadata(EducationUserProfile $profile): array
+    {
+        return array_filter([
+            'tenant_id' => $profile->tenant_id === null ? null : (int) $profile->tenant_id,
+            'campus_id' => $profile->current_campus_id === null ? null : (int) $profile->current_campus_id,
+        ], static fn (mixed $value): bool => $value !== null);
+    }
+
+    private function dispatchAudit(
+        string $action,
+        int $businessId,
+        ?EducationUserContext $context,
+        array $before,
+        array $after,
+        array $metadata,
+        string $summary
+    ): void {
+        if (! $context instanceof EducationUserContext) {
+            return;
+        }
+
+        $this->eventDispatcher->dispatch(new EducationAuditEvent(
+            module: 'foundation',
+            resource: 'user_profile',
+            action: $action,
+            businessType: 'user_profile',
+            businessId: $businessId,
+            context: $context,
+            beforeSnapshot: $before,
+            afterSnapshot: $after,
+            metadata: $metadata,
+            summary: $summary
+        ));
     }
 }

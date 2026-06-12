@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Http\Admin\Controller\Education\Foundation;
 
+use App\Exception\BusinessException;
 use App\Http\Admin\Controller\AbstractController;
 use App\Http\Admin\Middleware\Education\Foundation\ResolveEducationContextMiddleware;
 use App\Http\Admin\Middleware\PermissionMiddleware;
@@ -21,9 +22,12 @@ use App\Http\Admin\Request\Education\Foundation\TenantStatusRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
+use App\Http\Common\ResultCode;
 use App\Http\CurrentUser;
 use App\Schema\Education\Foundation\TenantSchema;
+use App\Service\Education\Foundation\EducationUserContext;
 use App\Service\Education\Foundation\TenantService;
+use Hyperf\Context\Context;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\Swagger\Annotation\Delete;
 use Hyperf\Swagger\Annotation\Get;
@@ -82,7 +86,7 @@ final class TenantController extends AbstractController
     {
         $tenant = $this->service->createTenant(array_merge($request->validated(), [
             'created_by' => $this->currentUser->id(),
-        ]));
+        ]), $this->context());
 
         return $this->success(['id' => $tenant->id]);
     }
@@ -101,7 +105,7 @@ final class TenantController extends AbstractController
     {
         $tenant = $this->service->updateTenant($id, array_merge($request->validated(), [
             'updated_by' => $this->currentUser->id(),
-        ]));
+        ]), $this->context());
 
         return $this->success(['id' => $tenant->id]);
     }
@@ -118,7 +122,7 @@ final class TenantController extends AbstractController
     #[Permission(code: 'education:foundation:tenant:status')]
     public function status(int $id, TenantStatusRequest $request): Result
     {
-        $tenant = $this->service->changeStatus($id, $request->validated()['status'], $this->currentUser->id());
+        $tenant = $this->service->changeStatus($id, $request->validated()['status'], $this->currentUser->id(), $this->context());
 
         return $this->success(['id' => $tenant->id, 'status' => $tenant->status->value ?? $tenant->status]);
     }
@@ -137,5 +141,15 @@ final class TenantController extends AbstractController
         $this->service->deleteTenant($id);
 
         return $this->success();
+    }
+
+    private function context(): EducationUserContext
+    {
+        $context = Context::get(ResolveEducationContextMiddleware::CONTEXT_KEY);
+        if (! $context instanceof EducationUserContext) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'education user context is missing');
+        }
+
+        return $context;
     }
 }

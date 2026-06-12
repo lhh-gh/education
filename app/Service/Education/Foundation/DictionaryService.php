@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Foundation;
 
 use App\Exception\BusinessException;
+use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationDictItem;
 use App\Model\Education\Foundation\EducationDictType;
@@ -21,6 +22,8 @@ use App\Repository\Education\Foundation\DictItemRepository;
 use App\Repository\Education\Foundation\DictTypeRepository;
 use App\Repository\Education\Foundation\TenantRepository;
 use Hyperf\Collection\Collection;
+use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class DictionaryService
 {
@@ -28,7 +31,8 @@ final class DictionaryService
         private readonly DictTypeRepository $typeRepository,
         private readonly DictItemRepository $itemRepository,
         private readonly TenantRepository $tenantRepository,
-        private readonly ConfigOwnerResolver $ownerResolver
+        private readonly ConfigOwnerResolver $ownerResolver,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function pageTypes(array $params, int $page, int $pageSize, EducationUserContext $context): array
@@ -55,7 +59,7 @@ final class DictionaryService
         $code = (string) $data['code'];
         $this->assertUniqueTypeCode($ownerKey, $code);
 
-        return $this->typeRepository->create([
+        $payload = [
             'owner_type' => $ownerType,
             'tenant_id' => $tenantId,
             'owner_key' => $ownerKey,
@@ -67,37 +71,89 @@ final class DictionaryService
             'sort_order' => (int) ($data['sort_order'] ?? 0),
             'created_by' => $operatorId,
             'updated_by' => $operatorId,
-        ]);
+        ];
+
+        return Db::transaction(function () use ($payload, $context): EducationDictType {
+            $type = $this->typeRepository->create($payload);
+            $type = $type->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_type',
+                action: 'education.foundation.dict_type.created',
+                businessType: 'dict_type',
+                businessId: (int) $type->id,
+                context: $context,
+                before: [],
+                after: $type->toArray(),
+                metadata: $this->dictTypeMetadata($type),
+                summary: sprintf('Dictionary type %s created', $type->code)
+            );
+
+            return $type;
+        });
     }
 
     public function updateType(int $id, array $data, EducationUserContext $context, ?int $operatorId): EducationDictType
     {
         $type = $this->findTypeOrFail($id);
         $this->assertTypeWritable($type, $context);
-        $type->fill([
+        $data = [
             'name' => $data['name'] ?? $type->name,
             'description' => $data['description'] ?? $type->description,
             'status' => $this->normalizeStatus((string) ($data['status'] ?? $type->status)),
             'is_locked' => (bool) ($data['is_locked'] ?? $type->is_locked),
             'sort_order' => (int) ($data['sort_order'] ?? $type->sort_order),
             'updated_by' => $operatorId,
-        ]);
-        $type->save();
+        ];
 
-        return $type->refresh();
+        return Db::transaction(function () use ($type, $data, $context): EducationDictType {
+            $before = $type->toArray();
+            $type->fill($data);
+            $type->save();
+            $type = $type->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_type',
+                action: 'education.foundation.dict_type.updated',
+                businessType: 'dict_type',
+                businessId: (int) $type->id,
+                context: $context,
+                before: $before,
+                after: $type->toArray(),
+                metadata: $this->dictTypeMetadata($type),
+                summary: sprintf('Dictionary type %s updated', $type->code)
+            );
+
+            return $type;
+        });
     }
 
     public function changeTypeStatus(int $id, string $status, EducationUserContext $context, ?int $operatorId): EducationDictType
     {
         $type = $this->findTypeOrFail($id);
         $this->assertTypeWritable($type, $context);
-        $type->fill([
+        $data = [
             'status' => $this->normalizeStatus($status),
             'updated_by' => $operatorId,
-        ]);
-        $type->save();
+        ];
 
-        return $type->refresh();
+        return Db::transaction(function () use ($type, $data, $context): EducationDictType {
+            $before = $type->toArray();
+            $type->fill($data);
+            $type->save();
+            $type = $type->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_type',
+                action: 'education.foundation.dict_type.status_changed',
+                businessType: 'dict_type',
+                businessId: (int) $type->id,
+                context: $context,
+                before: $before,
+                after: $type->toArray(),
+                metadata: $this->dictTypeMetadata($type),
+                summary: sprintf('Dictionary type %s status changed', $type->code)
+            );
+
+            return $type;
+        });
     }
 
     public function deleteType(int $id, EducationUserContext $context): void
@@ -121,7 +177,7 @@ final class DictionaryService
         $value = (string) $data['value'];
         $this->assertUniqueItemValue((int) $type->id, $value);
 
-        return $this->itemRepository->create([
+        $payload = [
             'dict_type_id' => $type->id,
             'owner_key' => $type->owner_key,
             'dict_code' => $type->code,
@@ -134,7 +190,25 @@ final class DictionaryService
             'is_default' => (bool) ($data['is_default'] ?? false),
             'created_by' => $operatorId,
             'updated_by' => $operatorId,
-        ]);
+        ];
+
+        return Db::transaction(function () use ($payload, $type, $context): EducationDictItem {
+            $item = $this->itemRepository->create($payload);
+            $item = $item->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_item',
+                action: 'education.foundation.dict_item.created',
+                businessType: 'dict_item',
+                businessId: (int) $item->id,
+                context: $context,
+                before: [],
+                after: $item->toArray(),
+                metadata: $this->dictItemMetadata($type, $item),
+                summary: sprintf('Dictionary item %s created', $item->value)
+            );
+
+            return $item;
+        });
     }
 
     public function updateItem(int $id, array $data, EducationUserContext $context, ?int $operatorId): EducationDictItem
@@ -144,7 +218,7 @@ final class DictionaryService
         $this->assertTypeWritable($type, $context);
         $value = (string) ($data['value'] ?? $item->value);
         $this->assertUniqueItemValue((int) $type->id, $value, $id);
-        $item->fill([
+        $data = [
             'label' => $data['label'] ?? $item->label,
             'value' => $value,
             'color' => $data['color'] ?? $item->color,
@@ -153,10 +227,27 @@ final class DictionaryService
             'status' => $this->normalizeStatus((string) ($data['status'] ?? $item->status)),
             'is_default' => (bool) ($data['is_default'] ?? $item->is_default),
             'updated_by' => $operatorId,
-        ]);
-        $item->save();
+        ];
 
-        return $item->refresh();
+        return Db::transaction(function () use ($item, $type, $data, $context): EducationDictItem {
+            $before = $item->toArray();
+            $item->fill($data);
+            $item->save();
+            $item = $item->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_item',
+                action: 'education.foundation.dict_item.updated',
+                businessType: 'dict_item',
+                businessId: (int) $item->id,
+                context: $context,
+                before: $before,
+                after: $item->toArray(),
+                metadata: $this->dictItemMetadata($type, $item),
+                summary: sprintf('Dictionary item %s updated', $item->value)
+            );
+
+            return $item;
+        });
     }
 
     public function changeItemStatus(int $id, string $status, EducationUserContext $context, ?int $operatorId): EducationDictItem
@@ -164,13 +255,30 @@ final class DictionaryService
         $item = $this->findItemOrFail($id);
         $type = $this->findTypeOrFail((int) $item->dict_type_id);
         $this->assertTypeWritable($type, $context);
-        $item->fill([
+        $data = [
             'status' => $this->normalizeStatus($status),
             'updated_by' => $operatorId,
-        ]);
-        $item->save();
+        ];
 
-        return $item->refresh();
+        return Db::transaction(function () use ($item, $type, $data, $context): EducationDictItem {
+            $before = $item->toArray();
+            $item->fill($data);
+            $item->save();
+            $item = $item->refresh();
+            $this->dispatchAudit(
+                resource: 'dict_item',
+                action: 'education.foundation.dict_item.status_changed',
+                businessType: 'dict_item',
+                businessId: (int) $item->id,
+                context: $context,
+                before: $before,
+                after: $item->toArray(),
+                metadata: $this->dictItemMetadata($type, $item),
+                summary: sprintf('Dictionary item %s status changed', $item->value)
+            );
+
+            return $item;
+        });
     }
 
     public function deleteItem(int $id, EducationUserContext $context): void
@@ -294,5 +402,47 @@ final class DictionaryService
         }
 
         return (int) $tenantId;
+    }
+
+    private function dictTypeMetadata(EducationDictType $type): array
+    {
+        return array_filter([
+            'tenant_id' => $type->tenant_id === null ? null : (int) $type->tenant_id,
+            'owner_key' => $type->owner_key,
+        ], static fn (mixed $value): bool => $value !== null);
+    }
+
+    private function dictItemMetadata(EducationDictType $type, EducationDictItem $item): array
+    {
+        return array_filter([
+            'tenant_id' => $type->tenant_id === null ? null : (int) $type->tenant_id,
+            'dict_type_id' => (int) $type->id,
+            'dict_code' => $item->dict_code,
+        ], static fn (mixed $value): bool => $value !== null);
+    }
+
+    private function dispatchAudit(
+        string $resource,
+        string $action,
+        string $businessType,
+        int $businessId,
+        EducationUserContext $context,
+        array $before,
+        array $after,
+        array $metadata,
+        string $summary
+    ): void {
+        $this->eventDispatcher->dispatch(new EducationAuditEvent(
+            module: 'foundation',
+            resource: $resource,
+            action: $action,
+            businessType: $businessType,
+            businessId: $businessId,
+            context: $context,
+            beforeSnapshot: $before,
+            afterSnapshot: $after,
+            metadata: $metadata,
+            summary: $summary
+        ));
     }
 }

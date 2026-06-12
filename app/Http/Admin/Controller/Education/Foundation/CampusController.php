@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Http\Admin\Controller\Education\Foundation;
 
 use App\Contract\Education\Foundation\TenantContextInterface;
+use App\Exception\BusinessException;
 use App\Http\Admin\Controller\AbstractController;
 use App\Http\Admin\Middleware\Education\Foundation\ResolveEducationContextMiddleware;
 use App\Http\Admin\Middleware\PermissionMiddleware;
@@ -22,9 +23,12 @@ use App\Http\Admin\Request\Education\Foundation\CampusStatusRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
+use App\Http\Common\ResultCode;
 use App\Http\CurrentUser;
 use App\Schema\Education\Foundation\CampusSchema;
 use App\Service\Education\Foundation\CampusService;
+use App\Service\Education\Foundation\EducationUserContext;
+use Hyperf\Context\Context;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\Swagger\Annotation\Delete;
 use Hyperf\Swagger\Annotation\Get;
@@ -84,7 +88,7 @@ final class CampusController extends AbstractController
     {
         $campus = $this->service->createCampus($this->tenantContext->id(), array_merge($request->validated(), [
             'created_by' => $this->currentUser->id(),
-        ]));
+        ]), $this->context());
 
         return $this->success(['id' => $campus->id, 'tenant_id' => $campus->tenant_id]);
     }
@@ -103,7 +107,7 @@ final class CampusController extends AbstractController
     {
         $campus = $this->service->updateCampus($this->tenantContext->id(), $id, array_merge($request->validated(), [
             'updated_by' => $this->currentUser->id(),
-        ]));
+        ]), $this->context());
 
         return $this->success(['id' => $campus->id, 'tenant_id' => $campus->tenant_id]);
     }
@@ -124,7 +128,8 @@ final class CampusController extends AbstractController
             $this->tenantContext->id(),
             $id,
             $request->validated()['status'],
-            $this->currentUser->id()
+            $this->currentUser->id(),
+            $this->context()
         );
 
         return $this->success([
@@ -148,5 +153,15 @@ final class CampusController extends AbstractController
         $this->service->deleteCampus($this->tenantContext->id(), $id);
 
         return $this->success();
+    }
+
+    private function context(): EducationUserContext
+    {
+        $context = Context::get(ResolveEducationContextMiddleware::CONTEXT_KEY);
+        if (! $context instanceof EducationUserContext) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'education user context is missing');
+        }
+
+        return $context;
     }
 }

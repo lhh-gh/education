@@ -13,16 +13,20 @@ declare(strict_types=1);
 namespace App\Service\Education\Foundation;
 
 use App\Exception\BusinessException;
+use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Foundation\CampusStatus;
 use App\Repository\Education\Foundation\CampusRepository;
+use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class CampusService
 {
     public function __construct(
-        private readonly CampusRepository $repository
+        private readonly CampusRepository $repository,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function page(array $params, int $page, int $pageSize): array
@@ -30,7 +34,7 @@ final class CampusService
         return $this->repository->page($params, $page, $pageSize);
     }
 
-    public function createCampus(int $tenantId, array $data): EducationCampus
+    public function createCampus(int $tenantId, array $data, ?EducationUserContext $context = null): EducationCampus
     {
         $this->assertTenantExists($tenantId);
         $this->assertUniqueCode($tenantId, (string) $data['code']);
@@ -38,31 +42,74 @@ final class CampusService
         $data['tenant_id'] = $tenantId;
         $data['status'] = $this->normalizeStatus((string) ($data['status'] ?? CampusStatus::Enabled->value));
 
-        return $this->repository->create($data);
+        return Db::transaction(function () use ($data, $context): EducationCampus {
+            $campus = $this->repository->create($data);
+            $campus = $campus->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.campus.created',
+                businessId: (int) $campus->id,
+                context: $context,
+                before: [],
+                after: $campus->toArray(),
+                metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
+                summary: sprintf('Campus %s created', $campus->name)
+            );
+
+            return $campus;
+        });
     }
 
-    public function updateCampus(int $tenantId, int $id, array $data): EducationCampus
+    public function updateCampus(int $tenantId, int $id, array $data, ?EducationUserContext $context = null): EducationCampus
     {
         $campus = $this->findCampusOrFail($tenantId, $id);
         $this->assertUniqueCode($tenantId, (string) $data['code'], $id);
         unset($data['tenant_id']);
         $data['status'] = $this->normalizeStatus((string) ($data['status'] ?? $campus->status));
-        $campus->fill($data);
-        $campus->save();
 
-        return $campus->refresh();
+        return Db::transaction(function () use ($campus, $data, $context): EducationCampus {
+            $before = $campus->toArray();
+            $campus->fill($data);
+            $campus->save();
+            $campus = $campus->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.campus.updated',
+                businessId: (int) $campus->id,
+                context: $context,
+                before: $before,
+                after: $campus->toArray(),
+                metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
+                summary: sprintf('Campus %s updated', $campus->name)
+            );
+
+            return $campus;
+        });
     }
 
-    public function changeStatus(int $tenantId, int $id, string $status, ?int $operatorId): EducationCampus
+    public function changeStatus(int $tenantId, int $id, string $status, ?int $operatorId, ?EducationUserContext $context = null): EducationCampus
     {
         $campus = $this->findCampusOrFail($tenantId, $id);
-        $campus->fill([
+        $data = [
             'status' => $this->normalizeStatus($status),
             'updated_by' => $operatorId,
-        ]);
-        $campus->save();
+        ];
 
-        return $campus->refresh();
+        return Db::transaction(function () use ($campus, $data, $context): EducationCampus {
+            $before = $campus->toArray();
+            $campus->fill($data);
+            $campus->save();
+            $campus = $campus->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.campus.status_changed',
+                businessId: (int) $campus->id,
+                context: $context,
+                before: $before,
+                after: $campus->toArray(),
+                metadata: ['tenant_id' => (int) $campus->tenant_id, 'campus_id' => (int) $campus->id],
+                summary: sprintf('Campus %s status changed', $campus->name)
+            );
+
+            return $campus;
+        });
     }
 
     public function deleteCampus(int $tenantId, int $id): void
@@ -106,5 +153,32 @@ final class CampusService
         }
 
         return CampusStatus::from($status)->value;
+    }
+
+    private function dispatchAudit(
+        string $action,
+        int $businessId,
+        ?EducationUserContext $context,
+        array $before,
+        array $after,
+        array $metadata,
+        string $summary
+    ): void {
+        if (! $context instanceof EducationUserContext) {
+            return;
+        }
+
+        $this->eventDispatcher->dispatch(new EducationAuditEvent(
+            module: 'foundation',
+            resource: 'campus',
+            action: $action,
+            businessType: 'campus',
+            businessId: $businessId,
+            context: $context,
+            beforeSnapshot: $before,
+            afterSnapshot: $after,
+            metadata: $metadata,
+            summary: $summary
+        ));
     }
 }

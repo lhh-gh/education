@@ -13,19 +13,23 @@ declare(strict_types=1);
 namespace App\Service\Education\Foundation;
 
 use App\Exception\BusinessException;
+use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationFeatureFlag;
 use App\Model\Enums\Education\Foundation\FeatureFlagStatus;
 use App\Repository\Education\Foundation\FeatureFlagRepository;
 use App\Repository\Education\Foundation\TenantRepository;
 use Carbon\Carbon;
+use Hyperf\DbConnection\Db;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class FeatureFlagService
 {
     public function __construct(
         private readonly FeatureFlagRepository $repository,
         private readonly TenantRepository $tenantRepository,
-        private readonly ConfigOwnerResolver $ownerResolver
+        private readonly ConfigOwnerResolver $ownerResolver,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function page(array $params, int $page, int $pageSize, EducationUserContext $context): array
@@ -55,7 +59,7 @@ final class FeatureFlagService
         $featureCode = (string) $data['feature_code'];
         $this->assertUniqueFeature($ownerKey, $featureCode);
 
-        return $this->repository->create([
+        $payload = [
             'owner_type' => $ownerType,
             'tenant_id' => $tenantId,
             'owner_key' => $ownerKey,
@@ -70,7 +74,23 @@ final class FeatureFlagService
             'is_locked' => (bool) ($data['is_locked'] ?? false),
             'created_by' => $operatorId,
             'updated_by' => $operatorId,
-        ]);
+        ];
+
+        return Db::transaction(function () use ($payload, $context): EducationFeatureFlag {
+            $flag = $this->repository->create($payload);
+            $flag = $flag->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.feature_flag.created',
+                businessId: (int) $flag->id,
+                context: $context,
+                before: [],
+                after: $flag->toArray(),
+                metadata: $this->flagMetadata($flag),
+                summary: sprintf('Feature flag %s created', $flag->feature_code)
+            );
+
+            return $flag;
+        });
     }
 
     public function updateFlag(int $id, array $data, EducationUserContext $context, ?int $operatorId): EducationFeatureFlag
@@ -78,7 +98,7 @@ final class FeatureFlagService
         $flag = $this->findFlagOrFail($id);
         $this->assertFlagWritable($flag, $context);
         $this->assertEffectiveWindow($data['effective_from'] ?? $flag->effective_from, $data['effective_to'] ?? $flag->effective_to);
-        $flag->fill([
+        $data = [
             'feature_name' => $data['feature_name'] ?? $flag->feature_name,
             'description' => $data['description'] ?? $flag->description,
             'enabled' => (bool) ($data['enabled'] ?? $flag->enabled),
@@ -88,23 +108,53 @@ final class FeatureFlagService
             'status' => $this->normalizeStatus((string) ($data['status'] ?? $flag->status)),
             'is_locked' => (bool) ($data['is_locked'] ?? $flag->is_locked),
             'updated_by' => $operatorId,
-        ]);
-        $flag->save();
+        ];
 
-        return $flag->refresh();
+        return Db::transaction(function () use ($flag, $data, $context): EducationFeatureFlag {
+            $before = $flag->toArray();
+            $flag->fill($data);
+            $flag->save();
+            $flag = $flag->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.feature_flag.updated',
+                businessId: (int) $flag->id,
+                context: $context,
+                before: $before,
+                after: $flag->toArray(),
+                metadata: $this->flagMetadata($flag),
+                summary: sprintf('Feature flag %s updated', $flag->feature_code)
+            );
+
+            return $flag;
+        });
     }
 
     public function changeStatus(int $id, string $status, EducationUserContext $context, ?int $operatorId): EducationFeatureFlag
     {
         $flag = $this->findFlagOrFail($id);
         $this->assertFlagWritable($flag, $context);
-        $flag->fill([
+        $data = [
             'status' => $this->normalizeStatus($status),
             'updated_by' => $operatorId,
-        ]);
-        $flag->save();
+        ];
 
-        return $flag->refresh();
+        return Db::transaction(function () use ($flag, $data, $context): EducationFeatureFlag {
+            $before = $flag->toArray();
+            $flag->fill($data);
+            $flag->save();
+            $flag = $flag->refresh();
+            $this->dispatchAudit(
+                action: 'education.foundation.feature_flag.status_changed',
+                businessId: (int) $flag->id,
+                context: $context,
+                before: $before,
+                after: $flag->toArray(),
+                metadata: $this->flagMetadata($flag),
+                summary: sprintf('Feature flag %s status changed', $flag->feature_code)
+            );
+
+            return $flag;
+        });
     }
 
     public function deleteFlag(int $id, EducationUserContext $context): void
@@ -220,5 +270,36 @@ final class FeatureFlagService
         }
 
         return (int) $tenantId;
+    }
+
+    private function flagMetadata(EducationFeatureFlag $flag): array
+    {
+        return array_filter([
+            'tenant_id' => $flag->tenant_id === null ? null : (int) $flag->tenant_id,
+            'owner_key' => $flag->owner_key,
+        ], static fn (mixed $value): bool => $value !== null);
+    }
+
+    private function dispatchAudit(
+        string $action,
+        int $businessId,
+        EducationUserContext $context,
+        array $before,
+        array $after,
+        array $metadata,
+        string $summary
+    ): void {
+        $this->eventDispatcher->dispatch(new EducationAuditEvent(
+            module: 'foundation',
+            resource: 'feature_flag',
+            action: $action,
+            businessType: 'feature_flag',
+            businessId: $businessId,
+            context: $context,
+            beforeSnapshot: $before,
+            afterSnapshot: $after,
+            metadata: $metadata,
+            summary: $summary
+        ));
     }
 }

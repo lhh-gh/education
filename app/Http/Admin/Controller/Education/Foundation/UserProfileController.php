@@ -90,7 +90,8 @@ final class UserProfileController extends AbstractController
     {
         $profile = $this->service->createProfile(
             $this->dataInsideContext($request->validated(), $this->context()),
-            $this->currentUser->id()
+            $this->currentUser->id(),
+            $this->context()
         );
 
         return $this->success(['id' => $profile->id, 'profile_key' => $profile->profile_key]);
@@ -113,7 +114,8 @@ final class UserProfileController extends AbstractController
         $profile = $this->service->updateProfile(
             $id,
             $this->dataInsideContext($request->validated(), $context),
-            $this->currentUser->id()
+            $this->currentUser->id(),
+            $context
         );
 
         return $this->success(['id' => $profile->id]);
@@ -132,7 +134,7 @@ final class UserProfileController extends AbstractController
     public function status(int $id, UserProfileStatusRequest $request): Result
     {
         $this->assertProfileInsideContext($this->service->findProfileOrFail($id), $this->context());
-        $profile = $this->service->changeStatus($id, $request->validated()['status'], $this->currentUser->id());
+        $profile = $this->service->changeStatus($id, $request->validated()['status'], $this->currentUser->id(), $this->context());
 
         return $this->success(['id' => $profile->id, 'status' => $profile->status->value ?? $profile->status]);
     }
@@ -176,7 +178,8 @@ final class UserProfileController extends AbstractController
             profileId: $id,
             tenantId: $this->scopedProfileTenantId($profile, $this->context()),
             campusIds: $request->validated()['campus_ids'],
-            operatorId: $this->currentUser->id()
+            operatorId: $this->currentUser->id(),
+            context: $this->context()
         );
 
         return $this->success(['user_profile_id' => $profile->id, 'campus_ids' => $campusIds]);
