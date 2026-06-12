@@ -9,7 +9,6 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
-
 use App\Model\Enums\User\Status;
 use App\Model\Permission\Role;
 use Hyperf\Database\Seeders\Seeder;

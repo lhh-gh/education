@@ -30,6 +30,6 @@ final readonly class EducationUserContext
 
     public function canAccessCampus(int $campusId): bool
     {
-        return $this->platformAccess || in_array($campusId, $this->campusIds, true);
+        return $this->platformAccess || \in_array($campusId, $this->campusIds, true);
     }
 }

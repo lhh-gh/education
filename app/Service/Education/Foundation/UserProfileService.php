@@ -22,6 +22,7 @@ use App\Model\Enums\Education\Foundation\UserProfileStatus;
 use App\Model\Permission\User;
 use App\Repository\Education\Foundation\UserCampusScopeRepository;
 use App\Repository\Education\Foundation\UserProfileRepository;
+use Hyperf\Database\Model\Model;
 
 final class UserProfileService
 {
@@ -108,11 +109,12 @@ final class UserProfileService
 
         $profile = null;
         if ($requestedTenantId !== null) {
-            $profile = $profiles->first(static function (EducationUserProfile $profile) use ($requestedTenantId): bool {
-                return $profile->tenant_id === null || (int) $profile->tenant_id === $requestedTenantId;
+            $profile = $profiles->first(static function (Model $profile) use ($requestedTenantId): bool {
+                return $profile instanceof EducationUserProfile
+                    && ($profile->tenant_id === null || (int) $profile->tenant_id === $requestedTenantId);
             });
         } else {
-            $profile = $profiles->first(static fn (EducationUserProfile $profile): bool => $profile->tenant_id !== null)
+            $profile = $profiles->first(static fn (Model $profile): bool => $profile instanceof EducationUserProfile && $profile->tenant_id !== null)
                 ?? $profiles->first();
         }
 

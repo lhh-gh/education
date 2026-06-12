@@ -27,10 +27,6 @@ class SeedCommand extends \Hyperf\Database\Commands\Seeders\SeedCommand
     public function handle()
     {
         $class = $this->input->getOption('class');
-        if ($class === null || $class === '') {
-            return parent::handle();
-        }
-
         if (! $this->confirmToProceed()) {
             return null;
         }
@@ -39,6 +35,12 @@ class SeedCommand extends \Hyperf\Database\Commands\Seeders\SeedCommand
 
         if ($this->input->hasOption('database') && $this->input->getOption('database')) {
             $this->seed->setConnection($this->input->getOption('database'));
+        }
+
+        if ($class === null || $class === '') {
+            $this->runConfiguredSeeders();
+
+            return null;
         }
 
         $this->runClassSeeder((string) $class);
@@ -72,16 +74,37 @@ class SeedCommand extends \Hyperf\Database\Commands\Seeders\SeedCommand
         }
 
         if (! class_exists($class)) {
-            throw new \RuntimeException(sprintf('Class "%s" not found', $class));
+            throw new \RuntimeException(\sprintf('Class "%s" not found', $class));
         }
 
         $seeder = new $class();
-        if (! $seeder instanceof Seeder) {
-            throw new \RuntimeException(sprintf('Class "%s" is not a seeder', $class));
+        if (! $seeder instanceof Seeder || ! method_exists($seeder, 'run')) {
+            throw new \RuntimeException(\sprintf('Class "%s" is not a seeder', $class));
         }
 
         $this->output->writeln("<comment>Seed:</comment> {$class}");
         $seeder->run();
         $this->output->writeln("<info>Seeded:</info> {$class}");
+    }
+
+    private function runConfiguredSeeders(): void
+    {
+        $files = $this->seed->getSeederFiles($this->getSeederPaths());
+        $this->seed->requireFiles($files);
+
+        foreach (array_keys($files) as $name) {
+            $this->runClassSeeder($this->resolveSeederClass((string) $name));
+        }
+    }
+
+    private function resolveSeederClass(string $name): string
+    {
+        foreach ([$name, Str::studly($name)] as $candidate) {
+            if (class_exists($candidate, false)) {
+                return $candidate;
+            }
+        }
+
+        return Str::studly($name);
     }
 }

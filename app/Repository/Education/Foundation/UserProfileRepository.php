@@ -29,7 +29,7 @@ final class UserProfileRepository extends IRepository
     public function handleSearch(Builder $query, array $params): Builder
     {
         $query
-            ->when(array_key_exists('tenant_id', $params), static function (Builder $query) use ($params): void {
+            ->when(\array_key_exists('tenant_id', $params), static function (Builder $query) use ($params): void {
                 $params['tenant_id'] === null
                     ? $query->whereNull('tenant_id')
                     : $query->where('tenant_id', (int) $params['tenant_id']);

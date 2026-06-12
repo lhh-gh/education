@@ -16,8 +16,8 @@ use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Education\Foundation\EducationUserCampusScope;
 use App\Model\Education\Foundation\EducationUserProfile;
-use Hyperf\Context\Context;
 use Hyperf\Context\ApplicationContext;
+use Hyperf\Context\Context;
 use HyperfTests\Feature\Admin\ControllerCase;
 use Psr\SimpleCache\CacheInterface;
 

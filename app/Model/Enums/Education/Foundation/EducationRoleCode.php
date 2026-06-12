@@ -26,11 +26,11 @@ enum EducationRoleCode: string
 
     public function isPlatform(): bool
     {
-        return in_array($this, [self::PlatformSuperAdmin, self::PlatformOperator], true);
+        return \in_array($this, [self::PlatformSuperAdmin, self::PlatformOperator], true);
     }
 
     public function requiresCampusScope(): bool
     {
-        return in_array($this, [self::Principal, self::AcademicStaff, self::FrontDesk, self::Teacher, self::Finance], true);
+        return \in_array($this, [self::Principal, self::AcademicStaff, self::FrontDesk, self::Teacher, self::Finance], true);
     }
 }
