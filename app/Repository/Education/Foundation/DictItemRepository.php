@@ -68,7 +68,14 @@ final class DictItemRepository extends IRepository
             ->where('status', 'enabled')
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->map(static function (object $item): EducationDictItem {
+                if (! $item instanceof EducationDictItem) {
+                    throw new \UnexpectedValueException('Expected education dictionary item.');
+                }
+
+                return $item;
+            });
     }
 
     public function existsValue(int $dictTypeId, string $value, ?int $ignoreId = null): bool
