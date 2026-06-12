@@ -9,7 +9,9 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
+use App\Contract\Education\Foundation\AuditLoggerInterface;
 use App\Contract\Education\Foundation\TenantContextInterface;
+use App\Service\Education\Foundation\AuditLogger;
 use App\Service\Education\Foundation\TenantContext;
 use App\Service\PassportService;
 use Mine\JwtAuth\Interfaces\CheckTokenInterface;
@@ -19,5 +21,6 @@ use Mine\Upload\UploadInterface;
 return [
     UploadInterface::class => Factory::class,
     CheckTokenInterface::class => PassportService::class,
+    AuditLoggerInterface::class => AuditLogger::class,
     TenantContextInterface::class => TenantContext::class,
 ];
