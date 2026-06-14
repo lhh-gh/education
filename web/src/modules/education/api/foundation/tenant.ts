@@ -1,24 +1,28 @@
-import type { PageList, ResponseStruct } from '#/global'
+import type { FoundationStatus, MinePage, MineResult, PageParams } from './types.ts'
 
-export type EducationStatus = 'enabled' | 'disabled'
+export type EducationStatus = FoundationStatus
 
-export interface TenantRecord {
+export interface TenantListItem {
   id: number
   name: string
   code: string
   short_name?: string
   contact_name?: string
   contact_phone?: string
-  status: EducationStatus
+  contact_mobile?: string
+  status: FoundationStatus
   created_at?: string
   updated_at?: string
 }
 
-export interface TenantPageParams {
+export type TenantRecord = TenantListItem
+export type TenantDetail = TenantListItem
+
+export interface TenantPageParams extends Partial<PageParams> {
   page?: number
   page_size?: number
   keyword?: string
-  status?: EducationStatus
+  status?: FoundationStatus
 }
 
 export interface TenantSavePayload {
@@ -27,26 +31,27 @@ export interface TenantSavePayload {
   short_name?: string
   contact_name?: string
   contact_phone?: string
-  status?: EducationStatus
+  contact_mobile?: string
+  status?: FoundationStatus
   settings?: Record<string, unknown>
 }
 
-export function pageTenants(params: TenantPageParams): Promise<ResponseStruct<PageList<TenantRecord>>> {
+export function pageTenants(params: TenantPageParams): Promise<MineResult<MinePage<TenantListItem>>> {
   return useHttp().get('/admin/education/foundation/tenants/page', { params })
 }
 
-export function createTenant(data: TenantSavePayload): Promise<ResponseStruct<{ id: number }>> {
+export function createTenant(data: TenantSavePayload): Promise<MineResult<TenantDetail>> {
   return useHttp().post('/admin/education/foundation/tenants', data)
 }
 
-export function updateTenant(id: number, data: TenantSavePayload): Promise<ResponseStruct<{ id: number }>> {
+export function updateTenant(id: number, data: TenantSavePayload): Promise<MineResult<TenantDetail>> {
   return useHttp().put(`/admin/education/foundation/tenants/${id}`, data)
 }
 
-export function updateTenantStatus(id: number, status: EducationStatus): Promise<ResponseStruct<{ id: number, status: EducationStatus }>> {
+export function updateTenantStatus(id: number, status: FoundationStatus): Promise<MineResult<TenantDetail>> {
   return useHttp().put(`/admin/education/foundation/tenants/${id}/status`, { status })
 }
 
-export function deleteTenant(id: number): Promise<ResponseStruct<null>> {
+export function deleteTenant(id: number): Promise<MineResult<true>> {
   return useHttp().delete(`/admin/education/foundation/tenants/${id}`)
 }

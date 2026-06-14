@@ -1,4 +1,4 @@
-import type { PageList, ResponseStruct } from '#/global'
+import type { MinePage, MineResult, PageParams } from './types.ts'
 
 export type AuditActorType = 'admin' | 'teacher' | 'guardian' | 'system'
 
@@ -30,9 +30,7 @@ export interface AuditLogDetail extends AuditLogListItem {
   metadata: Record<string, unknown> | null
 }
 
-export interface AuditLogPageParams {
-  page: number
-  pageSize: number
+export interface AuditLogPageParams extends PageParams {
   tenant_id?: number
   campus_id?: number
   module?: string
@@ -53,13 +51,13 @@ function tenantConfig(tenantId?: number): { headers: Record<string, string> } | 
     : undefined
 }
 
-export function pageAuditLogs(params: AuditLogPageParams): Promise<ResponseStruct<PageList<AuditLogListItem>>> {
+export function pageAuditLogs(params: AuditLogPageParams): Promise<MineResult<MinePage<AuditLogListItem>>> {
   return useHttp().get('/admin/education/foundation/audit-logs/page', {
     params,
     ...tenantConfig(params.tenant_id),
   })
 }
 
-export function getAuditLogDetail(id: number): Promise<ResponseStruct<AuditLogDetail>> {
+export function getAuditLogDetail(id: number): Promise<MineResult<AuditLogDetail>> {
   return useHttp().get(`/admin/education/foundation/audit-logs/${id}`)
 }

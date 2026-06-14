@@ -1,9 +1,9 @@
-import type { PageList, ResponseStruct } from '#/global'
+import type { FoundationStatus, MinePage, MineResult, PageParams } from './types.ts'
 
+export type { FoundationStatus } from './types.ts'
 export type ConfigOwnerType = 'system' | 'tenant'
-export type FoundationStatus = 'enabled' | 'disabled'
 
-export interface DictTypeRecord {
+export interface DictTypeListItem {
   id: number
   owner_type: ConfigOwnerType
   tenant_id?: number
@@ -19,7 +19,7 @@ export interface DictTypeRecord {
   updated_at?: string
 }
 
-export interface DictItemRecord {
+export interface DictItemListItem {
   id: number
   dict_type_id: number
   owner_key: string
@@ -35,7 +35,19 @@ export interface DictItemRecord {
   updated_at?: string
 }
 
-export interface DictTypePageParams {
+export type DictTypeRecord = DictTypeListItem
+export type DictTypeDetail = DictTypeListItem
+export type DictItemRecord = DictItemListItem
+export type DictItemDetail = DictItemListItem
+
+export interface DictOption {
+  label: string
+  value: string
+  color?: string
+  extra?: Record<string, unknown>
+}
+
+export interface DictTypePageParams extends Partial<PageParams> {
   page?: number
   page_size?: number
   owner_type?: ConfigOwnerType
@@ -44,7 +56,7 @@ export interface DictTypePageParams {
   status?: FoundationStatus
 }
 
-export interface DictItemPageParams {
+export interface DictItemPageParams extends Partial<PageParams> {
   page?: number
   page_size?: number
   dict_type_id?: number
@@ -86,49 +98,49 @@ function tenantConfig(tenantId?: number): { headers: Record<string, string> } | 
     : undefined
 }
 
-export function pageDictTypes(params: DictTypePageParams): Promise<ResponseStruct<PageList<DictTypeRecord>>> {
+export function pageDictTypes(params: DictTypePageParams): Promise<MineResult<MinePage<DictTypeListItem>>> {
   return useHttp().get('/admin/education/foundation/dict-types/page', {
     params,
     ...tenantConfig(params.tenant_id),
   })
 }
 
-export function createDictType(data: DictTypeSavePayload): Promise<ResponseStruct<{ id: number, owner_key: string }>> {
+export function createDictType(data: DictTypeSavePayload): Promise<MineResult<DictTypeDetail>> {
   return useHttp().post('/admin/education/foundation/dict-types', data, tenantConfig(data.tenant_id))
 }
 
-export function updateDictType(id: number, data: DictTypeSavePayload): Promise<ResponseStruct<{ id: number }>> {
+export function updateDictType(id: number, data: DictTypeSavePayload): Promise<MineResult<DictTypeDetail>> {
   return useHttp().put(`/admin/education/foundation/dict-types/${id}`, data, tenantConfig(data.tenant_id))
 }
 
-export function updateDictTypeStatus(id: number, status: FoundationStatus): Promise<ResponseStruct<{ id: number, status: FoundationStatus }>> {
+export function updateDictTypeStatus(id: number, status: FoundationStatus): Promise<MineResult<DictTypeDetail>> {
   return useHttp().put(`/admin/education/foundation/dict-types/${id}/status`, { status })
 }
 
-export function deleteDictType(id: number): Promise<ResponseStruct<null>> {
+export function deleteDictType(id: number): Promise<MineResult<true>> {
   return useHttp().delete(`/admin/education/foundation/dict-types/${id}`)
 }
 
-export function pageDictItems(params: DictItemPageParams): Promise<ResponseStruct<PageList<DictItemRecord>>> {
+export function pageDictItems(params: DictItemPageParams): Promise<MineResult<MinePage<DictItemListItem>>> {
   return useHttp().get('/admin/education/foundation/dict-items/page', { params })
 }
 
-export function createDictItem(data: DictItemSavePayload): Promise<ResponseStruct<{ id: number, dict_type_id: number }>> {
+export function createDictItem(data: DictItemSavePayload): Promise<MineResult<DictItemDetail>> {
   return useHttp().post('/admin/education/foundation/dict-items', data)
 }
 
-export function updateDictItem(id: number, data: DictItemSavePayload): Promise<ResponseStruct<{ id: number }>> {
+export function updateDictItem(id: number, data: DictItemSavePayload): Promise<MineResult<DictItemDetail>> {
   return useHttp().put(`/admin/education/foundation/dict-items/${id}`, data)
 }
 
-export function updateDictItemStatus(id: number, status: FoundationStatus): Promise<ResponseStruct<{ id: number, status: FoundationStatus }>> {
+export function updateDictItemStatus(id: number, status: FoundationStatus): Promise<MineResult<DictItemDetail>> {
   return useHttp().put(`/admin/education/foundation/dict-items/${id}/status`, { status })
 }
 
-export function deleteDictItem(id: number): Promise<ResponseStruct<null>> {
+export function deleteDictItem(id: number): Promise<MineResult<true>> {
   return useHttp().delete(`/admin/education/foundation/dict-items/${id}`)
 }
 
-export function lookupDictItems(code: string, tenantId?: number): Promise<ResponseStruct<DictLookupResult>> {
+export function lookupDictItems(code: string, tenantId?: number): Promise<MineResult<DictOption[]>> {
   return useHttp().get(`/admin/education/foundation/dictionaries/${code}/items`, tenantConfig(tenantId))
 }
