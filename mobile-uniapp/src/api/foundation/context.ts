@@ -32,7 +32,7 @@ export function getOperatorContext(params?: RequestParams): Promise<MobileFounda
   return requestContext('/mobile/education/foundation/operator/context', params)
 }
 
-function requestContext<T>(url: string, params?: Record<string, unknown>): Promise<T> {
+function requestContext<T>(url: string, params?: object): Promise<T> {
   return new Promise((resolve, reject) => {
     uni.request({
       url,
@@ -58,7 +58,7 @@ function requestContext<T>(url: string, params?: Record<string, unknown>): Promi
   })
 }
 
-function compact(params?: Record<string, unknown>): Record<string, unknown> {
+function compact(params?: object): Record<string, unknown> {
   return Object.fromEntries(
     Object.entries(params || {}).filter(([, value]) => value !== undefined && value !== null && value !== '')
   )

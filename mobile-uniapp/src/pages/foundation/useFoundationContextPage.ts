@@ -18,11 +18,11 @@ export function createFoundationContextPage<T extends MobileFoundationContext>(
   loader: () => Promise<T>,
   options: FoundationPageOptions<T>
 ) {
-  const state = reactive<FoundationPageState<T>>({
+  const state = reactive({
     status: 'loading',
     context: null,
     message: '',
-  })
+  }) as FoundationPageState<T>
 
   const enabledFeatureCodes = computed(() => Object.entries(state.context?.feature_flags || {})
     .filter(([, enabled]) => enabled)

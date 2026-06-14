@@ -143,14 +143,13 @@ final class MobileContextRepository extends IRepository
         return $result;
     }
 
-    private function profileQueryForUser(int $userId, ?int $tenantId): Builder
+    private function profileQueryForUser(int $userId, ?int $tenantId)
     {
-        return $this->getQuery()
-            ->where('user_id', $userId)
-            ->when(
-                $tenantId === null,
-                static fn (Builder $query): Builder => $query->whereNull('tenant_id'),
-                static fn (Builder $query): Builder => $query->where('tenant_id', $tenantId)
-            );
+        $query = $this->getQuery()->where('user_id', $userId);
+        if ($tenantId === null) {
+            return $query->whereNull('tenant_id');
+        }
+
+        return $query->where('tenant_id', $tenantId);
     }
 }
