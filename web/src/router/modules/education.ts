@@ -3,13 +3,13 @@ import type { RouteRecordRaw } from 'vue-router'
 const educationRoutes: RouteRecordRaw[] = [
   {
     path: '/education',
-    name: 'Education',
+    name: 'EducationRoot',
     redirect: '/education/foundation/tenants',
     meta: {
       title: '教务 SaaS',
       icon: 'material-symbols:school-outline-rounded',
       type: 'M',
-      auth: ['education:foundation:tenant:page', 'education:foundation:campus:page', 'education:foundation:user-profile:page', 'education:foundation:dictionary:page', 'education:foundation:feature-flag:page', 'education:foundation:audit-log:page'],
+      auth: ['education:*'],
     },
     children: [
       {
