@@ -12,6 +12,7 @@ const emit = defineEmits<{
   success: []
 }>()
 
+const message = useMessage()
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
 const model = reactive<TenantSavePayload>({
@@ -36,7 +37,9 @@ const rules: FormRules = {
 }
 
 async function submit() {
-  if (!formRef.value) return
+  if (!formRef.value) {
+    return
+  }
   await formRef.value.validate()
   submitting.value = true
   try {
@@ -47,6 +50,9 @@ async function submit() {
       await createTenant(model)
     }
     emit('success')
+  }
+  catch (error: any) {
+    message.error(error?.message ?? 'Tenant save failed')
   }
   finally {
     submitting.value = false

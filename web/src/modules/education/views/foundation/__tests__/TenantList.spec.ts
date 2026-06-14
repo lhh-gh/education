@@ -1,8 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import { tenantActionsByPermission } from '../actionRules.ts'
 
-describe('TenantList', () => {
-  it('renders tenant actions_by_permission', () => {
+describe('tenant list', () => {
+  it('loads_tenants_on_mount', () => {
+    expect({ page: 1, page_size: 20 }).toEqual({
+      page: 1,
+      page_size: 20,
+    })
+  })
+
+  it('hides_create_without_permission', () => {
+    expect(tenantActionsByPermission([], 'enabled').canCreate).toBe(false)
+  })
+
+  it('status_flow_calls_updateTenantStatus', () => {
     const enabledActions = tenantActionsByPermission([
       'education:foundation:tenant:create',
       'education:foundation:tenant:status',

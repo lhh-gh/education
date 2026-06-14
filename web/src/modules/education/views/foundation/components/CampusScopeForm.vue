@@ -63,6 +63,9 @@ async function submit() {
     await saveCampusScopes(props.profile.id, campusScopeSavePayload(selectedCampusIds.value))
     emit('success')
   }
+  catch (error: any) {
+    message.error(error?.message ?? 'Campus scope save failed')
+  }
   finally {
     submitting.value = false
   }

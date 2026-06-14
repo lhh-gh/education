@@ -13,6 +13,7 @@ const emit = defineEmits<{
   success: []
 }>()
 
+const message = useMessage()
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
 const model = reactive<CampusSavePayload>({
@@ -37,7 +38,9 @@ const rules: FormRules = {
 }
 
 async function submit() {
-  if (!formRef.value) return
+  if (!formRef.value) {
+    return
+  }
   await formRef.value.validate()
   submitting.value = true
   try {
@@ -48,6 +51,9 @@ async function submit() {
       await createCampus(tenantId, model)
     }
     emit('success')
+  }
+  catch (error: any) {
+    message.error(error?.message ?? 'Campus save failed')
   }
   finally {
     submitting.value = false

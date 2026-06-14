@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TenantRecord, TenantPageParams } from '../../api/foundation/tenant.ts'
+import type { TenantPageParams, TenantRecord } from '../../api/foundation/tenant.ts'
 import { deleteTenant, pageTenants, updateTenantStatus } from '../../api/foundation/tenant.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import TenantForm from './components/TenantForm.vue'
@@ -11,19 +11,24 @@ const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogMode = ref<'create' | 'edit'>('create')
 const currentTenant = ref<TenantRecord | null>(null)
+const errorText = ref('')
 const rows = ref<TenantRecord[]>([])
 const total = ref(0)
-const search = reactive<TenantPageParams>({
-  page: 1,
-  page_size: 20,
-  keyword: '',
-  status: undefined,
-})
+const search = reactive<TenantPageParams>(defaultSearch())
 
 const canCreate = computed(() => hasAuth('education:foundation:tenant:create'))
 const canEdit = computed(() => hasAuth('education:foundation:tenant:update'))
 const canStatus = computed(() => hasAuth('education:foundation:tenant:status'))
 const canDelete = computed(() => hasAuth('education:foundation:tenant:delete'))
+
+function defaultSearch(): TenantPageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    keyword: '',
+    status: undefined,
+  }
+}
 
 async function loadTenants() {
   loading.value = true
@@ -31,13 +36,25 @@ async function loadTenants() {
     const response = await pageTenants(search)
     rows.value = response.data.list
     total.value = response.data.total
+    errorText.value = ''
   }
   catch (error: any) {
+    errorText.value = error?.message ?? 'Tenant list loading failed'
     message.error(error?.message ?? '机构列表加载失败')
   }
   finally {
     loading.value = false
   }
+}
+
+function handleSearch() {
+  search.page = 1
+  loadTenants()
+}
+
+function handleReset() {
+  Object.assign(search, defaultSearch())
+  loadTenants()
 }
 
 function openCreate() {
@@ -73,7 +90,7 @@ onMounted(loadTenants)
 </script>
 
 <template>
-  <div class="mine-layout pt-3 education-foundation-page">
+  <div class="mine-layout education-foundation-page pt-3">
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
@@ -84,19 +101,24 @@ onMounted(loadTenants)
         </div>
       </template>
 
+      <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+
       <el-form :inline="true" :model="search" class="search-form">
         <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable placeholder="机构名称/编码/手机号" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px">
+          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px;">
             <el-option label="启用" value="enabled" />
             <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadTenants">
+          <el-button type="primary" @click="handleSearch">
             查询
+          </el-button>
+          <el-button @click="handleReset">
+            Reset
           </el-button>
         </el-form-item>
       </el-form>
@@ -157,6 +179,7 @@ onMounted(loadTenants)
     justify-content: space-between;
   }
 
+  .page-alert,
   .search-form {
     margin-bottom: 12px;
   }

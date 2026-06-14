@@ -15,15 +15,10 @@ const scopeVisible = ref(false)
 const dialogMode = ref<'create' | 'edit'>('create')
 const currentProfile = ref<UserProfileRecord | null>(null)
 const scopeProfile = ref<UserProfileRecord | null>(null)
+const errorText = ref('')
 const rows = ref<UserProfileRecord[]>([])
 const total = ref(0)
-const search = reactive<UserProfilePageParams>({
-  page: 1,
-  page_size: 20,
-  keyword: '',
-  role_code: undefined,
-  status: undefined,
-})
+const search = reactive<UserProfilePageParams>(defaultSearch())
 
 const roleOptions: Array<{ label: string, value: EducationRoleCode }> = [
   { label: 'Platform super admin', value: 'platform_super_admin' },
@@ -42,19 +37,42 @@ const canEdit = computed(() => hasAuth('education:foundation:user-profile:update
 const canStatus = computed(() => hasAuth('education:foundation:user-profile:status'))
 const canSaveCampusScope = computed(() => hasAuth('education:foundation:campus-scope:save'))
 
+function defaultSearch(): UserProfilePageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    tenant_id: undefined,
+    keyword: '',
+    role_code: undefined,
+    status: undefined,
+  }
+}
+
 async function loadProfiles() {
   loading.value = true
   try {
     const response = await pageUserProfiles(search)
     rows.value = response.data.list
     total.value = response.data.total
+    errorText.value = ''
   }
   catch (error: any) {
+    errorText.value = error?.message ?? 'Profile list loading failed'
     message.error(error?.message ?? 'Profile list loading failed')
   }
   finally {
     loading.value = false
   }
+}
+
+function handleSearch() {
+  search.page = 1
+  loadProfiles()
+}
+
+function handleReset() {
+  Object.assign(search, defaultSearch())
+  loadProfiles()
 }
 
 function roleLabel(roleCode: EducationRoleCode): string {
@@ -113,6 +131,8 @@ onMounted(loadProfiles)
         </div>
       </template>
 
+      <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+
       <el-form :inline="true" :model="search" class="search-form">
         <el-form-item label="Tenant ID">
           <el-input-number v-model="search.tenant_id" :controls="false" :min="1" />
@@ -132,8 +152,11 @@ onMounted(loadProfiles)
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadProfiles">
+          <el-button type="primary" @click="handleSearch">
             Search
+          </el-button>
+          <el-button @click="handleReset">
+            Reset
           </el-button>
         </el-form-item>
       </el-form>
@@ -203,6 +226,7 @@ onMounted(loadProfiles)
     justify-content: space-between;
   }
 
+  .page-alert,
   .search-form {
     margin-bottom: 12px;
   }

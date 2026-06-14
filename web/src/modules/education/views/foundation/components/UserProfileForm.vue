@@ -13,6 +13,7 @@ const emit = defineEmits<{
   success: []
 }>()
 
+const message = useMessage()
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
 const roleOptions: Array<{ label: string, value: EducationRoleCode }> = [
@@ -119,6 +120,9 @@ async function submit() {
       await createUserProfile(payload())
     }
     emit('success')
+  }
+  catch (error: any) {
+    message.error(error?.message ?? 'Profile save failed')
   }
   finally {
     submitting.value = false

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { CampusRecord, CampusPageParams } from '../../api/foundation/campus.ts'
+import type { CampusPageParams, CampusRecord } from '../../api/foundation/campus.ts'
 import { deleteCampus, pageCampuses, updateCampusStatus } from '../../api/foundation/campus.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
+import { tenantRequired } from './actionRules.ts'
 import CampusForm from './components/CampusForm.vue'
 
 defineOptions({ name: 'EducationFoundationCampusList' })
@@ -11,21 +12,26 @@ const loading = ref(false)
 const dialogVisible = ref(false)
 const dialogMode = ref<'create' | 'edit'>('create')
 const currentCampus = ref<CampusRecord | null>(null)
-const tenantId = ref<number>()
+const errorText = ref('')
 const rows = ref<CampusRecord[]>([])
 const total = ref(0)
-const search = reactive<CampusPageParams>({
-  page: 1,
-  page_size: 20,
-  keyword: '',
-  status: undefined,
-})
+const search = reactive<CampusPageParams>(defaultSearch())
 
-const canCreate = computed(() => Boolean(tenantId.value) && hasAuth('education:foundation:campus:create'))
+const canCreate = computed(() => Boolean(search.tenant_id) && hasAuth('education:foundation:campus:create'))
 const canEdit = computed(() => hasAuth('education:foundation:campus:update'))
 const canStatus = computed(() => hasAuth('education:foundation:campus:status'))
 const canDelete = computed(() => hasAuth('education:foundation:campus:delete'))
-const tenantMissing = computed(() => !tenantId.value || tenantId.value <= 0)
+const tenantMissing = computed(() => tenantRequired(search.tenant_id))
+
+function defaultSearch(): CampusPageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    tenant_id: undefined,
+    keyword: '',
+    status: undefined,
+  }
+}
 
 async function loadCampuses() {
   if (tenantMissing.value) {
@@ -34,11 +40,13 @@ async function loadCampuses() {
   }
   loading.value = true
   try {
-    const response = await pageCampuses(tenantId.value as number, search)
+    const response = await pageCampuses(search)
     rows.value = response.data.list
     total.value = response.data.total
+    errorText.value = ''
   }
   catch (error: any) {
+    errorText.value = error?.message ?? 'Campus list loading failed'
     message.error(error?.message ?? '校区列表加载失败')
   }
   finally {
@@ -46,8 +54,22 @@ async function loadCampuses() {
   }
 }
 
+function handleSearch() {
+  search.page = 1
+  loadCampuses()
+}
+
+function handleReset() {
+  Object.assign(search, defaultSearch())
+  rows.value = []
+  total.value = 0
+  loadCampuses()
+}
+
 function openCreate() {
-  if (tenantMissing.value) return
+  if (tenantMissing.value) {
+    return
+  }
   dialogMode.value = 'create'
   currentCampus.value = null
   dialogVisible.value = true
@@ -60,16 +82,20 @@ function openEdit(row: CampusRecord) {
 }
 
 async function changeStatus(row: CampusRecord) {
-  if (tenantMissing.value) return
+  if (tenantMissing.value) {
+    return
+  }
   const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
-  await updateCampusStatus(tenantId.value as number, row.id, nextStatus)
+  await updateCampusStatus(search.tenant_id as number, row.id, nextStatus)
   await loadCampuses()
 }
 
 async function removeCampus(row: CampusRecord) {
-  if (tenantMissing.value) return
+  if (tenantMissing.value) {
+    return
+  }
   await message.confirm('确认删除该校区？')
-  await deleteCampus(tenantId.value as number, row.id)
+  await deleteCampus(search.tenant_id as number, row.id)
   await loadCampuses()
 }
 
@@ -80,7 +106,7 @@ function onFormSuccess() {
 </script>
 
 <template>
-  <div class="mine-layout pt-3 education-foundation-page">
+  <div class="mine-layout education-foundation-page pt-3">
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
@@ -100,22 +126,27 @@ function onFormSuccess() {
         title="请选择机构后管理校区"
       />
 
+      <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+
       <el-form :inline="true" :model="search" class="search-form">
         <el-form-item label="机构ID" required>
-          <el-input-number v-model="tenantId" :min="1" :controls="false" placeholder="X-Tenant-Id" />
+          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" placeholder="X-Tenant-Id" />
         </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable placeholder="校区名称/编码/手机号/地址" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px">
+          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px;">
             <el-option label="启用" value="enabled" />
             <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :disabled="tenantMissing" @click="loadCampuses">
+          <el-button type="primary" :disabled="tenantMissing" @click="handleSearch">
             查询
+          </el-button>
+          <el-button @click="handleReset">
+            Reset
           </el-button>
         </el-form-item>
       </el-form>
@@ -164,9 +195,9 @@ function onFormSuccess() {
 
     <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新建校区' : '编辑校区'" width="560px">
       <CampusForm
-        v-if="tenantId"
+        v-if="search.tenant_id"
         :mode="dialogMode"
-        :tenant-id="tenantId"
+        :tenant-id="search.tenant_id"
         :data="currentCampus"
         @success="onFormSuccess"
       />
@@ -186,6 +217,7 @@ function onFormSuccess() {
     margin-bottom: 12px;
   }
 
+  .page-alert,
   .search-form {
     margin-bottom: 12px;
   }
