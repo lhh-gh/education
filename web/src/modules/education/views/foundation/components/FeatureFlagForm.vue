@@ -2,7 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { FeatureFlagRecord, FeatureFlagSavePayload } from '../../../api/foundation/featureFlag.ts'
 import { createFeatureFlag, updateFeatureFlag } from '../../../api/foundation/featureFlag.ts'
-import { dictionaryOwnerTypeOptions } from '../actionRules.ts'
+import { dictionaryOwnerTypeOptions, extractApiErrorMessage, isSubmitDisabled, parseJsonObjectText } from '../actionRules.ts'
 
 const { mode = 'create', data = null, platformContext = false } = defineProps<{
   mode?: 'create' | 'edit'
@@ -71,18 +71,8 @@ watch(() => model.owner_type, (ownerType) => {
 })
 
 function parseConfig(): Record<string, unknown> | undefined {
-  const text = configText.value.trim()
-  if (!text) {
-    return undefined
-  }
-
   try {
-    const parsed = JSON.parse(text)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('config must be an object')
-    }
-
-    return parsed
+    return parseJsonObjectText(configText.value, 'config')
   }
   catch {
     message.error('配置 JSON 格式不正确')
@@ -95,7 +85,14 @@ async function submit() {
     return
   }
   await formRef.value.validate()
-  const config = parseConfig()
+  let config: Record<string, unknown> | undefined
+  try {
+    config = parseConfig()
+  }
+  catch {
+    return
+  }
+
   submitting.value = true
   try {
     const payload: FeatureFlagSavePayload = {
@@ -112,6 +109,9 @@ async function submit() {
       await createFeatureFlag(payload)
     }
     emit('success')
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'feature flag save failed'))
   }
   finally {
     submitting.value = false
@@ -165,7 +165,7 @@ defineExpose({ submit })
       <el-switch v-model="model.is_locked" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" :loading="submitting" @click="submit">
+      <el-button type="primary" :loading="submitting" :disabled="isSubmitDisabled(submitting)" @click="submit">
         保存
       </el-button>
     </el-form-item>

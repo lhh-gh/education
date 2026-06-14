@@ -1,9 +1,55 @@
 import type { EducationStatus } from '../../api/foundation/tenant.ts'
-import type { ConfigOwnerType, FoundationStatus } from '../../api/foundation/dictionary.ts'
+import type { ConfigOwnerType, DictItemPageParams, DictTypePageParams, DictTypeRecord, FoundationStatus } from '../../api/foundation/dictionary.ts'
+import type { FeatureFlagPageParams } from '../../api/foundation/featureFlag.ts'
 import type { EducationRoleCode } from '../../api/foundation/userProfile.ts'
 
 export function hasPermission(permissions: string[], code: string): boolean {
-  return permissions.includes('*') || permissions.includes(code)
+  return permissions.includes('*') || permissions.includes('education:*') || permissions.includes(code)
+}
+
+export function hasPlatformConfigPermission(permissions: string[]): boolean {
+  return permissions.includes('*') || permissions.includes('education:*')
+}
+
+export function extractApiErrorMessage(error: unknown, fallback: string): string {
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    return error.message
+  }
+
+  return fallback
+}
+
+export function isSubmitDisabled(submitting: boolean): boolean {
+  return submitting
+}
+
+export function shouldCloseFormAfterSubmit(success: boolean): boolean {
+  return success
+}
+
+export function keepListStateAfterError<TFilters extends Record<string, unknown>, TRow>(
+  state: { filters: TFilters, rows: TRow[], total: number },
+) {
+  return {
+    filters: state.filters,
+    rows: state.rows,
+    total: state.total,
+  }
+}
+
+export function parseJsonObjectText(text: string, fieldName: string): Record<string, unknown> | undefined {
+  const trimmed = text.trim()
+
+  if (!trimmed) {
+    return undefined
+  }
+
+  const parsed = JSON.parse(trimmed)
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`${fieldName} must be a JSON object`)
+  }
+
+  return parsed as Record<string, unknown>
 }
 
 export function tenantActionsByPermission(permissions: string[], status: EducationStatus) {
@@ -62,19 +108,21 @@ export function campusScopeValidationError(roleCode: EducationRoleCode, campusId
 }
 
 export function dictionaryActionsByPermission(permissions: string[], isLocked: boolean, typeStatus?: FoundationStatus, itemStatus?: FoundationStatus) {
+  const canMutateLocked = !isLocked || hasPlatformConfigPermission(permissions)
+
   return {
     canCreateType: hasPermission(permissions, 'education:foundation:dictionary:create'),
-    canEditType: hasPermission(permissions, 'education:foundation:dictionary:update'),
-    typeStatusAction: hasPermission(permissions, 'education:foundation:dictionary:status') && typeStatus
+    canEditType: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary:update'),
+    typeStatusAction: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary:status') && typeStatus
       ? typeStatus === 'enabled' ? 'disable' : 'enable'
       : null,
-    canDeleteType: !isLocked && hasPermission(permissions, 'education:foundation:dictionary:delete'),
+    canDeleteType: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary:delete'),
     canCreateItem: hasPermission(permissions, 'education:foundation:dictionary-item:create'),
-    canEditItem: hasPermission(permissions, 'education:foundation:dictionary-item:update'),
-    itemStatusAction: hasPermission(permissions, 'education:foundation:dictionary-item:status') && itemStatus
+    canEditItem: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary-item:update'),
+    itemStatusAction: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary-item:status') && itemStatus
       ? itemStatus === 'enabled' ? 'disable' : 'enable'
       : null,
-    canDeleteItem: !isLocked && hasPermission(permissions, 'education:foundation:dictionary-item:delete'),
+    canDeleteItem: canMutateLocked && hasPermission(permissions, 'education:foundation:dictionary-item:delete'),
   }
 }
 
@@ -86,17 +134,99 @@ export function dictionaryOwnerTypeOptions(isPlatformContext: boolean): Array<{ 
     : [tenantOption]
 }
 
+export function defaultDictTypeSearch(isPlatformContext = true): DictTypePageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    owner_type: isPlatformContext ? undefined : 'tenant',
+    tenant_id: undefined,
+    keyword: '',
+    status: undefined,
+  }
+}
+
+export function normalizeDictTypeSearch(search: DictTypePageParams): DictTypePageParams {
+  return {
+    ...search,
+    page: search.page || 1,
+    page_size: search.page_size || 20,
+    tenant_id: search.owner_type === 'system' ? undefined : search.tenant_id,
+  }
+}
+
+export function defaultDictItemSearch(): DictItemPageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    keyword: '',
+    status: undefined,
+  }
+}
+
+export function dictionaryItemParamsForType(search: DictItemPageParams, selectedType: DictTypeRecord): DictItemPageParams {
+  return {
+    ...search,
+    page: search.page || 1,
+    page_size: search.page_size || 20,
+    dict_type_id: selectedType.id,
+    dict_code: selectedType.code,
+  }
+}
+
+export type FeatureFlagDateRange = [string, string] | []
+
+export function defaultFeatureFlagSearch(): FeatureFlagPageParams {
+  return {
+    page: 1,
+    page_size: 20,
+    owner_type: undefined,
+    tenant_id: undefined,
+    keyword: '',
+    enabled: undefined,
+    status: undefined,
+  }
+}
+
+export function normalizeFeatureFlagSearch(search: FeatureFlagPageParams, dateRange: FeatureFlagDateRange = []): FeatureFlagPageParams {
+  const params: FeatureFlagPageParams = {
+    ...search,
+    page: search.page || 1,
+    page_size: search.page_size || 20,
+    tenant_id: search.owner_type === 'system' ? undefined : search.tenant_id,
+  }
+
+  if (dateRange.length === 2) {
+    params.effective_from = dateRange[0]
+    params.effective_to = dateRange[1]
+  }
+  else {
+    delete params.effective_from
+    delete params.effective_to
+  }
+
+  return params
+}
+
+export function resetFeatureFlagSearch(): { search: FeatureFlagPageParams, dateRange: FeatureFlagDateRange } {
+  return {
+    search: defaultFeatureFlagSearch(),
+    dateRange: [],
+  }
+}
+
 export function featureFlagActionsByPermission(permissions: string[], enabled: boolean, isLocked: boolean, status?: FoundationStatus) {
+  const canMutateLocked = !isLocked || hasPlatformConfigPermission(permissions)
+
   return {
     canCreate: hasPermission(permissions, 'education:foundation:feature-flag:create'),
-    canEdit: hasPermission(permissions, 'education:foundation:feature-flag:update'),
-    enabledAction: hasPermission(permissions, 'education:foundation:feature-flag:status')
+    canEdit: canMutateLocked && hasPermission(permissions, 'education:foundation:feature-flag:update'),
+    enabledAction: canMutateLocked && hasPermission(permissions, 'education:foundation:feature-flag:status')
       ? enabled ? 'disable' : 'enable'
       : null,
-    statusAction: hasPermission(permissions, 'education:foundation:feature-flag:status') && status
+    statusAction: canMutateLocked && hasPermission(permissions, 'education:foundation:feature-flag:status') && status
       ? status === 'enabled' ? 'disable' : 'enable'
       : null,
-    canDelete: !isLocked && hasPermission(permissions, 'education:foundation:feature-flag:delete'),
+    canDelete: canMutateLocked && hasPermission(permissions, 'education:foundation:feature-flag:delete'),
     canResolve: hasPermission(permissions, 'education:foundation:feature-flag:lookup'),
   }
 }

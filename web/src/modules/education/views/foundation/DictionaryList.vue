@@ -16,7 +16,15 @@ import {
 } from '../../api/foundation/dictionary.ts'
 import useUserStore from '@/store/modules/useUserStore.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { dictionaryActionsByPermission, dictionaryOwnerTypeOptions } from './actionRules.ts'
+import {
+  defaultDictItemSearch,
+  defaultDictTypeSearch,
+  dictionaryActionsByPermission,
+  dictionaryItemParamsForType,
+  dictionaryOwnerTypeOptions,
+  extractApiErrorMessage,
+  normalizeDictTypeSearch,
+} from './actionRules.ts'
 import DictItemForm from './components/DictItemForm.vue'
 import DictTypeForm from './components/DictTypeForm.vue'
 
@@ -39,20 +47,8 @@ const typeTotal = ref(0)
 const itemTotal = ref(0)
 const typeError = ref('')
 const itemError = ref('')
-const typeSearch = reactive<DictTypePageParams>({
-  page: 1,
-  page_size: 20,
-  owner_type: undefined,
-  tenant_id: undefined,
-  keyword: '',
-  status: undefined,
-})
-const itemSearch = reactive<DictItemPageParams>({
-  page: 1,
-  page_size: 20,
-  keyword: '',
-  status: undefined,
-})
+const typeSearch = reactive<DictTypePageParams>(defaultDictTypeSearch())
+const itemSearch = reactive<DictItemPageParams>(defaultDictItemSearch())
 
 const permissions = computed(() => userStore.getPermissions())
 const isPlatformContext = computed(() => {
@@ -81,10 +77,7 @@ watch(() => typeSearch.owner_type, (ownerType) => {
 })
 
 function normalizeTypeSearch(): DictTypePageParams {
-  return {
-    ...typeSearch,
-    tenant_id: typeSearch.owner_type === 'system' ? undefined : typeSearch.tenant_id,
-  }
+  return normalizeDictTypeSearch(typeSearch)
 }
 
 function ownerTypeLabel(ownerType: ConfigOwnerType): string {
@@ -117,6 +110,7 @@ async function loadTypes() {
   }
   catch (error: any) {
     typeError.value = error?.message ?? '字典列表加载失败'
+    typeError.value = extractApiErrorMessage(error, typeError.value)
     message.error(typeError.value)
   }
   finally {
@@ -133,17 +127,14 @@ async function loadItems() {
 
   itemLoading.value = true
   try {
-    const response = await pageDictItems({
-      ...itemSearch,
-      dict_type_id: selectedType.value.id,
-      dict_code: selectedType.value.code,
-    })
+    const response = await pageDictItems(dictionaryItemParamsForType(itemSearch, selectedType.value))
     itemRows.value = response.data.list
     itemTotal.value = response.data.total
     itemError.value = ''
   }
   catch (error: any) {
     itemError.value = error?.message ?? '字典项加载失败'
+    itemError.value = extractApiErrorMessage(error, itemError.value)
     message.error(itemError.value)
   }
   finally {
@@ -154,6 +145,26 @@ async function loadItems() {
 function selectType(row?: DictTypeRecord) {
   selectedType.value = row ?? null
   itemSearch.page = 1
+  loadItems()
+}
+
+function handleTypeSearch() {
+  typeSearch.page = 1
+  loadTypes()
+}
+
+function handleTypeReset() {
+  Object.assign(typeSearch, defaultDictTypeSearch(isPlatformContext.value))
+  loadTypes()
+}
+
+function handleItemSearch() {
+  itemSearch.page = 1
+  loadItems()
+}
+
+function handleItemReset() {
+  Object.assign(itemSearch, defaultDictItemSearch())
   loadItems()
 }
 
@@ -185,27 +196,47 @@ function openEditItem(row: DictItemRecord) {
 }
 
 async function changeTypeStatus(row: DictTypeRecord) {
-  const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
-  await updateDictTypeStatus(row.id, nextStatus)
-  await loadTypes()
+  try {
+    const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
+    await updateDictTypeStatus(row.id, nextStatus)
+    await loadTypes()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary status update failed'))
+  }
 }
 
 async function changeItemStatus(row: DictItemRecord) {
-  const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
-  await updateDictItemStatus(row.id, nextStatus)
-  await loadItems()
+  try {
+    const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
+    await updateDictItemStatus(row.id, nextStatus)
+    await loadItems()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary item status update failed'))
+  }
 }
 
 async function removeType(row: DictTypeRecord) {
-  await message.confirm('确认删除该字典？')
-  await deleteDictType(row.id)
-  await loadTypes()
+  try {
+    await message.confirm('确认删除该字典？')
+    await deleteDictType(row.id)
+    await loadTypes()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary delete failed'))
+  }
 }
 
 async function removeItem(row: DictItemRecord) {
-  await message.confirm('确认删除该字典项？')
-  await deleteDictItem(row.id)
-  await loadItems()
+  try {
+    await message.confirm('确认删除该字典项？')
+    await deleteDictItem(row.id)
+    await loadItems()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary item delete failed'))
+  }
 }
 
 function onTypeFormSuccess() {
@@ -222,7 +253,7 @@ onMounted(loadTypes)
 </script>
 
 <template>
-  <div class="mine-layout pt-3 education-foundation-page dictionary-page">
+  <div class="mine-layout education-foundation-page dictionary-page pt-3">
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
@@ -237,7 +268,7 @@ onMounted(loadTypes)
 
       <el-form :inline="true" :model="typeSearch" class="search-form">
         <el-form-item label="归属">
-          <el-select v-model="typeSearch.owner_type" clearable :disabled="!isPlatformContext" placeholder="全部" style="width: 120px">
+          <el-select v-model="typeSearch.owner_type" clearable :disabled="!isPlatformContext" placeholder="全部" style="width: 120px;">
             <el-option v-for="option in ownerOptions" :key="option.value" :label="option.label" :value="option.value" />
           </el-select>
         </el-form-item>
@@ -248,14 +279,19 @@ onMounted(loadTypes)
           <el-input v-model="typeSearch.keyword" clearable placeholder="字典编码/名称" />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="typeSearch.status" clearable placeholder="全部" style="width: 120px">
+          <el-select v-model="typeSearch.status" clearable placeholder="全部" style="width: 120px;">
             <el-option label="启用" value="enabled" />
             <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadTypes">
+          <el-button type="primary" @click="handleTypeSearch">
             查询
+          </el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="handleTypeReset">
+            重置
           </el-button>
         </el-form-item>
       </el-form>
@@ -325,7 +361,7 @@ onMounted(loadTypes)
             <span class="panel-title">字典项</span>
             <span v-if="selectedType" class="panel-code">{{ selectedType.code }}</span>
           </div>
-          <el-button type="primary" :disabled="!canCreateItem" @click="openCreateItem">
+          <el-button v-if="canCreateItem" type="primary" @click="openCreateItem">
             新建字典项
           </el-button>
         </div>
@@ -337,14 +373,19 @@ onMounted(loadTypes)
             <el-input v-model="itemSearch.keyword" clearable placeholder="名称/值" :disabled="!selectedType" />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="itemSearch.status" clearable placeholder="全部" :disabled="!selectedType" style="width: 120px">
+            <el-select v-model="itemSearch.status" clearable placeholder="全部" :disabled="!selectedType" style="width: 120px;">
               <el-option label="启用" value="enabled" />
               <el-option label="停用" value="disabled" />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :disabled="!selectedType" @click="loadItems">
+            <el-button type="primary" :disabled="!selectedType" @click="handleItemSearch">
               查询
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button :disabled="!selectedType" @click="handleItemReset">
+              重置
             </el-button>
           </el-form-item>
         </el-form>

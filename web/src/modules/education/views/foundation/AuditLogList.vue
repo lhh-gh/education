@@ -78,7 +78,7 @@ onMounted(loadAuditLogs)
 </script>
 
 <template>
-  <div class="mine-layout pt-3 education-foundation-page audit-log-page">
+  <div class="mine-layout education-foundation-page audit-log-page pt-3">
     <el-card shadow="never">
       <template #header>
         <div class="page-header">

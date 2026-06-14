@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { DictItemRecord, DictItemSavePayload } from '../../../api/foundation/dictionary.ts'
 import { createDictItem, updateDictItem } from '../../../api/foundation/dictionary.ts'
+import { extractApiErrorMessage, isSubmitDisabled, parseJsonObjectText } from '../actionRules.ts'
 
 const { mode = 'create', dictTypeId, data = null } = defineProps<{
   mode?: 'create' | 'edit'
@@ -41,18 +42,8 @@ const rules: FormRules = {
 }
 
 function parseExtra(): Record<string, unknown> | undefined {
-  const text = extraText.value.trim()
-  if (!text) {
-    return undefined
-  }
-
   try {
-    const parsed = JSON.parse(text)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('extra must be an object')
-    }
-
-    return parsed
+    return parseJsonObjectText(extraText.value, 'extra')
   }
   catch {
     message.error('扩展 JSON 格式不正确')
@@ -65,7 +56,14 @@ async function submit() {
     return
   }
   await formRef.value.validate()
-  const extra = parseExtra()
+  let extra: Record<string, unknown> | undefined
+  try {
+    extra = parseExtra()
+  }
+  catch {
+    return
+  }
+
   submitting.value = true
   try {
     const payload: DictItemSavePayload = {
@@ -80,6 +78,9 @@ async function submit() {
       await createDictItem(payload)
     }
     emit('success')
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary item save failed'))
   }
   finally {
     submitting.value = false
@@ -122,7 +123,7 @@ defineExpose({ submit })
       <el-switch v-model="model.is_default" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" :loading="submitting" @click="submit">
+      <el-button type="primary" :loading="submitting" :disabled="isSubmitDisabled(submitting)" @click="submit">
         保存
       </el-button>
     </el-form-item>

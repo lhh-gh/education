@@ -2,7 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { DictTypeRecord, DictTypeSavePayload } from '../../../api/foundation/dictionary.ts'
 import { createDictType, updateDictType } from '../../../api/foundation/dictionary.ts'
-import { dictionaryOwnerTypeOptions } from '../actionRules.ts'
+import { dictionaryOwnerTypeOptions, extractApiErrorMessage, isSubmitDisabled } from '../actionRules.ts'
 
 const { mode = 'create', data = null, platformContext = false } = defineProps<{
   mode?: 'create' | 'edit'
@@ -15,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const formRef = ref<FormInstance>()
+const message = useMessage()
 const submitting = ref(false)
 const ownerOptions = computed(() => dictionaryOwnerTypeOptions(platformContext))
 const model = reactive<DictTypeSavePayload>({
@@ -78,6 +79,9 @@ async function submit() {
     }
     emit('success')
   }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'dictionary save failed'))
+  }
   finally {
     submitting.value = false
   }
@@ -121,7 +125,7 @@ defineExpose({ submit })
       <el-switch v-model="model.is_locked" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" :loading="submitting" @click="submit">
+      <el-button type="primary" :loading="submitting" :disabled="isSubmitDisabled(submitting)" @click="submit">
         保存
       </el-button>
     </el-form-item>

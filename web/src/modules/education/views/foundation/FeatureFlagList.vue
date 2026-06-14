@@ -10,7 +10,14 @@ import {
 } from '../../api/foundation/featureFlag.ts'
 import useUserStore from '@/store/modules/useUserStore.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { dictionaryOwnerTypeOptions, featureFlagActionsByPermission } from './actionRules.ts'
+import {
+  defaultFeatureFlagSearch,
+  dictionaryOwnerTypeOptions,
+  extractApiErrorMessage,
+  featureFlagActionsByPermission,
+  normalizeFeatureFlagSearch,
+  resetFeatureFlagSearch,
+} from './actionRules.ts'
 import FeatureFlagForm from './components/FeatureFlagForm.vue'
 
 defineOptions({ name: 'EducationFoundationFeatureFlagList' })
@@ -24,15 +31,8 @@ const currentFlag = ref<FeatureFlagRecord | null>(null)
 const rows = ref<FeatureFlagRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
-const search = reactive<FeatureFlagPageParams>({
-  page: 1,
-  page_size: 20,
-  owner_type: undefined,
-  tenant_id: undefined,
-  keyword: '',
-  enabled: undefined,
-  status: undefined,
-})
+const dateRange = ref<[string, string] | []>([])
+const search = reactive<FeatureFlagPageParams>(defaultFeatureFlagSearch())
 
 const permissions = computed(() => userStore.getPermissions())
 const isPlatformContext = computed(() => {
@@ -60,10 +60,7 @@ watch(() => search.owner_type, (ownerType) => {
 })
 
 function normalizeSearch(): FeatureFlagPageParams {
-  return {
-    ...search,
-    tenant_id: search.owner_type === 'system' ? undefined : search.tenant_id,
-  }
+  return normalizeFeatureFlagSearch(search, dateRange.value)
 }
 
 function ownerTypeLabel(ownerType: ConfigOwnerType): string {
@@ -108,6 +105,7 @@ async function loadFlags() {
   }
   catch (error: any) {
     errorText.value = error?.message ?? '功能开关列表加载失败'
+    errorText.value = extractApiErrorMessage(error, errorText.value || 'feature flags failed to load')
     message.error(errorText.value)
   }
   finally {
@@ -127,26 +125,59 @@ function openEdit(row: FeatureFlagRecord) {
   dialogVisible.value = true
 }
 
+function handleSearch() {
+  search.page = 1
+  loadFlags()
+}
+
+function handleReset() {
+  const reset = resetFeatureFlagSearch()
+  Object.assign(search, reset.search)
+  dateRange.value = reset.dateRange
+  loadFlags()
+}
+
 async function changeEnabled(row: FeatureFlagRecord) {
-  await updateFeatureFlag(row.id, toSavePayload(row, !row.enabled))
-  await loadFlags()
+  try {
+    await updateFeatureFlag(row.id, toSavePayload(row, !row.enabled))
+    await loadFlags()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'feature flag value update failed'))
+  }
 }
 
 async function changeStatus(row: FeatureFlagRecord) {
-  const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
-  await updateFeatureFlagStatus(row.id, nextStatus)
-  await loadFlags()
+  try {
+    const nextStatus = row.status === 'enabled' ? 'disabled' : 'enabled'
+    await updateFeatureFlagStatus(row.id, nextStatus)
+    await loadFlags()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'feature flag status update failed'))
+  }
 }
 
 async function removeFlag(row: FeatureFlagRecord) {
-  await message.confirm('确认删除该功能开关？')
-  await deleteFeatureFlag(row.id)
-  await loadFlags()
+  try {
+    await message.confirm('确认删除该功能开关？')
+    await deleteFeatureFlag(row.id)
+    await loadFlags()
+  }
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'feature flag delete failed'))
+  }
 }
 
 async function resolveFlag(row: FeatureFlagRecord) {
-  const response = await resolveFeatureFlag(row.feature_code, row.tenant_id ?? search.tenant_id)
-  message.success(`${row.feature_code}：${enabledLabel(response.data.enabled)}（${response.data.owner_key ?? '-'}）`)
+  try {
+    const response = await resolveFeatureFlag(row.feature_code, row.tenant_id ?? search.tenant_id)
+    message.success(`${row.feature_code}：${enabledLabel(response.data.enabled)}（${response.data.owner_key ?? '-'}）`)
+  }
+
+  catch (error: any) {
+    message.error(extractApiErrorMessage(error, 'feature flag resolve failed'))
+  }
 }
 
 function onFormSuccess() {
@@ -158,7 +189,7 @@ onMounted(loadFlags)
 </script>
 
 <template>
-  <div class="mine-layout pt-3 education-foundation-page feature-flag-page">
+  <div class="mine-layout education-foundation-page feature-flag-page pt-3">
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
@@ -173,7 +204,7 @@ onMounted(loadFlags)
 
       <el-form :inline="true" :model="search" class="search-form">
         <el-form-item label="归属">
-          <el-select v-model="search.owner_type" clearable :disabled="!isPlatformContext" placeholder="全部" style="width: 120px">
+          <el-select v-model="search.owner_type" clearable :disabled="!isPlatformContext" placeholder="全部" style="width: 120px;">
             <el-option v-for="option in ownerOptions" :key="option.value" :label="option.label" :value="option.value" />
           </el-select>
         </el-form-item>
@@ -184,20 +215,33 @@ onMounted(loadFlags)
           <el-input v-model="search.keyword" clearable placeholder="功能编码/名称" />
         </el-form-item>
         <el-form-item label="开关值">
-          <el-select v-model="search.enabled" clearable placeholder="全部" style="width: 120px">
+          <el-select v-model="search.enabled" clearable placeholder="全部" style="width: 120px;">
             <el-option label="开启" :value="true" />
             <el-option label="关闭" :value="false" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px">
+          <el-select v-model="search.status" clearable placeholder="全部" style="width: 120px;">
             <el-option label="启用" value="enabled" />
             <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
+        <el-form-item label="生效时间">
+          <el-date-picker
+            v-model="dateRange"
+            type="datetimerange"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            range-separator="至"
+            start-placeholder="开始"
+            end-placeholder="结束"
+          />
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="loadFlags">
+          <el-button type="primary" @click="handleSearch">
             查询
+          </el-button>
+          <el-button @click="handleReset">
+            重置
           </el-button>
         </el-form-item>
       </el-form>
