@@ -13,12 +13,18 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationClassroom;
+use App\Model\Education\Academic\EducationCourse;
+use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationGuardian;
+use App\Model\Education\Academic\EducationLessonPackage;
 use App\Model\Education\Academic\EducationStudent;
+use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Education\Academic\EducationTeacher;
+use App\Model\Education\Academic\EducationTeacherCourse;
 use App\Model\Education\Foundation\EducationAuditLog;
 use App\Model\Education\Foundation\EducationCampus;
+use App\Model\Education\Foundation\EducationFeatureFlag;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Education\Foundation\EducationUserCampusScope;
 use App\Model\Education\Foundation\EducationUserProfile;
@@ -35,6 +41,7 @@ abstract class AcademicTestCase extends TestCase
     {
         parent::setUp();
         $this->ensureProfileRecordTables();
+        $this->ensureCourseAccountTables();
         $this->cleanEducationData();
     }
 
@@ -88,8 +95,29 @@ abstract class AcademicTestCase extends TestCase
         }
     }
 
+    private function ensureCourseAccountTables(): void
+    {
+        foreach (['edu_courses', 'edu_teacher_courses', 'edu_lesson_packages', 'edu_student_course_accounts', 'edu_enrollments'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            $migration = $this->courseAccountMigration();
+            $migration->down();
+            $migration->up();
+
+            return;
+        }
+    }
+
     private function cleanEducationData(): void
     {
+        EducationEnrollment::query()->forceDelete();
+        EducationStudentCourseAccount::query()->forceDelete();
+        EducationLessonPackage::query()->forceDelete();
+        EducationTeacherCourse::query()->forceDelete();
+        EducationCourse::query()->forceDelete();
+        EducationFeatureFlag::query()->forceDelete();
         EducationAuditLog::query()->whereRaw('1 = 1')->delete();
         EducationStudentGuardian::query()->forceDelete();
         EducationTeacher::query()->forceDelete();
@@ -106,5 +134,10 @@ abstract class AcademicTestCase extends TestCase
     private function profileRecordMigration(): Migration
     {
         return require BASE_PATH . '/databases/migrations/2026_06_10_010100_create_v1_profile_record_tables.php';
+    }
+
+    private function courseAccountMigration(): Migration
+    {
+        return require BASE_PATH . '/databases/migrations/2026_06_10_010200_create_v1_course_account_tables.php';
     }
 }
