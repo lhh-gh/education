@@ -97,6 +97,67 @@ const educationRoutes: RouteRecordRaw[] = [
           },
         ],
       },
+      {
+        path: '/education/academic',
+        name: 'EducationAcademic',
+        redirect: '/education/academic/classrooms',
+        meta: {
+          title: 'V1 Academic',
+          icon: 'material-symbols:auto-stories-outline-rounded',
+          type: 'M',
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page'],
+        },
+        children: [
+          {
+            path: '/education/academic/classrooms',
+            name: 'EducationAcademicClassroomList',
+            component: () => import('~/education/views/academic/ClassroomList.vue'),
+            meta: {
+              title: 'Classrooms',
+              icon: 'material-symbols:meeting-room-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:classroom:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/students',
+            name: 'EducationAcademicStudentList',
+            component: () => import('~/education/views/academic/StudentList.vue'),
+            meta: {
+              title: 'Students',
+              icon: 'material-symbols:face-3-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:student:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/guardians',
+            name: 'EducationAcademicGuardianList',
+            component: () => import('~/education/views/academic/GuardianList.vue'),
+            meta: {
+              title: 'Guardians',
+              icon: 'material-symbols:family-restroom-rounded',
+              type: 'M',
+              auth: ['education:academic:guardian:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/teachers',
+            name: 'EducationAcademicTeacherList',
+            component: () => import('~/education/views/academic/TeacherList.vue'),
+            meta: {
+              title: 'Teachers',
+              icon: 'material-symbols:co-present-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:teacher:page'],
+              cache: true,
+            },
+          },
+        ],
+      },
     ],
   },
 ]

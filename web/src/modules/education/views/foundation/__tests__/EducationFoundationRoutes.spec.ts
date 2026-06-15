@@ -70,6 +70,54 @@ describe('education foundation routes', () => {
     }
   })
 
+  it('registers_v1_profile_record_route_tree', () => {
+    const academicRoot = findRoute('EducationAcademic')
+
+    expect(academicRoot).toMatchObject({
+      path: '/education/academic',
+      redirect: '/education/academic/classrooms',
+      meta: {
+        auth: [
+          'education:academic:classroom:page',
+          'education:academic:student:page',
+          'education:academic:guardian:page',
+          'education:academic:teacher:page',
+        ],
+      },
+    })
+
+    const expectedRoutes = [
+      {
+        name: 'EducationAcademicClassroomList',
+        path: '/education/academic/classrooms',
+        auth: ['education:academic:classroom:page'],
+      },
+      {
+        name: 'EducationAcademicStudentList',
+        path: '/education/academic/students',
+        auth: ['education:academic:student:page'],
+      },
+      {
+        name: 'EducationAcademicGuardianList',
+        path: '/education/academic/guardians',
+        auth: ['education:academic:guardian:page'],
+      },
+      {
+        name: 'EducationAcademicTeacherList',
+        path: '/education/academic/teachers',
+        auth: ['education:academic:teacher:page'],
+      },
+    ]
+
+    for (const expected of expectedRoutes) {
+      const route = findRoute(expected.name)
+
+      expect(route.path).toBe(expected.path)
+      expect(route.component).toEqual(expect.any(Function))
+      expect(route.meta?.auth).toEqual(expected.auth)
+    }
+  })
+
   it('has_no_duplicate_route_names', () => {
     const names = flattenRoutes(educationRoutes)
       .map(route => route.name)
