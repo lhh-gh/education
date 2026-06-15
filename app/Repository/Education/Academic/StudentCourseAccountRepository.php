@@ -150,7 +150,10 @@ final class StudentCourseAccountRepository extends IRepository
         $rowCount = \count($rows);
         for ($leftIndex = 0; $leftIndex < $rowCount; ++$leftIndex) {
             for ($rightIndex = $leftIndex + 1; $rightIndex < $rowCount; ++$rightIndex) {
-                if (strcmp((string) $rows[$rightIndex]['occurred_at'], (string) $rows[$leftIndex]['occurred_at']) <= 0) {
+                $timeCompare = strcmp((string) $rows[$rightIndex]['occurred_at'], (string) $rows[$leftIndex]['occurred_at']);
+                $rightIsNewer = $timeCompare > 0
+                    || ($timeCompare === 0 && $rows[$rightIndex]['source_type'] === 'enrollment_cancel' && $rows[$leftIndex]['source_type'] !== 'enrollment_cancel');
+                if (! $rightIsNewer) {
                     continue;
                 }
 
