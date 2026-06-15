@@ -72,25 +72,35 @@ final class StudentRepository extends IRepository
         }
 
         if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
+            $query->whereRaw('1 = 0');
+
+            return $query;
         }
 
         $query->where('tenant_id', $context->tenantId);
         $campusId = isset($filters['campus_id']) && $filters['campus_id'] !== '' ? (int) $filters['campus_id'] : null;
 
         if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            return $campusId === null ? $query : $query->where('campus_id', $campusId);
+            if ($campusId !== null) {
+                $query->where('campus_id', $campusId);
+            }
+
+            return $query;
         }
 
         if ($campusId !== null) {
-            return $context->canAccessCampus($campusId)
+            $context->canAccessCampus($campusId)
                 ? $query->where('campus_id', $campusId)
                 : $query->whereRaw('1 = 0');
+
+            return $query;
         }
 
-        return $context->campusIds === []
+        $context->campusIds === []
             ? $query->whereRaw('1 = 0')
             : $query->whereIn('campus_id', $context->campusIds);
+
+        return $query;
     }
 
     private function applyFilters(Builder $query, array $filters): void
