@@ -16,6 +16,7 @@ use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Academic\EducationStudent;
+use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Education\Foundation\EducationCampus;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Academic\AcademicRecordStatus;
@@ -42,7 +43,20 @@ final class StudentService
     {
         [$page, $pageSize, $filters] = $this->extractPage($filters);
 
-        return $this->repository->pageByContext($filters, $page, $pageSize, $context);
+        $result = $this->repository->pageByContext($filters, $page, $pageSize, $context);
+        $ids = array_map(static fn (array $row): int => (int) $row['id'], $result['list']);
+        $counts = $ids === [] ? [] : EducationStudentGuardian::query()
+            ->selectRaw('student_id, COUNT(*) as aggregate')
+            ->whereIn('student_id', $ids)
+            ->groupBy('student_id')
+            ->pluck('aggregate', 'student_id')
+            ->all();
+        foreach ($result['list'] as &$row) {
+            $row['guardian_count'] = (int) ($counts[$row['id']] ?? 0);
+        }
+        unset($row);
+
+        return $result;
     }
 
     public function create(array $data, EducationUserContext $context, ?int $operatorId): EducationStudent
@@ -148,7 +162,7 @@ final class StudentService
             $this->eventDispatcher->dispatch(new EducationAuditEvent(
                 module: 'academic',
                 resource: 'student_guardian',
-                action: 'education.academic.student.guardians_saved',
+                action: 'education.academic.student_guardian.saved',
                 businessType: 'student',
                 businessId: (int) $student->id,
                 context: $context,
@@ -317,8 +331,8 @@ final class StudentService
     private function extractPage(array $filters): array
     {
         $page = max(1, (int) ($filters['page'] ?? 1));
-        $pageSize = max(1, (int) ($filters['page_size'] ?? $filters['per_page'] ?? 15));
-        unset($filters['page'], $filters['page_size'], $filters['per_page']);
+        $pageSize = max(1, (int) ($filters['pageSize'] ?? $filters['page_size'] ?? $filters['per_page'] ?? 15));
+        unset($filters['page'], $filters['pageSize'], $filters['page_size'], $filters['per_page']);
 
         return [$page, $pageSize, $filters];
     }

@@ -252,8 +252,8 @@ final class TeacherService
     private function extractPage(array $filters): array
     {
         $page = max(1, (int) ($filters['page'] ?? 1));
-        $pageSize = max(1, (int) ($filters['page_size'] ?? $filters['per_page'] ?? 15));
-        unset($filters['page'], $filters['page_size'], $filters['per_page']);
+        $pageSize = max(1, (int) ($filters['pageSize'] ?? $filters['page_size'] ?? $filters['per_page'] ?? 15));
+        unset($filters['page'], $filters['pageSize'], $filters['page_size'], $filters['per_page']);
 
         return [$page, $pageSize, $filters];
     }

@@ -39,7 +39,17 @@ final class StudentGuardianRepository extends IRepository
                 : $query->where('tenant_id', $context->tenantId);
         }
 
-        return $query->get()->toArray();
+        return $query->get()
+            ->map(static function (EducationStudentGuardian $relation): array {
+                $row = $relation->toArray();
+                $guardian = $relation->guardian;
+                $row['guardian_name'] = $guardian?->name;
+                $row['guardian_mobile'] = $guardian?->mobile;
+                unset($row['guardian']);
+
+                return $row;
+            })
+            ->all();
     }
 
     public function replaceForStudent(int $tenantId, int $studentId, array $relations, ?int $operatorId): void

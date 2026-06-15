@@ -16,6 +16,7 @@ use App\Event\Education\Foundation\EducationAuditEvent;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Academic\EducationGuardian;
+use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Academic\AcademicRecordStatus;
 use App\Repository\Education\Academic\GuardianRepository;
@@ -34,7 +35,20 @@ final class GuardianService
     {
         [$page, $pageSize, $filters] = $this->extractPage($filters);
 
-        return $this->repository->pageByContext($filters, $page, $pageSize, $context);
+        $result = $this->repository->pageByContext($filters, $page, $pageSize, $context);
+        $ids = array_map(static fn (array $row): int => (int) $row['id'], $result['list']);
+        $counts = $ids === [] ? [] : EducationStudentGuardian::query()
+            ->selectRaw('guardian_id, COUNT(*) as aggregate')
+            ->whereIn('guardian_id', $ids)
+            ->groupBy('guardian_id')
+            ->pluck('aggregate', 'guardian_id')
+            ->all();
+        foreach ($result['list'] as &$row) {
+            $row['student_count'] = (int) ($counts[$row['id']] ?? 0);
+        }
+        unset($row);
+
+        return $result;
     }
 
     public function create(array $data, EducationUserContext $context, ?int $operatorId): EducationGuardian
@@ -168,8 +182,8 @@ final class GuardianService
     private function extractPage(array $filters): array
     {
         $page = max(1, (int) ($filters['page'] ?? 1));
-        $pageSize = max(1, (int) ($filters['page_size'] ?? $filters['per_page'] ?? 15));
-        unset($filters['page'], $filters['page_size'], $filters['per_page']);
+        $pageSize = max(1, (int) ($filters['pageSize'] ?? $filters['page_size'] ?? $filters['per_page'] ?? 15));
+        unset($filters['page'], $filters['pageSize'], $filters['page_size'], $filters['per_page']);
 
         return [$page, $pageSize, $filters];
     }
