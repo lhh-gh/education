@@ -105,7 +105,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: 'V1 Academic',
           icon: 'material-symbols:auto-stories-outline-rounded',
           type: 'M',
-          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page'],
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page'],
         },
         children: [
           {
@@ -153,6 +153,54 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:co-present-outline-rounded',
               type: 'M',
               auth: ['education:academic:teacher:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/courses',
+            name: 'EducationAcademicCourseList',
+            component: () => import('~/education/views/academic/CourseList.vue'),
+            meta: {
+              title: 'Courses',
+              icon: 'material-symbols:menu-book-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:course:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/lesson-packages',
+            name: 'EducationAcademicLessonPackageList',
+            component: () => import('~/education/views/academic/LessonPackageList.vue'),
+            meta: {
+              title: 'Lesson Packages',
+              icon: 'material-symbols:inventory-2-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:lesson-package:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/enrollments',
+            name: 'EducationAcademicEnrollmentWorkbench',
+            component: () => import('~/education/views/academic/EnrollmentWorkbench.vue'),
+            meta: {
+              title: 'Enrollments',
+              icon: 'material-symbols:how-to-reg-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:enrollment:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/course-accounts',
+            name: 'EducationAcademicAccountLedgerList',
+            component: () => import('~/education/views/academic/AccountLedgerList.vue'),
+            meta: {
+              title: 'Course Accounts',
+              icon: 'material-symbols:account-balance-wallet-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:student-course-account:page'],
               cache: true,
             },
           },

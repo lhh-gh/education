@@ -82,6 +82,10 @@ describe('education foundation routes', () => {
           'education:academic:student:page',
           'education:academic:guardian:page',
           'education:academic:teacher:page',
+          'education:academic:course:page',
+          'education:academic:lesson-package:page',
+          'education:academic:enrollment:page',
+          'education:academic:student-course-account:page',
         ],
       },
     })
@@ -106,6 +110,26 @@ describe('education foundation routes', () => {
         name: 'EducationAcademicTeacherList',
         path: '/education/academic/teachers',
         auth: ['education:academic:teacher:page'],
+      },
+      {
+        name: 'EducationAcademicCourseList',
+        path: '/education/academic/courses',
+        auth: ['education:academic:course:page'],
+      },
+      {
+        name: 'EducationAcademicLessonPackageList',
+        path: '/education/academic/lesson-packages',
+        auth: ['education:academic:lesson-package:page'],
+      },
+      {
+        name: 'EducationAcademicEnrollmentWorkbench',
+        path: '/education/academic/enrollments',
+        auth: ['education:academic:enrollment:page'],
+      },
+      {
+        name: 'EducationAcademicAccountLedgerList',
+        path: '/education/academic/course-accounts',
+        auth: ['education:academic:student-course-account:page'],
       },
     ]
 
