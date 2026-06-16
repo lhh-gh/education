@@ -105,7 +105,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: 'V1 Academic',
           icon: 'material-symbols:auto-stories-outline-rounded',
           type: 'M',
-          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page', 'education:academic:attendance:lesson-page', 'education:academic:consumption:page', 'education:academic:account-adjustment:page'],
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page', 'education:academic:attendance:lesson-page', 'education:academic:leave-request:page', 'education:academic:lesson-change:page', 'education:academic:consumption:page', 'education:academic:account-adjustment:page'],
         },
         children: [
           {
@@ -249,6 +249,30 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:fact-check-outline-rounded',
               type: 'M',
               auth: ['education:academic:attendance:lesson-page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/leave-requests',
+            name: 'EducationAcademicLeaveRequestList',
+            component: () => import('~/education/views/academic/LeaveRequestList.vue'),
+            meta: {
+              title: 'Leave Requests',
+              icon: 'material-symbols:event-busy-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:leave-request:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/lesson-changes',
+            name: 'EducationAcademicLessonChangeList',
+            component: () => import('~/education/views/academic/LessonChangeList.vue'),
+            meta: {
+              title: 'Lesson Changes',
+              icon: 'material-symbols:move-up-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:lesson-change:page'],
               cache: true,
             },
           },
