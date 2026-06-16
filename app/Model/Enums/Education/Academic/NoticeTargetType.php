@@ -16,6 +16,6 @@ enum NoticeTargetType: string
 {
     case All = 'all';
     case Campus = 'campus';
-    case Class = 'class';
+    case ClassTarget = 'class';
     case Student = 'student';
 }

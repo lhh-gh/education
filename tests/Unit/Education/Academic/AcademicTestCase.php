@@ -26,6 +26,8 @@ use App\Model\Education\Academic\EducationLessonChangeRecord;
 use App\Model\Education\Academic\EducationLessonConsumption;
 use App\Model\Education\Academic\EducationLessonPackage;
 use App\Model\Education\Academic\EducationLessonStudent;
+use App\Model\Education\Academic\EducationNotice;
+use App\Model\Education\Academic\EducationNoticeReceipt;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Education\Academic\EducationStudentGuardian;
@@ -54,6 +56,7 @@ abstract class AcademicTestCase extends TestCase
         $this->ensureClassScheduleTables();
         $this->ensureAttendanceConsumptionTables();
         $this->ensureLeaveChangeTables();
+        $this->ensureNoticeTables();
         $this->cleanEducationData();
     }
 
@@ -127,6 +130,8 @@ abstract class AcademicTestCase extends TestCase
         EducationAccountAdjustment::query()->forceDelete();
         EducationLessonChangeRecord::query()->forceDelete();
         EducationLeaveRequest::query()->forceDelete();
+        EducationNoticeReceipt::query()->forceDelete();
+        EducationNotice::query()->forceDelete();
         EducationLessonConsumption::query()->forceDelete();
         EducationLessonAttendance::query()->forceDelete();
         EducationLessonStudent::query()->forceDelete();
@@ -220,5 +225,25 @@ abstract class AcademicTestCase extends TestCase
     private function leaveChangeMigration(): Migration
     {
         return require BASE_PATH . '/databases/migrations/2026_06_10_010500_create_v1_leave_change_tables.php';
+    }
+
+    private function ensureNoticeTables(): void
+    {
+        foreach (['edu_notices', 'edu_notice_receipts'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            $migration = $this->noticeMigration();
+            $migration->down();
+            $migration->up();
+
+            return;
+        }
+    }
+
+    private function noticeMigration(): Migration
+    {
+        return require BASE_PATH . '/databases/migrations/2026_06_10_010700_create_v1_notice_tables.php';
     }
 }
