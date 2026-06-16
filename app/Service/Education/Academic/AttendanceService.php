@@ -18,6 +18,7 @@ use App\Http\Common\ResultCode;
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\AttendanceRepository;
 use App\Repository\Education\Academic\ConsumptionRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -230,6 +231,10 @@ final class AttendanceService
     {
         $detail = $this->repository->lessonDetail($lessonId, $context);
         if (! \is_array($detail['lesson'])) {
+            $existing = EducationLesson::query()->whereKey($lessonId)->first();
+            if ($existing instanceof EducationLesson) {
+                $this->assertLessonVisible($existing, $context);
+            }
             throw new BusinessException(ResultCode::NOT_FOUND, 'lesson not found', ['lesson_id' => $lessonId]);
         }
         $lesson = EducationLesson::query()->whereKey($lessonId)->first();
@@ -240,17 +245,42 @@ final class AttendanceService
         return $lesson;
     }
 
+    private function assertLessonVisible(EducationLesson $lesson, EducationUserContext $context): void
+    {
+        if ($context->platformAccess) {
+            return;
+        }
+        if ($context->tenantId !== (int) $lesson->tenant_id) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'tenant is outside current user scope', ['tenant_id' => (int) $lesson->tenant_id]);
+        }
+        if ($context->roleCode !== EducationRoleCode::TenantAdmin && ! $context->canAccessCampus((int) $lesson->campus_id)) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current user scope', ['campus_id' => (int) $lesson->campus_id]);
+        }
+    }
+
     private function summary(array $attendances, array $consumptions): array
     {
         $total = '0.00';
+        $noConsumeCount = 0;
         foreach ($attendances as $attendance) {
             $total = $this->add($total, $attendance['consumed_units']);
+            if ($attendance['consume_policy'] === 'no_consume') {
+                ++$noConsumeCount;
+            }
         }
 
         return [
+            'lesson_id' => $attendances[0]['lesson_id'] ?? null,
+            'attendance_batch_no' => $attendances[0]['attendance_batch_no'] ?? null,
             'attendance_count' => \count($attendances),
             'consumed_count' => \count($consumptions) > 0 ? \count($consumptions) : \count(array_filter($attendances, static fn (array $row): bool => $row['consume_policy'] === 'consume')),
+            'no_consume_count' => $noConsumeCount,
             'total_consumed_units' => $total,
+            'account_changes' => array_map(static fn (array $row): array => [
+                'account_id' => $row['account_id'],
+                'before_available_units' => $row['before_available_units'],
+                'after_available_units' => $row['after_available_units'],
+            ], $consumptions),
             'attendances' => $attendances,
             'consumptions' => $consumptions,
         ];

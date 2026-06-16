@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace HyperfTests\Feature\Education\Academic;
 
+use App\Model\Education\Academic\EducationAccountAdjustment;
 use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationClassroom;
 use App\Model\Education\Academic\EducationClassStudent;
@@ -19,6 +20,8 @@ use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationGuardian;
 use App\Model\Education\Academic\EducationLesson;
+use App\Model\Education\Academic\EducationLessonAttendance;
+use App\Model\Education\Academic\EducationLessonConsumption;
 use App\Model\Education\Academic\EducationLessonPackage;
 use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationStudent;
@@ -42,6 +45,10 @@ abstract class ProfileRecordAdminCase extends EducationAdminControllerCase
         $this->ensureProfileRecordTables();
         $this->ensureCourseAccountTables();
         $this->ensureClassScheduleTables();
+        $this->ensureAttendanceConsumptionTables();
+        EducationAccountAdjustment::query()->forceDelete();
+        EducationLessonConsumption::query()->forceDelete();
+        EducationLessonAttendance::query()->forceDelete();
         EducationLessonStudent::query()->forceDelete();
         EducationLesson::query()->forceDelete();
         EducationClassStudent::query()->forceDelete();
@@ -166,5 +173,25 @@ abstract class ProfileRecordAdminCase extends EducationAdminControllerCase
     private function classScheduleMigration(): Migration
     {
         return require BASE_PATH . '/databases/migrations/2026_06_10_010300_create_v1_class_lesson_tables.php';
+    }
+
+    private function ensureAttendanceConsumptionTables(): void
+    {
+        foreach (['edu_lesson_attendances', 'edu_lesson_consumptions', 'edu_account_adjustments'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            $migration = $this->attendanceConsumptionMigration();
+            $migration->down();
+            $migration->up();
+
+            return;
+        }
+    }
+
+    private function attendanceConsumptionMigration(): Migration
+    {
+        return require BASE_PATH . '/databases/migrations/2026_06_10_010400_create_v1_attendance_consumption_tables.php';
     }
 }
