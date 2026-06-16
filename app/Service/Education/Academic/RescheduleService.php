@@ -22,6 +22,7 @@ use App\Model\Education\Academic\EducationLessonConsumption;
 use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationTeacher;
 use App\Model\Education\Academic\EducationTeacherCourse;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LessonChangeRepository;
 use App\Repository\Education\Academic\LessonRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -40,6 +41,9 @@ final class RescheduleService
 
     public function reschedule(array $data, EducationUserContext $context, ?int $operatorId): array
     {
+        if ($context->roleCode === EducationRoleCode::FrontDesk) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'front desk cannot reschedule lessons');
+        }
         $lesson = $this->sourceLesson((int) $data['source_lesson_id'], $context);
         if ($lesson->status !== 'scheduled') {
             throw new BusinessException(ResultCode::CONFLICT, 'only scheduled lessons can be rescheduled', ['lesson_id' => (int) $lesson->id, 'status' => $lesson->status]);

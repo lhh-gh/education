@@ -22,6 +22,7 @@ use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Education\Academic\EducationTeacher;
 use App\Model\Education\Academic\EducationTeacherCourse;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LeaveRequestRepository;
 use App\Repository\Education\Academic\LessonChangeRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -40,6 +41,9 @@ final class MakeupLessonService
 
     public function create(array $data, EducationUserContext $context, ?int $operatorId): array
     {
+        if ($context->roleCode === EducationRoleCode::FrontDesk) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'front desk cannot create make-up lessons');
+        }
         $leave = $this->leaveRequest((int) $data['leave_request_id'], $context);
 
         return $this->createMakeupLesson($leave, $data, $context, $operatorId);

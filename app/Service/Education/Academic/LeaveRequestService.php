@@ -96,6 +96,7 @@ final class LeaveRequestService
 
     public function approve(int $id, string $reviewRemark, EducationUserContext $context, ?int $operatorId): EducationLeaveRequest
     {
+        $this->assertCanReview($context);
         $leave = $this->findScoped($id, $context);
         $this->assertPending($leave);
         if ($this->hasActiveConsumption((int) $leave->lesson_student_id, (int) $leave->tenant_id)) {
@@ -107,6 +108,7 @@ final class LeaveRequestService
 
     public function reject(int $id, string $reviewRemark, EducationUserContext $context, ?int $operatorId): EducationLeaveRequest
     {
+        $this->assertCanReview($context);
         $leave = $this->findScoped($id, $context);
         $this->assertPending($leave);
 
@@ -174,6 +176,13 @@ final class LeaveRequestService
     {
         if ($leave->status !== 'pending') {
             throw new BusinessException(ResultCode::CONFLICT, 'only pending leave request can be reviewed', ['id' => (int) $leave->id, 'status' => $leave->status]);
+        }
+    }
+
+    private function assertCanReview(EducationUserContext $context): void
+    {
+        if ($context->roleCode === EducationRoleCode::FrontDesk) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'front desk cannot review leave requests');
         }
     }
 
