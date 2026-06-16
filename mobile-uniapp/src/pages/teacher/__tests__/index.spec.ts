@@ -1,6 +1,8 @@
 import { createFoundationContextPage } from '../../foundation/useFoundationContextPage'
 import { teacherPageOptions } from '../../foundation/pageOptions'
 import type { MobileFoundationContext } from '../../../api/foundation/types'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 describe('teacher entry page state', () => {
   beforeEach(() => {
@@ -47,6 +49,15 @@ describe('teacher entry page state', () => {
     await page.retry()
     expect(loader).toHaveBeenCalledTimes(2)
     expect(page.state.status).toBe('success')
+  })
+
+  it('teacher_entry_links_schedule_and_leave_review', () => {
+    const source = readFileSync(join(process.cwd(), 'src/pages/teacher/index.vue'), 'utf8')
+
+    expect(source).toContain('/pages/teacher/schedule/index')
+    expect(source).toContain('/pages/teacher/leave/index?status=pending')
+    expect(source).toContain('getTeacherTodayLessons')
+    expect(source).toContain('pageTeacherLeaveRequests')
   })
 })
 
