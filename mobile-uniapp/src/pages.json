@@ -13,6 +13,36 @@
       }
     },
     {
+      "path": "pages/teacher/schedule/index",
+      "style": {
+        "navigationBarTitleText": "\u4eca\u65e5\u8bfe\u8868"
+      }
+    },
+    {
+      "path": "pages/teacher/lesson/detail",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u8282\u8be6\u60c5"
+      }
+    },
+    {
+      "path": "pages/teacher/lesson/attendance",
+      "style": {
+        "navigationBarTitleText": "\u70b9\u540d"
+      }
+    },
+    {
+      "path": "pages/teacher/leave/index",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047\u5ba1\u6838"
+      }
+    },
+    {
+      "path": "pages/teacher/leave/detail",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047\u8be6\u60c5"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
