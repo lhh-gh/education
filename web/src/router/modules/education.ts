@@ -105,7 +105,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: 'V1 Academic',
           icon: 'material-symbols:auto-stories-outline-rounded',
           type: 'M',
-          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page'],
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page'],
         },
         children: [
           {
@@ -201,6 +201,42 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:account-balance-wallet-outline-rounded',
               type: 'M',
               auth: ['education:academic:student-course-account:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/classes',
+            name: 'EducationAcademicClassList',
+            component: () => import('~/education/views/academic/ClassList.vue'),
+            meta: {
+              title: 'Classes',
+              icon: 'material-symbols:groups-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:class:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/lesson-schedule',
+            name: 'EducationAcademicLessonScheduleCalendar',
+            component: () => import('~/education/views/academic/LessonScheduleCalendar.vue'),
+            meta: {
+              title: 'Lesson Schedule',
+              icon: 'material-symbols:calendar-month-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:lesson-schedule:calendar'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/lessons',
+            name: 'EducationAcademicLessonList',
+            component: () => import('~/education/views/academic/LessonList.vue'),
+            meta: {
+              title: 'Lessons',
+              icon: 'material-symbols:event-note-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:lesson:page'],
               cache: true,
             },
           },
