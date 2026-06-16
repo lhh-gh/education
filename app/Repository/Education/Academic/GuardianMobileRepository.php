@@ -62,13 +62,16 @@ final class GuardianMobileRepository extends IRepository
             ->join('edu_lessons', 'edu_lessons.id', '=', 'edu_lesson_students.lesson_id')
             ->where('edu_lesson_students.tenant_id', $tenantId)
             ->where('edu_lesson_students.student_id', $studentId)
-            ->select('edu_lesson_students.*', 'edu_lessons.title', 'edu_lessons.start_at', 'edu_lessons.end_at', 'edu_lessons.status as lesson_status');
+            ->select('edu_lesson_students.*', 'edu_lessons.title', 'edu_lessons.start_at', 'edu_lessons.end_at', 'edu_lessons.status as lesson_status', 'edu_lessons.class_name_snapshot', 'edu_lessons.course_name_snapshot', 'edu_lessons.teacher_name_snapshot', 'edu_lessons.classroom_name_snapshot');
 
         if (isset($params['start_at']) && $params['start_at'] !== '') {
             $query->where('edu_lessons.start_at', '>=', (string) $params['start_at']);
         }
         if (isset($params['end_at']) && $params['end_at'] !== '') {
             $query->where('edu_lessons.start_at', '<=', (string) $params['end_at']);
+        }
+        if (isset($params['status']) && $params['status'] !== '') {
+            $query->where('edu_lessons.status', (string) $params['status']);
         }
 
         $query->orderByDesc('edu_lessons.start_at');
@@ -107,6 +110,21 @@ final class GuardianMobileRepository extends IRepository
 
         if (isset($params['course_id']) && $params['course_id'] !== '') {
             $query->where('course_id', (int) $params['course_id']);
+        }
+        if (isset($params['account_id']) && $params['account_id'] !== '') {
+            $query->where('account_id', (int) $params['account_id']);
+        }
+        if (isset($params['source_type']) && $params['source_type'] !== '') {
+            $query->where('source_type', (string) $params['source_type']);
+        }
+        if (isset($params['status']) && $params['status'] !== '') {
+            $query->where('status', (string) $params['status']);
+        }
+        if (isset($params['start_at']) && $params['start_at'] !== '') {
+            $query->where('created_at', '>=', (string) $params['start_at']);
+        }
+        if (isset($params['end_at']) && $params['end_at'] !== '') {
+            $query->where('created_at', '<=', (string) $params['end_at']);
         }
 
         $query->orderByDesc('id');

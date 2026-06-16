@@ -146,7 +146,7 @@ final class NoticeReceiptRepository extends IRepository
             ->where('edu_notice_receipts.guardian_id', $guardianId)
             ->where('edu_notices.status', '<>', 'withdrawn')
             ->whereNull('edu_notices.deleted_at')
-            ->select('edu_notice_receipts.*');
+            ->select('edu_notice_receipts.*', 'edu_notices.title', 'edu_notices.content', 'edu_notices.notice_type', 'edu_notices.priority', 'edu_notices.published_at', 'edu_notices.status as notice_status');
         $this->applyReceiptFilters($query, $params);
         if (isset($params['notice_type']) && $params['notice_type'] !== '') {
             $query->where('edu_notices.notice_type', (string) $params['notice_type']);
