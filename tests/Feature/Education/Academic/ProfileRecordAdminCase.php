@@ -12,11 +12,15 @@ declare(strict_types=1);
 
 namespace HyperfTests\Feature\Education\Academic;
 
+use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationClassroom;
+use App\Model\Education\Academic\EducationClassStudent;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationGuardian;
+use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonPackage;
+use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Education\Academic\EducationStudentGuardian;
@@ -37,6 +41,11 @@ abstract class ProfileRecordAdminCase extends EducationAdminControllerCase
     {
         $this->ensureProfileRecordTables();
         $this->ensureCourseAccountTables();
+        $this->ensureClassScheduleTables();
+        EducationLessonStudent::query()->forceDelete();
+        EducationLesson::query()->forceDelete();
+        EducationClassStudent::query()->forceDelete();
+        EducationClass::query()->forceDelete();
         EducationEnrollment::query()->forceDelete();
         EducationStudentCourseAccount::query()->forceDelete();
         EducationLessonPackage::query()->forceDelete();
@@ -137,5 +146,25 @@ abstract class ProfileRecordAdminCase extends EducationAdminControllerCase
     private function courseAccountMigration(): Migration
     {
         return require BASE_PATH . '/databases/migrations/2026_06_10_010200_create_v1_course_account_tables.php';
+    }
+
+    private function ensureClassScheduleTables(): void
+    {
+        foreach (['edu_classes', 'edu_class_students', 'edu_lessons', 'edu_lesson_students'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            $migration = $this->classScheduleMigration();
+            $migration->down();
+            $migration->up();
+
+            return;
+        }
+    }
+
+    private function classScheduleMigration(): Migration
+    {
+        return require BASE_PATH . '/databases/migrations/2026_06_10_010300_create_v1_class_lesson_tables.php';
     }
 }
