@@ -86,6 +86,9 @@ describe('education foundation routes', () => {
           'education:academic:lesson-package:page',
           'education:academic:enrollment:page',
           'education:academic:student-course-account:page',
+          'education:academic:attendance:lesson-page',
+          'education:academic:consumption:page',
+          'education:academic:account-adjustment:page',
         ],
       },
     })
@@ -130,6 +133,21 @@ describe('education foundation routes', () => {
         name: 'EducationAcademicAccountLedgerList',
         path: '/education/academic/course-accounts',
         auth: ['education:academic:student-course-account:page'],
+      },
+      {
+        name: 'EducationAcademicAttendanceReview',
+        path: '/education/academic/attendance-review',
+        auth: ['education:academic:attendance:lesson-page'],
+      },
+      {
+        name: 'EducationAcademicConsumptionLedgerList',
+        path: '/education/academic/consumptions',
+        auth: ['education:academic:consumption:page'],
+      },
+      {
+        name: 'EducationAcademicAccountAdjustmentList',
+        path: '/education/academic/account-adjustments',
+        auth: ['education:academic:account-adjustment:page'],
       },
     ]
 

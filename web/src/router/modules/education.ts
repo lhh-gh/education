@@ -105,7 +105,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: 'V1 Academic',
           icon: 'material-symbols:auto-stories-outline-rounded',
           type: 'M',
-          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page'],
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page', 'education:academic:attendance:lesson-page', 'education:academic:consumption:page', 'education:academic:account-adjustment:page'],
         },
         children: [
           {
@@ -237,6 +237,42 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:event-note-outline-rounded',
               type: 'M',
               auth: ['education:academic:lesson:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/attendance-review',
+            name: 'EducationAcademicAttendanceReview',
+            component: () => import('~/education/views/academic/AttendanceReview.vue'),
+            meta: {
+              title: 'Attendance Review',
+              icon: 'material-symbols:fact-check-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:attendance:lesson-page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/consumptions',
+            name: 'EducationAcademicConsumptionLedgerList',
+            component: () => import('~/education/views/academic/ConsumptionLedgerList.vue'),
+            meta: {
+              title: 'Consumption Ledger',
+              icon: 'material-symbols:receipt-long-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:consumption:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/account-adjustments',
+            name: 'EducationAcademicAccountAdjustmentList',
+            component: () => import('~/education/views/academic/AccountAdjustmentList.vue'),
+            meta: {
+              title: 'Account Adjustments',
+              icon: 'material-symbols:price-change-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:account-adjustment:page'],
               cache: true,
             },
           },
