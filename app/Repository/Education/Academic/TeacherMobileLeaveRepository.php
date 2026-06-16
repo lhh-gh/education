@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace App\Repository\Education\Academic;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
 use App\Repository\IRepository;
@@ -57,6 +59,12 @@ final class TeacherMobileLeaveRepository extends IRepository
             $leave = EducationLeaveRequest::query()->whereKey($id)->lockForUpdate()->first();
             if (! $leave instanceof EducationLeaveRequest) {
                 throw new \RuntimeException('Leave request not found.');
+            }
+            if ((string) $leave->status !== 'pending') {
+                throw new BusinessException(ResultCode::CONFLICT, 'only pending leave can be ' . $status, [
+                    'id' => $id,
+                    'status' => (string) $leave->status,
+                ]);
             }
 
             $leave->fill([
