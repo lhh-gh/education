@@ -19,8 +19,10 @@ use App\Model\Education\Academic\EducationClassStudent;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationGuardian;
+use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonAttendance;
+use App\Model\Education\Academic\EducationLessonChangeRecord;
 use App\Model\Education\Academic\EducationLessonConsumption;
 use App\Model\Education\Academic\EducationLessonPackage;
 use App\Model\Education\Academic\EducationLessonStudent;
@@ -51,6 +53,7 @@ abstract class AcademicTestCase extends TestCase
         $this->ensureCourseAccountTables();
         $this->ensureClassScheduleTables();
         $this->ensureAttendanceConsumptionTables();
+        $this->ensureLeaveChangeTables();
         $this->cleanEducationData();
     }
 
@@ -122,6 +125,8 @@ abstract class AcademicTestCase extends TestCase
     private function cleanEducationData(): void
     {
         EducationAccountAdjustment::query()->forceDelete();
+        EducationLessonChangeRecord::query()->forceDelete();
+        EducationLeaveRequest::query()->forceDelete();
         EducationLessonConsumption::query()->forceDelete();
         EducationLessonAttendance::query()->forceDelete();
         EducationLessonStudent::query()->forceDelete();
@@ -195,5 +200,25 @@ abstract class AcademicTestCase extends TestCase
     private function attendanceConsumptionMigration(): Migration
     {
         return require BASE_PATH . '/databases/migrations/2026_06_10_010400_create_v1_attendance_consumption_tables.php';
+    }
+
+    private function ensureLeaveChangeTables(): void
+    {
+        foreach (['edu_leave_requests', 'edu_lesson_change_records'] as $table) {
+            if (Schema::hasTable($table)) {
+                continue;
+            }
+
+            $migration = $this->leaveChangeMigration();
+            $migration->down();
+            $migration->up();
+
+            return;
+        }
+    }
+
+    private function leaveChangeMigration(): Migration
+    {
+        return require BASE_PATH . '/databases/migrations/2026_06_10_010500_create_v1_leave_change_tables.php';
     }
 }
