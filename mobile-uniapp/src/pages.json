@@ -73,6 +73,26 @@
       }
     },
     {
+      "path": "pages/teacher/admissions/trial-lessons",
+      "style": {
+        "navigationBarTitleText": "Trial Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/admissions/trial-feedback",
+      "style": {
+        "navigationBarTitleText": "Trial Feedback"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
@@ -162,6 +182,16 @@
         "role": "guardian",
         "requiresProfile": "guardian",
         "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/admissions/consult",
+      "style": {
+        "navigationBarTitleText": "Admission Consultation"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian"
       }
     },
     {
