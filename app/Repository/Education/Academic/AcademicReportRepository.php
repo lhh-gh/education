@@ -274,8 +274,8 @@ final class AcademicReportRepository
     public function leaveSummary(array $params, EducationUserContext $context): array
     {
         $rows = $this->leaveBaseQuery($params, $context)
-            ->selectRaw('status, source, COUNT(*) as total')
-            ->groupBy('status', 'source')
+            ->selectRaw('lr.status as status, lr.source as source, COUNT(*) as total')
+            ->groupBy('lr.status', 'lr.source')
             ->get();
         $summary = [
             'total_count' => 0,

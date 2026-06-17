@@ -12,6 +12,9 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Academic;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\AcademicAcceptanceRepository;
 use App\Schema\Education\Academic\V1AcceptanceSummarySchema;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -24,6 +27,7 @@ final class AcademicAcceptanceService
     public function summary(array $params, EducationUserContext $context): array
     {
         $campusId = isset($params['campus_id']) && $params['campus_id'] !== '' ? (int) $params['campus_id'] : null;
+        $this->assertCampusInScope($campusId, $context);
         $modules = $this->repository->moduleTableHealth($context);
         $ledger = $this->repository->ledgerConsistency($context, $campusId);
         $fixtures = $this->repository->acceptanceFixtureSummary($context, $campusId);
@@ -108,5 +112,15 @@ final class AcademicAcceptanceService
         }
 
         return $gates;
+    }
+
+    private function assertCampusInScope(?int $campusId, EducationUserContext $context): void
+    {
+        if ($campusId === null || $context->roleCode === EducationRoleCode::TenantAdmin || $context->platformAccess) {
+            return;
+        }
+        if (! $context->canAccessCampus($campusId)) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current scope', ['campus_id' => $campusId]);
+        }
     }
 }
