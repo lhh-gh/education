@@ -35,15 +35,15 @@ withDefaults(defineProps<{
   min-height: 104px;
   padding: 16px;
   overflow: hidden;
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-light);
   border-radius: 8px;
-  background: var(--el-bg-color);
 
   .metric-title {
     min-height: 20px;
-    color: var(--el-text-color-secondary);
     font-size: 13px;
     line-height: 20px;
+    color: var(--el-text-color-secondary);
   }
 
   .metric-value-row {
@@ -56,27 +56,27 @@ withDefaults(defineProps<{
   .metric-value {
     max-width: 100%;
     overflow: hidden;
-    color: var(--el-text-color-primary);
+    text-overflow: ellipsis;
     font-size: 26px;
     font-weight: 650;
     line-height: 34px;
-    text-overflow: ellipsis;
+    color: var(--el-text-color-primary);
     white-space: nowrap;
   }
 
   .metric-unit {
     flex: none;
     margin-left: 6px;
-    color: var(--el-text-color-secondary);
     font-size: 13px;
+    color: var(--el-text-color-secondary);
   }
 
   .metric-trend {
     min-height: 18px;
     margin-top: 4px;
-    color: var(--el-text-color-secondary);
     font-size: 12px;
     line-height: 18px;
+    color: var(--el-text-color-secondary);
   }
 
   &.is-success {

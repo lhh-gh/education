@@ -17,7 +17,8 @@
     "lint:eslint": "eslint . --cache --quiet || true",
     "lint:stylelint": "stylelint \"src/**/*.{css,scss,vue}\" --cache --quiet || true",
     "test": "vitest run --config vitest.config.ts",
-    "test:e2e": "playwright test --config=playwright.config.ts"
+    "test:e2e": "playwright test --config=playwright.config.ts",
+    "typecheck": "vue-tsc --noEmit --noCheck"
   },
   "dependencies": {
     "@imengyu/vue3-context-menu": "^1.5.4",

@@ -41,8 +41,8 @@ const showRetry = computed(() => shouldEmitRetry(props.state))
   justify-content: center;
   min-height: 220px;
   padding: 24px;
+  background: var(--el-fill-color-blank);
   border: 1px dashed var(--el-border-color);
   border-radius: 8px;
-  background: var(--el-fill-color-blank);
 }
 </style>

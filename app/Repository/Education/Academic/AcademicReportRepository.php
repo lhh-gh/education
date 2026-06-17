@@ -293,10 +293,10 @@ final class AcademicReportRepository
             $summary['total_count'] += $total;
             $statusKey = (string) $row->status . '_count';
             $sourceKey = (string) $row->source . '_source_count';
-            if (array_key_exists($statusKey, $summary)) {
+            if (\array_key_exists($statusKey, $summary)) {
                 $summary[$statusKey] += $total;
             }
-            if (array_key_exists($sourceKey, $summary)) {
+            if (\array_key_exists($sourceKey, $summary)) {
                 $summary[$sourceKey] += $total;
             }
         }
@@ -518,7 +518,7 @@ final class AcademicReportRepository
             ->orderBy('a.available_units')
             ->orderByDesc('a.id')
             ->get()
-            ->map(fn (object $row): array => (array) $row)
+            ->map(static fn (object $row): array => (array) $row)
             ->map(function (array $row): array {
                 $row['balance_level'] = $this->balanceLevel($row);
 

@@ -48,8 +48,8 @@ const emit = defineEmits<{
   }
 
   .toolbar-title {
-    color: var(--el-text-color-primary);
     font-weight: 600;
+    color: var(--el-text-color-primary);
   }
 }
 </style>

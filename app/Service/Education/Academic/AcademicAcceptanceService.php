@@ -7,7 +7,7 @@ declare(strict_types=1);
  * @link     https://www.mineadmin.com
  * @document https://doc.mineadmin.com
  * @contact  root@imoi.cn
- * @license  https://github.com/mineAdmin/MineAdmin/blob/master/LICENSE
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
 
 namespace App\Service\Education\Academic;

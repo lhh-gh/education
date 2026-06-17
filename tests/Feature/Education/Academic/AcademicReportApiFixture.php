@@ -41,13 +41,13 @@ trait AcademicReportApiFixture
         $student = EducationStudent::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'student_no' => 'S-' . strtoupper($code),
+            'student_no' => 'S-' . mb_strtoupper($code),
             'name' => 'Student ' . $code,
             'status' => 'enabled',
         ]);
         $guardian = EducationGuardian::query()->create([
             'tenant_id' => $tenant->id,
-            'guardian_no' => 'G-' . strtoupper($code),
+            'guardian_no' => 'G-' . mb_strtoupper($code),
             'name' => 'Guardian ' . $code,
             'mobile' => '13900000001',
             'status' => 'enabled',
@@ -62,14 +62,14 @@ trait AcademicReportApiFixture
         $teacher = EducationTeacher::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'teacher_no' => 'T-' . strtoupper($code),
+            'teacher_no' => 'T-' . mb_strtoupper($code),
             'name' => 'Teacher ' . $code,
             'status' => 'enabled',
         ]);
         $course = EducationCourse::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'code' => 'C-' . strtoupper($code),
+            'code' => 'C-' . mb_strtoupper($code),
             'name' => 'Art Basics',
             'status' => 'enabled',
         ]);
@@ -77,7 +77,7 @@ trait AcademicReportApiFixture
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
             'course_id' => $course->id,
-            'code' => 'PKG-' . strtoupper($code),
+            'code' => 'PKG-' . mb_strtoupper($code),
             'name' => '20 Lessons',
             'lesson_units' => '20.00',
             'bonus_units' => '0.00',
@@ -90,7 +90,7 @@ trait AcademicReportApiFixture
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
             'course_id' => $course->id,
-            'code' => 'CLS-' . strtoupper($code),
+            'code' => 'CLS-' . mb_strtoupper($code),
             'name' => 'Sunday Art',
             'class_type' => 'group',
             'lesson_units' => '1.00',
@@ -115,7 +115,7 @@ trait AcademicReportApiFixture
         $enrollment = EducationEnrollment::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'enrollment_no' => 'ENR-' . strtoupper($code),
+            'enrollment_no' => 'ENR-' . mb_strtoupper($code),
             'student_id' => $student->id,
             'course_id' => $course->id,
             'lesson_package_id' => $package->id,
@@ -146,7 +146,7 @@ trait AcademicReportApiFixture
         $lesson = EducationLesson::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'lesson_no' => 'LES-' . strtoupper($code),
+            'lesson_no' => 'LES-' . mb_strtoupper($code),
             'class_id' => $class->id,
             'course_id' => $course->id,
             'teacher_id' => $teacher->id,
@@ -192,12 +192,12 @@ trait AcademicReportApiFixture
             'consumption_status' => 'active',
             'submitted_at' => '2026-06-12 10:00:00',
             'submitted_by' => 1,
-            'attendance_batch_no' => 'ATT-' . strtoupper($code),
+            'attendance_batch_no' => 'ATT-' . mb_strtoupper($code),
         ]);
         $consumption = EducationLessonConsumption::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'consumption_no' => 'CON-' . strtoupper($code),
+            'consumption_no' => 'CON-' . mb_strtoupper($code),
             'account_id' => $account->id,
             'student_id' => $student->id,
             'course_id' => $course->id,
@@ -217,7 +217,7 @@ trait AcademicReportApiFixture
         $leave = EducationLeaveRequest::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'leave_no' => 'LEA-' . strtoupper($code),
+            'leave_no' => 'LEA-' . mb_strtoupper($code),
             'source' => 'guardian',
             'leave_type' => 'sick',
             'lesson_id' => $lesson->id,
@@ -236,7 +236,7 @@ trait AcademicReportApiFixture
         $notice = EducationNotice::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
-            'notice_no' => 'NOT-' . strtoupper($code),
+            'notice_no' => 'NOT-' . mb_strtoupper($code),
             'notice_type' => 'academic',
             'target_type' => 'student',
             'target_id' => $student->id,

@@ -95,6 +95,11 @@ final class V1MobileAcceptanceTest extends ProfileRecordAdminCase
         self::assertSame(ResultCode::FORBIDDEN->value, $guardianDeniedTeacher['code']);
     }
 
+    protected function mobileHeaders(EducationTenant $tenant): array
+    {
+        return $this->tenantHeaders($tenant, ['X-Client-Type' => 'wechat_miniprogram']);
+    }
+
     private function teacherFixture(): array
     {
         $tenant = $this->tenant('v1_mobile_teacher');
@@ -135,10 +140,5 @@ final class V1MobileAcceptanceTest extends ProfileRecordAdminCase
             'lesson' => $lesson,
             'lessonStudent' => $lessonStudent,
         ];
-    }
-
-    protected function mobileHeaders(EducationTenant $tenant): array
-    {
-        return $this->tenantHeaders($tenant, ['X-Client-Type' => 'wechat_miniprogram']);
     }
 }
