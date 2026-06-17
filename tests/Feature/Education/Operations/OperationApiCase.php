@@ -1,12 +1,19 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Feature\Education\Operations;
 
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationGuardian;
-use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonConsumption;
 use App\Model\Education\Academic\EducationStudent;
@@ -44,7 +51,7 @@ abstract class OperationApiCase extends ProfileRecordAdminCase
     {
         $tenant = $this->tenant($code);
         $campus = $this->campus($tenant);
-        $course = EducationCourse::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campus->id, 'code' => strtoupper($code), 'name' => 'Art', 'status' => 'enabled']);
+        $course = EducationCourse::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campus->id, 'code' => mb_strtoupper($code), 'name' => 'Art', 'status' => 'enabled']);
         $lesson = EducationLesson::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,

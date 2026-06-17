@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
 
 namespace HyperfTests\Feature\Education\Operations;
 
@@ -8,6 +16,10 @@ use App\Http\Common\ResultCode;
 use App\Model\Education\Operations\EducationMakeupEntitlement;
 use App\Model\Education\Operations\EducationRenewalAlert;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class GuardianOperationMobileApiTest extends OperationApiCase
 {
     public function testGuardianReadsOnlyBoundStudentEntitlements(): void

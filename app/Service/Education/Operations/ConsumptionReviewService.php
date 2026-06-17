@@ -83,8 +83,8 @@ final class ConsumptionReviewService
             $credits = number_format((float) $data['credits'], 2, '.', '');
             $units = number_format(abs((float) $credits), 2, '.', '');
             $account = EducationStudentCourseAccount::query()->where('tenant_id', $context->tenantId)->whereKey((int) $original->account_id)->lockForUpdate()->first();
-            $beforeAvailable = (float) ($account?->available_units ?? $original->after_available_units);
-            $beforeConsumed = (float) ($account?->consumed_units ?? $original->after_consumed_units);
+            $beforeAvailable = (float) ($account->available_units ?? $original->after_available_units);
+            $beforeConsumed = (float) ($account->consumed_units ?? $original->after_consumed_units);
             $afterAvailable = $beforeAvailable + (float) $units;
             $afterConsumed = max(0, $beforeConsumed - (float) $units);
             $rollback = EducationLessonConsumption::query()->create([

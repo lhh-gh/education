@@ -57,7 +57,7 @@ final class LessonChangeService
 
     public function approve(int $id, array $data, EducationUserContext $context): array
     {
-        return Db::transaction(function () use ($id, $data, $context): array {
+        return Db::transaction(function () use ($id, $context): array {
             $request = $this->changeRequest($id, $context);
             if ($request->status !== 'pending') {
                 throw new BusinessException(ResultCode::CONFLICT, 'lesson change request is not pending', ['id' => $id, 'status' => $request->status]);
@@ -194,7 +194,7 @@ final class LessonChangeService
     {
         $payload = [];
         foreach (['teacher_id', 'classroom_id', 'title', 'status'] as $field) {
-            if (array_key_exists($field, $newValues)) {
+            if (\array_key_exists($field, $newValues)) {
                 $payload[$field] = $newValues[$field];
             }
         }
