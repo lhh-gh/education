@@ -16,6 +16,7 @@ use App\Exception\BusinessException;
 use App\Model\Education\Operations\EducationTeacherWorkloadRecord;
 use App\Model\Education\Payroll\EducationTeacherSalaryItem;
 use App\Model\Education\Payroll\EducationTeacherSalarySlip;
+use App\Service\Education\Payroll\SalaryBatchService;
 use App\Service\Education\Payroll\SalaryCalculationService;
 use App\Service\Education\Payroll\SalaryReviewService;
 use App\Service\Education\Payroll\SalaryRuleService;
@@ -69,6 +70,7 @@ final class SalaryCalculationServiceTest extends PayrollTestCase
             'items' => [['item_type' => 'workload', 'workload_type' => 'main', 'calculation_method' => 'per_credit', 'unit_amount_cents' => 10000]],
         ], $context);
         $batch = make(SalaryCalculationService::class)->calculate(['salary_month' => '2026-06'], $context);
+        make(SalaryBatchService::class)->submitReview((int) $batch['batch_id'], $context);
         make(SalaryReviewService::class)->approveBatch((int) $batch['batch_id'], ['review_note' => 'approved'], $context);
 
         $this->expectException(BusinessException::class);

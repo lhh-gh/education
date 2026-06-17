@@ -44,7 +44,7 @@ final class SalaryReviewService
             if (! $batch instanceof EducationTeacherSalaryBatch) {
                 throw new BusinessException(ResultCode::NOT_FOUND, 'salary batch not found in current context', ['batch_id' => $batchId]);
             }
-            if (! \in_array($batch->status, [SalaryBatchStatus::Calculated->value, SalaryBatchStatus::Submitted->value], true)) {
+            if ($batch->status !== SalaryBatchStatus::Submitted->value) {
                 throw new BusinessException(ResultCode::CONFLICT, 'salary batch is not submitted', ['batch_id' => $batchId, 'status' => (string) $batch->status]);
             }
             $now = Carbon::now()->toDateTimeString();
