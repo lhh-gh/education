@@ -1,46 +1,175 @@
 <script setup lang="ts">
+import { reactive } from 'vue'
 import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
+import {
+  getGuardianStudents,
+  type GuardianStudentRecord,
+} from '@/api/academic/guardian'
 import { getGuardianContext } from '@/api/foundation/context'
 import { guardianPageOptions } from '@/pages/foundation/pageOptions'
 import { createFoundationContextPage } from '@/pages/foundation/useFoundationContextPage'
+import GuardianStateBlock from './components/GuardianStateBlock.vue'
+import StudentSelector from './components/StudentSelector.vue'
+
+const selectedStudentKey = 'guardian_selected_student_id'
 
 const {
   state,
   enabledFeatureCodes,
   load,
-  retry,
-  refresh,
 } = createFoundationContextPage(() => getGuardianContext(), guardianPageOptions)
 
-onLoad(load)
-onPullDownRefresh(refresh)
+const guardian = reactive({
+  loading: false,
+  status: 'loading' as 'loading' | 'success' | 'empty' | 'error' | 'forbidden',
+  message: '',
+  students: [] as GuardianStudentRecord[],
+  selectedStudentId: 0,
+})
+
+onLoad(loadAll)
+onPullDownRefresh(refreshAll)
+
+async function loadAll(): Promise<void> {
+  await load()
+  guardian.selectedStudentId = readSelectedStudentId()
+  if (state.status === 'success' || state.status === 'empty') {
+    await loadStudents()
+  } else {
+    guardian.status = state.status === 'forbidden' ? 'forbidden' : state.status === 'error' ? 'error' : 'loading'
+    guardian.message = state.message
+  }
+}
+
+async function loadStudents(): Promise<void> {
+  guardian.loading = true
+  guardian.status = 'loading'
+  guardian.message = ''
+  try {
+    const result = await getGuardianStudents()
+    guardian.students = result.list
+    if (guardian.students.length === 0) {
+      guardian.status = 'empty'
+      guardian.message = 'No bound students'
+      guardian.selectedStudentId = 0
+      return
+    }
+
+    if (!guardian.students.some((student) => student.id === guardian.selectedStudentId)) {
+      selectStudent(guardian.students[0])
+    }
+    guardian.status = 'success'
+  } catch (error) {
+    guardian.students = []
+    guardian.status = isForbidden(error) ? 'forbidden' : 'error'
+    guardian.message = errorMessage(error)
+  } finally {
+    guardian.loading = false
+  }
+}
+
+async function retryAll(): Promise<void> {
+  await loadAll()
+}
+
+async function refreshAll(): Promise<void> {
+  try {
+    await loadAll()
+  } finally {
+    uni.stopPullDownRefresh?.()
+  }
+}
+
+function selectStudent(student: GuardianStudentRecord): void {
+  guardian.selectedStudentId = student.id
+  uni.setStorageSync(selectedStudentKey, student.id)
+}
+
+function openStudentSelector(): void {
+  uni.navigateTo({ url: '/pages/guardian/student/index' })
+}
+
+function openStudentPage(path: string): void {
+  if (guardian.selectedStudentId <= 0) {
+    return
+  }
+  uni.navigateTo({ url: `${path}?studentId=${guardian.selectedStudentId}` })
+}
+
+function openNotice(): void {
+  uni.navigateTo({ url: '/pages/guardian/notice/index' })
+}
+
+function readSelectedStudentId(): number {
+  try {
+    return Number(uni.getStorageSync(selectedStudentKey) || 0)
+  } catch {
+    return 0
+  }
+}
+
+function isForbidden(error: unknown): boolean {
+  const code = (error as { code?: number })?.code
+
+  return code === 401 || code === 403
+}
+
+function errorMessage(error: unknown): string {
+  return (error as { message?: string })?.message || 'Request failed'
+}
 </script>
 
 <template>
   <view class="page">
-    <view v-if="state.status === 'loading'" class="state">
-      <text>Loading...</text>
-    </view>
+    <GuardianStateBlock
+      v-if="guardian.status === 'loading'"
+      state="loading"
+      message="Loading guardian dashboard"
+    />
+    <GuardianStateBlock
+      v-else-if="guardian.status === 'forbidden'"
+      state="forbidden"
+      :message="guardian.message"
+      @retry="retryAll"
+    />
+    <GuardianStateBlock
+      v-else-if="guardian.status === 'error'"
+      state="error"
+      :message="guardian.message"
+      @retry="retryAll"
+    />
 
-    <view v-else-if="state.status === 'forbidden'" class="state blocked">
-      <text class="message">{{ state.message }}</text>
-      <button class="retry" @tap="retry">Retry</button>
-    </view>
-
-    <view v-else-if="state.status === 'error'" class="state">
-      <text class="message">{{ state.message }}</text>
-      <button class="retry" @tap="retry">Retry</button>
-    </view>
-
-    <view v-else-if="state.context" class="content">
-      <view class="summary">
+    <view v-else class="content">
+      <view v-if="state.context" class="summary">
         <text class="tenant">{{ state.context.tenant.name }}</text>
         <text class="name">{{ state.context.profile.display_name }}</text>
-        <text class="meta">Bound students: {{ state.context.bound_students.length }}</text>
+        <text class="meta">Bound students: {{ guardian.students.length }}</text>
       </view>
 
-      <view v-if="state.status === 'empty'" class="empty">
-        <text>{{ state.message }}</text>
+      <GuardianStateBlock
+        v-if="guardian.status === 'empty'"
+        state="empty"
+        :message="guardian.message"
+        @retry="retryAll"
+      />
+
+      <view v-else class="section">
+        <text class="section-title">Selected student</text>
+        <StudentSelector
+          :students="guardian.students"
+          :selected-student-id="guardian.selectedStudentId"
+          @select="selectStudent"
+        />
+      </view>
+
+      <view class="section">
+        <text class="section-title">Actions</text>
+        <button class="entry-button" @tap="openStudentSelector">Students</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/schedule/index')">Schedule</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/account/index')">Accounts</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/consumption/index')">Consumption</button>
+        <button class="entry-button secondary" @tap="openNotice">Notices</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/leave/create')">Leave</button>
       </view>
 
       <view class="section">
@@ -61,53 +190,25 @@ onPullDownRefresh(refresh)
   color: #172033;
 }
 
-.state,
-.content {
+.content,
+.summary,
+.section {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-}
-
-.state {
-  min-height: 60vh;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.blocked {
-  color: #8a1f1f;
-}
-
-.message {
-  max-width: 560rpx;
-  line-height: 1.6;
-}
-
-.retry {
-  width: 220rpx;
-  border-radius: 8rpx;
-  background: #2456a6;
-  color: #ffffff;
+  gap: 18rpx;
 }
 
 .summary,
-.section,
-.empty {
+.section {
   padding: 24rpx;
   border: 1rpx solid #dfe5d5;
   border-radius: 8rpx;
   background: #ffffff;
 }
 
-.summary {
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.tenant {
-  font-size: 30rpx;
+.tenant,
+.section-title {
+  font-size: 28rpx;
   font-weight: 700;
 }
 
@@ -120,15 +221,20 @@ onPullDownRefresh(refresh)
   color: #5f6f86;
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
+.entry-button {
+  min-height: 76rpx;
+  border-radius: 8rpx;
+  background: #2456a6;
+  color: #ffffff;
 }
 
-.section-title {
-  font-size: 28rpx;
-  font-weight: 700;
+.entry-button[disabled] {
+  background: #c9d1db;
+  color: #5f6f86;
+}
+
+.secondary {
+  background: #17623a;
 }
 
 .chips {
@@ -143,10 +249,5 @@ onPullDownRefresh(refresh)
   background: #e7f6ee;
   color: #17623a;
   font-size: 22rpx;
-}
-
-.empty {
-  color: #6b4e00;
-  background: #fff8df;
 }
 </style>

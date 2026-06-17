@@ -2,6 +2,8 @@ import { MobileApiError } from '../../../api/foundation/context'
 import type { GuardianFoundationContext } from '../../../api/foundation/types'
 import { guardianPageOptions } from '../../foundation/pageOptions'
 import { createFoundationContextPage } from '../../foundation/useFoundationContextPage'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 describe('guardian entry page state', () => {
   beforeEach(() => {
@@ -33,6 +35,19 @@ describe('guardian entry page state', () => {
     expect(page.state.status).toBe('forbidden')
     expect(page.state.message).toBe('Contact campus to bind guardian profile')
     expect(page.state.context).toBeNull()
+  })
+
+  it('entry_disables_student_features_without_bound_student', () => {
+    const source = readFileSync(join(process.cwd(), 'src/pages/guardian/index.vue'), 'utf8')
+
+    expect(source).toContain('getGuardianStudents')
+    expect(source).toContain('guardian_selected_student_id')
+    expect(source).toContain(':disabled="!guardian.selectedStudentId"')
+    expect(source).toContain('/pages/guardian/schedule/index')
+    expect(source).toContain('/pages/guardian/account/index')
+    expect(source).toContain('/pages/guardian/consumption/index')
+    expect(source).toContain('/pages/guardian/notice/index')
+    expect(source).toContain('/pages/guardian/leave/create')
   })
 })
 
