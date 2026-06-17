@@ -75,9 +75,15 @@ describe('education foundation routes', () => {
 
     expect(academicRoot).toMatchObject({
       path: '/education/academic',
-      redirect: '/education/academic/classrooms',
+      redirect: '/education/academic/dashboard',
       meta: {
         auth: [
+          'education:academic:report:dashboard',
+          'education:academic:report:attendance',
+          'education:academic:report:consumption',
+          'education:academic:report:account-balance',
+          'education:academic:report:leave',
+          'education:academic:report:acceptance',
           'education:academic:classroom:page',
           'education:academic:student:page',
           'education:academic:guardian:page',
@@ -86,14 +92,25 @@ describe('education foundation routes', () => {
           'education:academic:lesson-package:page',
           'education:academic:enrollment:page',
           'education:academic:student-course-account:page',
+          'education:academic:class:page',
+          'education:academic:lesson-schedule:calendar',
+          'education:academic:lesson:page',
           'education:academic:attendance:lesson-page',
+          'education:academic:leave-request:page',
+          'education:academic:lesson-change:page',
           'education:academic:consumption:page',
           'education:academic:account-adjustment:page',
+          'education:academic:notice:page',
         ],
       },
     })
 
     const expectedRoutes = [
+      {
+        name: 'EducationAcademicDashboard',
+        path: '/education/academic/dashboard',
+        auth: ['education:academic:report:dashboard'],
+      },
       {
         name: 'EducationAcademicClassroomList',
         path: '/education/academic/classrooms',
@@ -135,9 +152,34 @@ describe('education foundation routes', () => {
         auth: ['education:academic:student-course-account:page'],
       },
       {
+        name: 'EducationAcademicClassList',
+        path: '/education/academic/classes',
+        auth: ['education:academic:class:page'],
+      },
+      {
+        name: 'EducationAcademicLessonScheduleCalendar',
+        path: '/education/academic/lesson-schedule',
+        auth: ['education:academic:lesson-schedule:calendar'],
+      },
+      {
+        name: 'EducationAcademicLessonList',
+        path: '/education/academic/lessons',
+        auth: ['education:academic:lesson:page'],
+      },
+      {
         name: 'EducationAcademicAttendanceReview',
         path: '/education/academic/attendance-review',
         auth: ['education:academic:attendance:lesson-page'],
+      },
+      {
+        name: 'EducationAcademicLeaveRequestList',
+        path: '/education/academic/leave-requests',
+        auth: ['education:academic:leave-request:page'],
+      },
+      {
+        name: 'EducationAcademicLessonChangeList',
+        path: '/education/academic/lesson-changes',
+        auth: ['education:academic:lesson-change:page'],
       },
       {
         name: 'EducationAcademicConsumptionLedgerList',
@@ -148,6 +190,36 @@ describe('education foundation routes', () => {
         name: 'EducationAcademicAccountAdjustmentList',
         path: '/education/academic/account-adjustments',
         auth: ['education:academic:account-adjustment:page'],
+      },
+      {
+        name: 'EducationAcademicNoticeList',
+        path: '/education/academic/notices',
+        auth: ['education:academic:notice:page'],
+      },
+      {
+        name: 'EducationAttendanceReport',
+        path: '/education/academic/reports/attendance',
+        auth: ['education:academic:report:attendance'],
+      },
+      {
+        name: 'EducationConsumptionReport',
+        path: '/education/academic/reports/consumption',
+        auth: ['education:academic:report:consumption'],
+      },
+      {
+        name: 'EducationAccountBalanceReport',
+        path: '/education/academic/reports/account-balances',
+        auth: ['education:academic:report:account-balance'],
+      },
+      {
+        name: 'EducationLeaveReport',
+        path: '/education/academic/reports/leaves',
+        auth: ['education:academic:report:leave'],
+      },
+      {
+        name: 'EducationV1AcceptanceReport',
+        path: '/education/academic/reports/v1-acceptance',
+        auth: ['education:academic:report:acceptance'],
       },
     ]
 
