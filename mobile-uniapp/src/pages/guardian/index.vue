@@ -170,6 +170,9 @@ function errorMessage(error: unknown): string {
         <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/consumption/index')">Consumption</button>
         <button class="entry-button secondary" @tap="openNotice">Notices</button>
         <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/leave/create')">Leave</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/finance/orders')">Finance Orders</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/finance/receipts')">Receipts</button>
+        <button class="entry-button" :disabled="!guardian.selectedStudentId" @tap="openStudentPage('/pages/guardian/finance/refunds')">Refunds</button>
       </view>
 
       <view class="section">

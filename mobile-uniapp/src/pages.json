@@ -141,6 +141,50 @@
       }
     },
     {
+      "path": "pages/guardian/finance/orders",
+      "style": {
+        "navigationBarTitleText": "Finance Orders"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/order-detail",
+      "style": {
+        "navigationBarTitleText": "Finance Order"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/receipts",
+      "style": {
+        "navigationBarTitleText": "Receipts"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/refunds",
+      "style": {
+        "navigationBarTitleText": "Refunds"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
       "path": "pages/guardian/operations/changed-lessons",
       "style": {
         "navigationBarTitleText": "Changed Lessons"
