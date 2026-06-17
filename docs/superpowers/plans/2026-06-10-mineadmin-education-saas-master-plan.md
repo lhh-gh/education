@@ -816,7 +816,7 @@ Use this status table:
 | 00 Foundation | tenant/campus/permissions/bootstrap | ready | incomplete / not implemented |
 | 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
-| 03 V3 Admissions | admissions CRM | ready | incomplete / not implemented |
+| 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
 | 04 V4 Finance | payment and finance | ready | incomplete / not implemented |
 | 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
 | 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
@@ -873,7 +873,7 @@ done
 | 00 Foundation | tenant/campus/permissions/bootstrap | ready | incomplete / not implemented |
 | 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
-| 03 V3 Admissions | admissions CRM | ready | incomplete / not implemented |
+| 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
 | 04 V4 Finance | payment and finance | ready | incomplete / not implemented |
 | 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
 | 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
