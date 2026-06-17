@@ -76,6 +76,57 @@ export function shouldEmitRetry(state: ReportState): boolean {
   return state === 'error' || state === 'forbidden' || state === 'empty'
 }
 
+export function reportHasRows(total = 0, listLength = 0): boolean {
+  return total > 0 || listLength > 0
+}
+
+export function reportTagType(value?: string | null): '' | 'success' | 'warning' | 'danger' | 'info' {
+  if (!value) {
+    return ''
+  }
+  if (['pass', 'present', 'active', 'approved', 'normal', 'read', 'completed'].includes(value)) {
+    return 'success'
+  }
+  if (['pending', 'late', 'low', 'expiring_soon', 'makeup_scheduled', 'warning'].includes(value)) {
+    return 'warning'
+  }
+  if (['fail', 'absent', 'zero', 'expired', 'rejected', 'cancelled', 'danger'].includes(value)) {
+    return 'danger'
+  }
+  if (['leave', 'reversed', 'frozen', 'closed'].includes(value)) {
+    return 'info'
+  }
+
+  return ''
+}
+
+export function canShowReportDrillLink(hasPermission: boolean, id?: number | null): boolean {
+  return hasPermission && !!id
+}
+
+export function dashboardMetricItems(metrics: Record<string, string | number> = {}): Array<{ title: string, value: string | number, unit?: string }> {
+  return [
+    { title: 'Active Students', value: metrics.active_student_count ?? 0 },
+    { title: 'Completed Lessons', value: metrics.completed_lesson_count ?? 0 },
+    { title: 'Attendance', value: metrics.attendance_count ?? 0 },
+    { title: 'Net Consumed', value: metrics.net_consumed_units ?? '0.00', unit: 'units' },
+    { title: 'Available Units', value: metrics.total_available_units ?? '0.00', unit: 'units' },
+    { title: 'Pending Leave', value: metrics.pending_leave_count ?? 0 },
+    { title: 'Unread Notices', value: metrics.unread_notice_receipt_count ?? 0 },
+  ]
+}
+
+export function summaryMetricItems(summary: Record<string, string | number> = {}, keys: string[]): Array<{ title: string, value: string | number }> {
+  return keys.map(key => ({
+    title: key.replace(/_/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase()),
+    value: summary[key] ?? 0,
+  }))
+}
+
+export function acceptanceOverallType(status: 'pass' | 'fail'): 'success' | 'danger' {
+  return status === 'pass' ? 'success' : 'danger'
+}
+
 function formatReportDateTime(value: Date): string {
   const pad = (input: number) => String(input).padStart(2, '0')
 
