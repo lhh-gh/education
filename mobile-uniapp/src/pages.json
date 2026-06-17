@@ -49,6 +49,48 @@
       }
     },
     {
+      "path": "pages/guardian/student/index",
+      "style": {
+        "navigationBarTitleText": "\u5b66\u751f"
+      }
+    },
+    {
+      "path": "pages/guardian/schedule/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u8868"
+      }
+    },
+    {
+      "path": "pages/guardian/account/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u65f6\u8d26\u6237"
+      }
+    },
+    {
+      "path": "pages/guardian/consumption/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u6d88\u8bb0\u5f55"
+      }
+    },
+    {
+      "path": "pages/guardian/notice/index",
+      "style": {
+        "navigationBarTitleText": "\u901a\u77e5"
+      }
+    },
+    {
+      "path": "pages/guardian/notice/detail",
+      "style": {
+        "navigationBarTitleText": "\u901a\u77e5\u8be6\u60c5"
+      }
+    },
+    {
+      "path": "pages/guardian/leave/create",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047"
+      }
+    },
+    {
       "path": "pages/operator/index",
       "style": {
         "navigationBarTitleText": "Operator"
