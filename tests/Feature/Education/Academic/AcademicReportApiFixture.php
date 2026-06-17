@@ -13,12 +13,15 @@ declare(strict_types=1);
 namespace HyperfTests\Feature\Education\Academic;
 
 use App\Model\Education\Academic\EducationClass;
+use App\Model\Education\Academic\EducationClassStudent;
 use App\Model\Education\Academic\EducationCourse;
+use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationGuardian;
 use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonAttendance;
 use App\Model\Education\Academic\EducationLessonConsumption;
+use App\Model\Education\Academic\EducationLessonPackage;
 use App\Model\Education\Academic\EducationLessonStudent;
 use App\Model\Education\Academic\EducationNotice;
 use App\Model\Education\Academic\EducationNoticeReceipt;
@@ -70,6 +73,19 @@ trait AcademicReportApiFixture
             'name' => 'Art Basics',
             'status' => 'enabled',
         ]);
+        $package = EducationLessonPackage::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'course_id' => $course->id,
+            'code' => 'PKG-' . strtoupper($code),
+            'name' => '20 Lessons',
+            'lesson_units' => '20.00',
+            'bonus_units' => '0.00',
+            'total_units' => '20.00',
+            'list_price' => '3000.00',
+            'sale_price' => '2800.00',
+            'status' => 'enabled',
+        ]);
         $class = EducationClass::query()->create([
             'tenant_id' => $tenant->id,
             'campus_id' => $campus->id,
@@ -95,6 +111,37 @@ trait AcademicReportApiFixture
             'status' => 'active',
             'opened_at' => '2026-06-01 00:00:00',
             'expires_at' => '2026-12-31 23:59:59',
+        ]);
+        $enrollment = EducationEnrollment::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'enrollment_no' => 'ENR-' . strtoupper($code),
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'lesson_package_id' => $package->id,
+            'account_id' => $account->id,
+            'student_name_snapshot' => $student->name,
+            'course_name_snapshot' => $course->name,
+            'package_name_snapshot' => $package->name,
+            'package_lesson_units' => '20.00',
+            'package_bonus_units' => '0.00',
+            'total_units' => '20.00',
+            'list_price' => '3000.00',
+            'deal_amount' => '2800.00',
+            'status' => 'confirmed',
+            'confirmed_at' => '2026-06-01 10:00:00',
+            'materialized_at' => '2026-06-01 10:00:00',
+        ]);
+        EducationClassStudent::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'class_id' => $class->id,
+            'course_id' => $course->id,
+            'student_id' => $student->id,
+            'account_id' => $account->id,
+            'student_name_snapshot' => $student->name,
+            'student_no_snapshot' => $student->student_no,
+            'status' => 'active',
         ]);
         $lesson = EducationLesson::query()->create([
             'tenant_id' => $tenant->id,
@@ -214,7 +261,7 @@ trait AcademicReportApiFixture
             'delivered_at' => '2026-06-12 08:31:00',
         ]);
 
-        return compact('tenant', 'campus', 'student', 'guardian', 'teacher', 'course', 'class', 'account', 'lesson', 'lessonStudent', 'attendance', 'consumption', 'leave', 'notice');
+        return compact('tenant', 'campus', 'student', 'guardian', 'teacher', 'course', 'package', 'class', 'account', 'enrollment', 'lesson', 'lessonStudent', 'attendance', 'consumption', 'leave', 'notice');
     }
 
     protected function reportRangeParams(array $extra = []): array
