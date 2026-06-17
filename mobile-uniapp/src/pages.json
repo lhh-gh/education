@@ -133,6 +133,56 @@
       }
     },
     {
+      "path": "pages/teacher/family/lesson-comments",
+      "style": {
+        "navigationBarTitleText": "Lesson Comments"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/comment-form",
+      "style": {
+        "navigationBarTitleText": "Comment"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/homework-reviews",
+      "style": {
+        "navigationBarTitleText": "Homework Reviews"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/growth-record-form",
+      "style": {
+        "navigationBarTitleText": "Growth Record"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/messages",
+      "style": {
+        "navigationBarTitleText": "Family Messages"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
@@ -261,6 +311,72 @@
       "path": "pages/guardian/operations/renewal-alerts",
       "style": {
         "navigationBarTitleText": "Renewal Alerts"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/lesson-comments",
+      "style": {
+        "navigationBarTitleText": "Lesson Comments"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/homework",
+      "style": {
+        "navigationBarTitleText": "Homework"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/homework-submit",
+      "style": {
+        "navigationBarTitleText": "Submit Homework"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/learning-reports",
+      "style": {
+        "navigationBarTitleText": "Learning Reports"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/growth-records",
+      "style": {
+        "navigationBarTitleText": "Growth Records"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/messages",
+      "style": {
+        "navigationBarTitleText": "Family Messages"
       },
       "meta": {
         "role": "guardian",
