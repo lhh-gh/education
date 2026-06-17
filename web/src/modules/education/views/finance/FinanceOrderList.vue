@@ -1,0 +1,129 @@
+<script setup lang="ts">
+import type { FinanceOrderRecord } from '../../api/finance/order.ts'
+import { pageFinanceOrders } from '../../api/finance/order.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
+import OfflineCollectionForm from './components/OfflineCollectionForm.vue'
+import ReceiptIssueDrawer from './components/ReceiptIssueDrawer.vue'
+import { canShowOfflineCollection, centsToYuan, financeTagType } from './financeRules.ts'
+
+defineOptions({ name: 'EducationFinanceOrderList' })
+
+const loading = ref(false)
+const rows = ref<FinanceOrderRecord[]>([])
+const total = ref(0)
+const errorText = ref('')
+const current = ref<FinanceOrderRecord | null>(null)
+const offlineVisible = ref(false)
+const receiptVisible = ref(false)
+const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '', keyword: '' })
+
+async function loadRows() {
+  loading.value = true
+  try {
+    const response = await pageFinanceOrders(search)
+    rows.value = response.data.list
+    total.value = response.data.total
+    errorText.value = ''
+  }
+  catch (error: any) {
+    errorText.value = error?.message ?? 'Finance orders loading failed'
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+function openOffline(row: FinanceOrderRecord) {
+  current.value = row
+  offlineVisible.value = true
+}
+
+function openReceipt(row: FinanceOrderRecord) {
+  current.value = row
+  receiptVisible.value = true
+}
+
+onMounted(loadRows)
+</script>
+
+<template>
+  <div class="mine-layout education-finance-page pt-3">
+    <el-card shadow="never">
+      <template #header>
+        <div class="page-header">
+          <span>Finance Orders</span>
+          <el-button type="primary" @click="loadRows">
+            Refresh
+          </el-button>
+        </div>
+      </template>
+      <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+      <el-form :inline="true" :model="search" class="search-form">
+        <el-form-item label="Campus">
+          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
+        </el-form-item>
+        <el-form-item label="Status">
+          <el-select v-model="search.status" clearable style="width: 150px;">
+            <el-option label="pending" value="pending" />
+            <el-option label="paid" value="paid" />
+            <el-option label="refunded" value="refunded" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Keyword">
+          <el-input v-model="search.keyword" clearable />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="loadRows">
+            Search
+          </el-button>
+        </el-form-item>
+      </el-form>
+      <el-table v-loading="loading" :data="rows" row-key="id">
+        <el-table-column prop="order_no" label="Order No" min-width="180" />
+        <el-table-column prop="student_id" label="Student" width="110" />
+        <el-table-column label="Total" width="130">
+          <template #default="{ row }">
+            {{ centsToYuan(row.total_amount_cents) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Paid" width="130">
+          <template #default="{ row }">
+            {{ centsToYuan(row.paid_amount_cents) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="Status" width="130">
+          <template #default="{ row }">
+            <el-tag :type="financeTagType(row.status)">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="Actions" fixed="right" width="220">
+          <template #default="{ row }">
+            <el-button v-if="canShowOfflineCollection(hasAuth)" link type="primary" @click="openOffline(row)">
+              Collect
+            </el-button>
+            <el-button link @click="openReceipt(row)">
+              Receipt
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <el-empty description="No finance orders" />
+        </template>
+      </el-table>
+      <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
+    </el-card>
+    <OfflineCollectionForm v-model="offlineVisible" :order="current" @success="loadRows" />
+    <ReceiptIssueDrawer v-model="receiptVisible" :order="current" @success="loadRows" />
+  </div>
+</template>
+
+<style scoped lang="scss">
+.education-finance-page {
+  .page-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+  .page-alert,
+  .search-form { margin-bottom: 12px; }
+  .page-pagination { justify-content: flex-end; margin-top: 16px; }
+}
+</style>
