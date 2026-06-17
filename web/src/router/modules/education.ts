@@ -105,7 +105,7 @@ const educationRoutes: RouteRecordRaw[] = [
           title: 'V1 Academic',
           icon: 'material-symbols:auto-stories-outline-rounded',
           type: 'M',
-          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page', 'education:academic:attendance:lesson-page', 'education:academic:leave-request:page', 'education:academic:lesson-change:page', 'education:academic:consumption:page', 'education:academic:account-adjustment:page'],
+          auth: ['education:academic:classroom:page', 'education:academic:student:page', 'education:academic:guardian:page', 'education:academic:teacher:page', 'education:academic:course:page', 'education:academic:lesson-package:page', 'education:academic:enrollment:page', 'education:academic:student-course-account:page', 'education:academic:class:page', 'education:academic:lesson-schedule:calendar', 'education:academic:lesson:page', 'education:academic:attendance:lesson-page', 'education:academic:leave-request:page', 'education:academic:lesson-change:page', 'education:academic:consumption:page', 'education:academic:account-adjustment:page', 'education:academic:notice:page'],
         },
         children: [
           {
@@ -297,6 +297,18 @@ const educationRoutes: RouteRecordRaw[] = [
               icon: 'material-symbols:price-change-outline-rounded',
               type: 'M',
               auth: ['education:academic:account-adjustment:page'],
+              cache: true,
+            },
+          },
+          {
+            path: '/education/academic/notices',
+            name: 'EducationAcademicNoticeList',
+            component: () => import('~/education/views/academic/NoticeList.vue'),
+            meta: {
+              title: 'Notices',
+              icon: 'material-symbols:campaign-outline-rounded',
+              type: 'M',
+              auth: ['education:academic:notice:page'],
               cache: true,
             },
           },
