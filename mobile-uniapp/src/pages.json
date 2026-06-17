@@ -43,6 +43,36 @@
       }
     },
     {
+      "path": "pages/teacher/operations/changed-lessons",
+      "style": {
+        "navigationBarTitleText": "Changed Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/operations/makeup-attendance",
+      "style": {
+        "navigationBarTitleText": "Make-up Attendance"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/operations/workload-summary",
+      "style": {
+        "navigationBarTitleText": "Workload Summary"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
@@ -88,6 +118,50 @@
       "path": "pages/guardian/leave/create",
       "style": {
         "navigationBarTitleText": "\u8bf7\u5047"
+      }
+    },
+    {
+      "path": "pages/guardian/operations/changed-lessons",
+      "style": {
+        "navigationBarTitleText": "Changed Lessons"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/makeup-entitlements",
+      "style": {
+        "navigationBarTitleText": "Make-up Entitlements"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/makeup-records",
+      "style": {
+        "navigationBarTitleText": "Make-up Records"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/renewal-alerts",
+      "style": {
+        "navigationBarTitleText": "Renewal Alerts"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
       }
     },
     {
