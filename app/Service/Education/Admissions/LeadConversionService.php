@@ -25,6 +25,7 @@ use App\Model\Education\Admissions\EducationLead;
 use App\Model\Education\Admissions\EducationLeadConversionRecord;
 use App\Model\Education\Admissions\EducationLeadGuardian;
 use App\Model\Education\Admissions\EducationLeadStudent;
+use App\Model\Education\Foundation\EducationAuditLog;
 use App\Repository\Education\Admissions\AdmissionTaskRepository;
 use App\Repository\Education\Admissions\LeadConversionRepository;
 use App\Repository\Education\Admissions\LeadRepository;
@@ -64,6 +65,7 @@ final class LeadConversionService
                 throw new BusinessException(ResultCode::UNPROCESSABLE_ENTITY, 'course is disabled', ['course_id' => (int) $package->course_id]);
             }
 
+            $beforeLead = ['status' => $lead->status, 'stage' => $lead->stage];
             $guardian = $this->guardian($lead, $data, $context);
             $student = $this->student($lead, $data, $context);
             EducationStudentGuardian::query()->firstOrCreate([
@@ -123,6 +125,22 @@ final class LeadConversionService
             ]);
             $lead->update(['stage' => 'converted', 'status' => 'converted', 'updated_by' => $context->userId]);
             $this->taskRepository->completeByLead($context->tenantId, $leadId, $context->userId);
+            EducationAuditLog::query()->create([
+                'tenant_id' => $context->tenantId,
+                'campus_id' => (int) $lead->campus_id,
+                'actor_user_id' => $context->userId,
+                'actor_type' => 'admin',
+                'actor_role_code' => $context->roleCode->value,
+                'module' => 'admissions',
+                'resource' => 'lead',
+                'action' => 'education.admissions.lead.converted',
+                'business_type' => 'lead',
+                'business_id' => (string) $leadId,
+                'summary' => 'Lead converted',
+                'before_snapshot' => $beforeLead,
+                'after_snapshot' => ['student_id' => (int) $student->id, 'enrollment_id' => (int) $enrollment->id],
+                'metadata' => ['conversion_record_id' => (int) $record->id],
+            ]);
 
             return [
                 'lead_id' => $leadId,

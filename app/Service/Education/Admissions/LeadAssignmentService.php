@@ -15,6 +15,7 @@ namespace App\Service\Education\Admissions;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Admissions\EducationLead;
+use App\Model\Education\Foundation\EducationAuditLog;
 use App\Repository\Education\Admissions\LeadAssignmentRepository;
 use App\Repository\Education\Admissions\LeadRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -41,6 +42,7 @@ final class LeadAssignmentService
                 $active->update(['status' => 'replaced', 'updated_by' => $context->userId]);
             }
 
+            $beforeOwnerUserId = $lead->owner_user_id;
             $assignment = $this->assignmentRepository->create([
                 'tenant_id' => $context->tenantId,
                 'campus_id' => $lead->campus_id,
@@ -57,6 +59,22 @@ final class LeadAssignmentService
                 'owner_user_id' => $toUserId,
                 'stage' => $lead->stage === 'new' ? 'assigned' : $lead->stage,
                 'updated_by' => $context->userId,
+            ]);
+            EducationAuditLog::query()->create([
+                'tenant_id' => $context->tenantId,
+                'campus_id' => $lead->campus_id,
+                'actor_user_id' => $context->userId,
+                'actor_type' => 'admin',
+                'actor_role_code' => $context->roleCode->value,
+                'module' => 'admissions',
+                'resource' => 'lead',
+                'action' => 'education.admissions.lead.assigned',
+                'business_type' => 'lead',
+                'business_id' => (string) $leadId,
+                'summary' => 'Lead assigned',
+                'before_snapshot' => ['owner_user_id' => $beforeOwnerUserId],
+                'after_snapshot' => ['owner_user_id' => $toUserId],
+                'metadata' => ['reason' => $reason],
             ]);
 
             return $assignment->refresh()->toArray() + ['lead_owner_user_id' => $toUserId];
