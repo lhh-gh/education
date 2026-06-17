@@ -93,6 +93,46 @@
       }
     },
     {
+      "path": "pages/teacher/payroll/slips",
+      "style": {
+        "navigationBarTitleText": "Salary Slips"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/slip-detail",
+      "style": {
+        "navigationBarTitleText": "Salary Slip"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/disputes",
+      "style": {
+        "navigationBarTitleText": "Workload Disputes"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/dispute-form",
+      "style": {
+        "navigationBarTitleText": "Submit Dispute"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
