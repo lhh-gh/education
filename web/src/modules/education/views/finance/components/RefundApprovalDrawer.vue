@@ -4,7 +4,7 @@ import { approveRefundRequest } from '../../../api/finance/refund.ts'
 import { validateRefundAmount } from '../financeRules.ts'
 
 const props = defineProps<{ modelValue: boolean, row: RefundRequestRecord | null, refundableCents?: number }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive({ review_note: '' })
 const errorText = computed(() => props.row ? validateRefundAmount(props.row.refund_amount_cents, props.refundableCents ?? props.row.refund_amount_cents) : '')
 const visible = computed({

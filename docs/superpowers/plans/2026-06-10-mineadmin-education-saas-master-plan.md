@@ -817,9 +817,9 @@ Use this status table:
 | 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
 | 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
-| 04 V4 Finance | payment and finance | ready | incomplete / not implemented |
-| 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
-| 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
+| 04 V4 Finance | payment and finance | accepted | implemented / accepted |
+| 05 V5 Payroll | teacher payroll | accepted | implemented / accepted |
+| 06 V6 Group | multi-campus group | accepted | implemented / accepted |
 | 07 V7 Family | family service | ready | implemented / accepted |
 | 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |
@@ -874,9 +874,9 @@ done
 | 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
 | 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
-| 04 V4 Finance | payment and finance | ready | incomplete / not implemented |
-| 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
-| 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
+| 04 V4 Finance | payment and finance | accepted | implemented / accepted |
+| 05 V5 Payroll | teacher payroll | accepted | implemented / accepted |
+| 06 V6 Group | multi-campus group | accepted | implemented / accepted |
 | 07 V7 Family | family service | ready | implemented / accepted |
 | 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |

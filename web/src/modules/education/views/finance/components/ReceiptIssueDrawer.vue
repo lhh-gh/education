@@ -3,7 +3,7 @@ import type { FinanceOrderRecord } from '../../../api/finance/order.ts'
 import { issueReceipt } from '../../../api/finance/receipt.ts'
 
 const props = defineProps<{ modelValue: boolean, order: FinanceOrderRecord | null }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive({ amount_cents: 0, pdf_url: '' })
 const visible = computed({
   get: () => props.modelValue,

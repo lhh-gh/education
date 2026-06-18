@@ -2,7 +2,7 @@
 import { importReconciliationBatch } from '../../../api/finance/reconciliation.ts'
 
 const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive({ channel_code: 'wechat', business_date: '', file_url: '' })
 const visible = computed({
   get: () => props.modelValue,

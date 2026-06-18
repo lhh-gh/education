@@ -3,7 +3,7 @@ import type { FinanceOrderRecord } from '../../../api/finance/order.ts'
 import { confirmOfflinePayment } from '../../../api/finance/payment.ts'
 
 const props = defineProps<{ modelValue: boolean, order: FinanceOrderRecord | null }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 
 const form = reactive({ channel_code: 'offline_cash', payment_no: '', amount_cents: 0, payer_name: '', remark: '' })
 const visible = computed({
