@@ -8,7 +8,7 @@
 
 **Tech Stack:** MineAdmin 3.x, Hyperf 3.1, PHP 8.1+, MySQL 8, Redis queue, MineAdmin-Vue, Vue3, TypeScript, uni-app, pnpm, PHPUnit/co-phpunit.
 
-**Status:** ready
+**Status:** accepted
 
 **Completion:** implemented / accepted. Final backend, PC, and mobile gates passed.
 
@@ -1054,19 +1054,19 @@ Run `pnpm lint && pnpm test -- operations && pnpm build:h5`; expected output is 
 
 - Verify all V2 backend, PC, and mobile files.
 
-- [ ] **Step 1: Run backend final gate**
+- [x] **Step 1: Run backend final gate**
 
 Run the backend commands in `Execution Commands`; expected output is all migrations, tests, style, and analysis passing.
 
-- [ ] **Step 2: Run PC final gate**
+- [x] **Step 2: Run PC final gate**
 
 Run the PC commands in `Execution Commands`; expected output is lint, tests, and build passing.
 
-- [ ] **Step 3: Run mobile final gate**
+- [x] **Step 3: Run mobile final gate**
 
 Run the mobile commands in `Execution Commands`; expected output is lint, tests, and H5 build passing.
 
-- [ ] **Step 4: Record implementation completion**
+- [x] **Step 4: Record implementation completion**
 
 Only after all gates pass, update completion status from `incomplete / not implemented` to implemented in the project status index.
 
@@ -1075,4 +1075,4 @@ Only after all gates pass, update completion status from `incomplete / not imple
 - Spec coverage: Covers V2 lesson change center, leave/make-up closure, consumption review/reversal, renewal alerts/follow-up, teacher workload, dashboards, notifications, permissions, and tenant/campus isolation.
 - MineAdmin fit: Uses MineAdmin 3.x admin/mobile controller paths, request classes, services, repositories, models, schemas, migrations, PC routes/API/pages, and uni-app pages.
 - Code-level readiness: Migration fields, indexes, rollback, API request/response/failures, backend layer tasks, PC/mobile page tasks, tests, commands, and acceptance gates are defined.
-- Implementation status: No code has been implemented; this is a ready implementation plan only.
+- Implementation status: V2 code, tests, and gates have been implemented and accepted in this repository.
