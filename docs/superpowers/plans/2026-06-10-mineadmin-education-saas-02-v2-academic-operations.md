@@ -1024,27 +1024,27 @@ Run `pnpm lint && pnpm test -- operations && pnpm build`; expected output is lin
 - Create mobile API, page, and test files listed in `File Structure`.
 - Modify: `mineadmin-education-saas/mobile-uniapp/pages.json`
 
-- [ ] **Step 1: Create mobile API clients**
+- [x] **Step 1: Create mobile API clients**
 
 Implement teacher and guardian API methods with F06 headers and selected student context.
 
-- [ ] **Step 2: Register pages**
+- [x] **Step 2: Register pages**
 
 Add V2 pages to `pages.json` with role meta for teacher and guardian profiles.
 
-- [ ] **Step 3: Implement teacher pages**
+- [x] **Step 3: Implement teacher pages**
 
 Implement changed lessons, make-up attendance, and workload summary states and isolation rules.
 
-- [ ] **Step 4: Implement guardian pages**
+- [x] **Step 4: Implement guardian pages**
 
 Implement changed lessons, make-up entitlements, make-up records, and renewal alert pages with bound-student isolation.
 
-- [ ] **Step 5: Write mobile tests**
+- [x] **Step 5: Write mobile tests**
 
 Implement all mobile cases listed in `Mobile tests`.
 
-- [ ] **Step 6: Run mobile gate**
+- [x] **Step 6: Run mobile gate**
 
 Run `pnpm lint && pnpm test -- operations && pnpm build:h5`; expected output is mobile lint, tests, and build passing.
 
