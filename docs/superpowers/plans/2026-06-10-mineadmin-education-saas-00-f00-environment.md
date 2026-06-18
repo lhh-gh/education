@@ -1159,7 +1159,7 @@ Commit succeeds with smoke scripts.
 - Create: `mineadmin-education-saas/backend/app/Http/Controller/HealthController.php`
 - Create: `mineadmin-education-saas/backend/tests/Feature/Foundation/EnvironmentHealthTest.php`
 
-- [ ] **Step 1: Install backend**
+- [x] **Step 1: Install backend**
 
 Run:
 
@@ -1177,7 +1177,7 @@ backend/vendor exists.
 backend/.env exists.
 ```
 
-- [ ] **Step 2: Update backend `.env.example`**
+- [x] **Step 2: Update backend `.env.example`**
 
 Apply the backend environment values from `MineAdmin Backend Module Design` to `mineadmin-education-saas/backend/.env.example`.
 
@@ -1187,7 +1187,7 @@ Expected:
 backend/.env.example uses APP_NAME=mineadmin-education-saas, DB_DATABASE=mineadmin_education, DB_USERNAME=education, and REDIS_HOST=127.0.0.1.
 ```
 
-- [ ] **Step 3: Update backend `.env`**
+- [x] **Step 3: Update backend `.env`**
 
 Run:
 
@@ -1202,7 +1202,7 @@ Expected:
 backend/.env matches backend/.env.example for local F00 development.
 ```
 
-- [ ] **Step 4: Add health controller**
+- [x] **Step 4: Add health controller**
 
 Create `backend/app/Http/Controller/HealthController.php` with the full file from `MineAdmin Backend Module Design`.
 
@@ -1212,7 +1212,7 @@ Expected:
 HealthController has checkDatabase, checkRedis, and index methods.
 ```
 
-- [ ] **Step 5: Register `/health` route**
+- [x] **Step 5: Register `/health` route**
 
 Modify `backend/config/routes.php` with the required route diff from `MineAdmin Backend Module Design`.
 
@@ -1222,7 +1222,7 @@ Expected:
 Router::get('/health', [HealthController::class, 'index']); exists.
 ```
 
-- [ ] **Step 6: Add backend health test**
+- [x] **Step 6: Add backend health test**
 
 Create `backend/tests/Feature/Foundation/EnvironmentHealthTest.php` with the full file from `MineAdmin Backend Module Design`.
 
@@ -1232,7 +1232,7 @@ Expected:
 EnvironmentHealthTest asserts MineAdmin result shape and database/redis checks.
 ```
 
-- [ ] **Step 7: Run backend smoke**
+- [x] **Step 7: Run backend smoke**
 
 Run:
 
@@ -1251,7 +1251,7 @@ backend smoke ok
 EnvironmentHealthTest passes.
 ```
 
-- [ ] **Step 8: Commit backend environment**
+- [x] **Step 8: Commit backend environment**
 
 Run:
 
