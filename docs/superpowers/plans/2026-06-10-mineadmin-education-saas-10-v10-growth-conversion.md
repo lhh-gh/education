@@ -523,11 +523,11 @@ V10 is accepted only when:
 
 ### Task 4: PC Admin
 
-- [ ] Create typed API clients.
-- [ ] Register growth routes and menus in `education.ts`.
-- [ ] Create workbench, score, AI script, strategy, trial conversion, ROI, consultant metric, and loss pages.
-- [ ] Write PC tests listed in `Test Plan`.
-- [ ] Run `pnpm lint && pnpm test -- growth && pnpm build`; expected output is all PC gates passing.
+- [x] Create typed API clients.
+- [x] Register growth routes and menus in `education.ts`.
+- [x] Create workbench, score, AI script, strategy, trial conversion, ROI, consultant metric, and loss pages.
+- [x] Write PC tests listed in `Test Plan`.
+- [x] Run `pnpm lint && pnpm test -- growth && pnpm build`; expected output is all PC gates passing.
 
 ### Task 5: Teacher Mobile
 
