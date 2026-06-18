@@ -813,8 +813,8 @@ Use this status table:
 ```markdown
 | Plan | Scope | Plan status | Completion status |
 | --- | --- | --- | --- |
-| 00 Foundation | tenant/campus/permissions/bootstrap | ready | incomplete / not implemented |
-| 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
+| 00 Foundation | tenant/campus/permissions/bootstrap | accepted | implemented / accepted |
+| 01 V1 Core Academic | core academic MVP | accepted | implemented / accepted |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
 | 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
 | 04 V4 Finance | payment and finance | accepted | implemented / accepted |
@@ -870,8 +870,8 @@ done
 
 | Plan | Scope | Plan status | Completion status |
 | --- | --- | --- | --- |
-| 00 Foundation | tenant/campus/permissions/bootstrap | ready | incomplete / not implemented |
-| 01 V1 Core Academic | core academic MVP | ready | incomplete / not implemented |
+| 00 Foundation | tenant/campus/permissions/bootstrap | accepted | implemented / accepted |
+| 01 V1 Core Academic | core academic MVP | accepted | implemented / accepted |
 | 02 V2 Operations | academic operations | ready | implemented / accepted |
 | 03 V3 Admissions | admissions CRM | ready | implemented / accepted |
 | 04 V4 Finance | payment and finance | accepted | implemented / accepted |
