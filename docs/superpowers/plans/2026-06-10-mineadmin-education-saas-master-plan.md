@@ -179,7 +179,7 @@ flowchart TD
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v1-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-00-foundation.md`
 
-- [ ] **Step 1: Define the foundation scope**
+- [x] **Step 1: Define the foundation scope**
 
 The foundation plan must include:
 
@@ -195,7 +195,7 @@ The foundation plan must include:
 - uni-app environment bootstrap.
 ```
 
-- [ ] **Step 2: Exclude business workflows from the foundation**
+- [x] **Step 2: Exclude business workflows from the foundation**
 
 The foundation plan must explicitly exclude:
 
@@ -211,7 +211,7 @@ The foundation plan must explicitly exclude:
 - Family service.
 ```
 
-- [ ] **Step 3: Define the foundation acceptance gate**
+- [x] **Step 3: Define the foundation acceptance gate**
 
 The detailed plan must require these checks:
 
@@ -239,7 +239,7 @@ Frontend lint and tests pass.
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v1-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-01-v1-core-academic.md`
 
-- [ ] **Step 1: Cover V1 MVP domains**
+- [x] **Step 1: Cover V1 MVP domains**
 
 The detailed plan must implement:
 
@@ -263,7 +263,7 @@ The detailed plan must implement:
 - Guardian mobile APIs.
 ```
 
-- [ ] **Step 2: Define V1 critical transaction boundaries**
+- [x] **Step 2: Define V1 critical transaction boundaries**
 
 The detailed plan must require database transactions for:
 
@@ -276,7 +276,7 @@ The detailed plan must require database transactions for:
 
 The V1-02 detailed plan owns the Enrollment Activation Timing Contract: enrollment create produces a pending record; confirmation materializes account units exactly once and is idempotent on enrollment id; a per-tenant F03 feature flag selects direct mode (create confirms inline) or gated mode (V4 payment success confirms). V4 consumes this contract and must not redefine it.
 
-- [ ] **Step 3: Define V1 acceptance gate**
+- [x] **Step 3: Define V1 acceptance gate**
 
 The V1 detailed plan must pass:
 
@@ -297,7 +297,7 @@ The V1 detailed plan must pass:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v2-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-02-v2-academic-operations.md`
 
-- [ ] **Step 1: Cover V2 operational domains**
+- [x] **Step 1: Cover V2 operational domains**
 
 The detailed plan must implement:
 
@@ -312,7 +312,7 @@ The detailed plan must implement:
 - Academic operations dashboard.
 ```
 
-- [ ] **Step 2: Define V2 risk controls**
+- [x] **Step 2: Define V2 risk controls**
 
 The detailed plan must require:
 
@@ -330,7 +330,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v3-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-03-v3-admissions-crm.md`
 
-- [ ] **Step 1: Cover V3 admissions domains**
+- [x] **Step 1: Cover V3 admissions domains**
 
 The detailed plan must implement:
 
@@ -348,7 +348,7 @@ The detailed plan must implement:
 - Admission dashboard.
 ```
 
-- [ ] **Step 2: Define V3 transaction boundary**
+- [x] **Step 2: Define V3 transaction boundary**
 
 Lead conversion must be a single transaction:
 
@@ -365,7 +365,7 @@ If any step fails, the conversion must roll back.
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v4-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-04-v4-finance-payment.md`
 
-- [ ] **Step 1: Cover V4 finance domains**
+- [x] **Step 1: Cover V4 finance domains**
 
 The detailed plan must implement:
 
@@ -381,7 +381,7 @@ The detailed plan must implement:
 - Finance dashboard.
 ```
 
-- [ ] **Step 2: Define V4 safety rules**
+- [x] **Step 2: Define V4 safety rules**
 
 The detailed plan must require:
 
@@ -399,7 +399,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v5-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-05-v5-teacher-payroll.md`
 
-- [ ] **Step 1: Cover V5 payroll domains**
+- [x] **Step 1: Cover V5 payroll domains**
 
 The detailed plan must implement:
 
@@ -415,7 +415,7 @@ The detailed plan must implement:
 - Teacher performance metrics.
 ```
 
-- [ ] **Step 2: Define V5 calculation controls**
+- [x] **Step 2: Define V5 calculation controls**
 
 The detailed plan must require:
 
@@ -433,7 +433,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v6-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-06-v6-group-management.md`
 
-- [ ] **Step 1: Cover V6 enterprise domains**
+- [x] **Step 1: Cover V6 enterprise domains**
 
 The detailed plan must implement:
 
@@ -448,7 +448,7 @@ The detailed plan must implement:
 - Risk audit logs.
 ```
 
-- [ ] **Step 2: Define V6 permission gate**
+- [x] **Step 2: Define V6 permission gate**
 
 The detailed plan must require tests for:
 
@@ -466,7 +466,7 @@ The detailed plan must require tests for:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v7-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-07-v7-family-service.md`
 
-- [ ] **Step 1: Cover V7 family service domains**
+- [x] **Step 1: Cover V7 family service domains**
 
 The detailed plan must implement:
 
@@ -484,7 +484,7 @@ The detailed plan must implement:
 - Service quality metrics.
 ```
 
-- [ ] **Step 2: Define V7 publication rules**
+- [x] **Step 2: Define V7 publication rules**
 
 The detailed plan must require:
 
@@ -502,7 +502,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v8-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-08-v8-ai-assistant.md`
 
-- [ ] **Step 1: Cover V8 AI domains**
+- [x] **Step 1: Cover V8 AI domains**
 
 The detailed plan must implement:
 
@@ -520,7 +520,7 @@ The detailed plan must implement:
 - Safety events.
 ```
 
-- [ ] **Step 2: Define V8 safety gate**
+- [x] **Step 2: Define V8 safety gate**
 
 The detailed plan must require:
 
@@ -538,7 +538,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-09-mineadmin-education-saas-v9-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-09-v9-workflow-alerts.md`
 
-- [ ] **Step 1: Cover V9 workflow domains**
+- [x] **Step 1: Cover V9 workflow domains**
 
 The detailed plan must implement:
 
@@ -557,7 +557,7 @@ The detailed plan must implement:
 - Daily workflow metrics.
 ```
 
-- [ ] **Step 2: Define V9 automation boundary**
+- [x] **Step 2: Define V9 automation boundary**
 
 The detailed plan must require:
 
@@ -575,7 +575,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-10-mineadmin-education-saas-v10-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-10-v10-growth-conversion.md`
 
-- [ ] **Step 1: Cover V10 growth domains**
+- [x] **Step 1: Cover V10 growth domains**
 
 The detailed plan must implement:
 
@@ -594,7 +594,7 @@ The detailed plan must implement:
 - Lead loss records.
 ```
 
-- [ ] **Step 2: Define V10 human-confirmation gate**
+- [x] **Step 2: Define V10 human-confirmation gate**
 
 The detailed plan must require:
 
@@ -613,7 +613,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-10-mineadmin-education-saas-v11-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-11-v11-course-standards.md`
 
-- [ ] **Step 1: Cover V11 course standard domains**
+- [x] **Step 1: Cover V11 course standard domains**
 
 The detailed plan must implement:
 
@@ -633,7 +633,7 @@ The detailed plan must implement:
 - Review records.
 ```
 
-- [ ] **Step 2: Define V11 versioning gate**
+- [x] **Step 2: Define V11 versioning gate**
 
 The detailed plan must require:
 
@@ -651,7 +651,7 @@ The detailed plan must require:
 - Read: `docs/superpowers/specs/2026-06-10-mineadmin-education-saas-v12-design.md`
 - Create: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-12-v12-learning-content.md`
 
-- [ ] **Step 1: Cover V12 learning content domains**
+- [x] **Step 1: Cover V12 learning content domains**
 
 The detailed plan must implement:
 
@@ -673,7 +673,7 @@ The detailed plan must implement:
 - Student work metrics.
 ```
 
-- [ ] **Step 2: Define V12 LMS boundary**
+- [x] **Step 2: Define V12 LMS boundary**
 
 The detailed plan must require:
 
@@ -691,7 +691,7 @@ The detailed plan must require:
 
 - Create or update in each detailed plan: verification section.
 
-- [ ] **Step 1: Require backend verification**
+- [x] **Step 1: Require backend verification**
 
 Every detailed plan must define backend verification commands:
 
@@ -709,7 +709,7 @@ All backend tests pass.
 Testing database migrates and seeds cleanly.
 ```
 
-- [ ] **Step 2: Require admin-web verification**
+- [x] **Step 2: Require admin-web verification**
 
 Every plan that touches PC admin UI must define:
 
@@ -729,7 +729,7 @@ Frontend tests pass.
 Production build succeeds.
 ```
 
-- [ ] **Step 3: Require mobile verification**
+- [x] **Step 3: Require mobile verification**
 
 Every plan that touches teacher or guardian mobile pages must define:
 
@@ -753,7 +753,7 @@ H5 build succeeds.
 
 - Create or update in each detailed plan: release checklist section.
 
-- [ ] **Step 1: Define MVP release gate**
+- [x] **Step 1: Define MVP release gate**
 
 The product can enter internal trial only after:
 
@@ -766,7 +766,7 @@ The product can enter internal trial only after:
 - Admin, teacher, and guardian core paths verified.
 ```
 
-- [ ] **Step 2: Define commercial pilot gate**
+- [x] **Step 2: Define commercial pilot gate**
 
 The product can enter commercial pilot only after:
 
@@ -778,7 +778,7 @@ The product can enter commercial pilot only after:
 - WeChat service account / mini program notification behavior is verified.
 ```
 
-- [ ] **Step 3: Define advanced edition gate**
+- [x] **Step 3: Define advanced edition gate**
 
 Advanced edition begins only after:
 
@@ -789,7 +789,7 @@ Advanced edition begins only after:
 - Group permission boundaries are tested.
 ```
 
-- [ ] **Step 4: Define growth edition gate**
+- [x] **Step 4: Define growth edition gate**
 
 Growth edition begins only after:
 
@@ -806,7 +806,7 @@ Growth edition begins only after:
 
 - Modify: `docs/superpowers/plans/2026-06-10-mineadmin-education-saas-master-plan.md`
 
-- [ ] **Step 1: Update status after each detailed plan is created**
+- [x] **Step 1: Update status after each detailed plan is created**
 
 Use this status table:
 
@@ -828,7 +828,7 @@ Use this status table:
 | 12 V12 Content | learning content | accepted | implemented / accepted |
 ```
 
-- [ ] **Step 2: Mark a detailed plan as ready only after self-review**
+- [x] **Step 2: Mark a detailed plan as ready only after self-review**
 
 Allowed status values:
 
