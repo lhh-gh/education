@@ -58,7 +58,7 @@ final class UserControllerTest extends ControllerCase
         ];
         foreach ($attributes as $attribute) {
             $result = $this->post('/admin/user', [$attribute => '']);
-            self::assertSame(Arr::get($result, 'code'), ResultCode::UNPROCESSABLE_ENTITY->value);
+            self::assertSame(Arr::get($result, 'code'), ResultCode::UNAUTHORIZED->value);
         }
         $fillAttributes = [
             'username' => Str::random(),
@@ -123,7 +123,7 @@ final class UserControllerTest extends ControllerCase
         ]);
         $token = $this->token;
         $result = $this->put('/admin/user/' . $user->id);
-        self::assertSame(Arr::get($result, 'code'), ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame(Arr::get($result, 'code'), ResultCode::UNAUTHORIZED->value);
         $fillAttributes = [
             'username' => Str::random(),
             'user_type' => 100,
@@ -164,7 +164,7 @@ final class UserControllerTest extends ControllerCase
         $user = $this->user;
         $token = $this->token;
         $result = $this->put('/admin/user');
-        self::assertSame(Arr::get($result, 'code'), ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame(Arr::get($result, 'code'), ResultCode::UNAUTHORIZED->value);
         $fillAttributes = [
             'username' => Str::random(),
             'user_type' => 100,

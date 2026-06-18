@@ -9,5 +9,8 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
+use App\Command\SeedCommand;
+
 return [
+    SeedCommand::class,
 ];

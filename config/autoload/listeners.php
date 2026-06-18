@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @contact  root@imoi.cn
  * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
  */
+use App\Listener\Education\Foundation\EducationAuditListener;
 use Hyperf\ExceptionHandler\Listener\ErrorExceptionHandler;
 use Mine\Core\Subscriber\BootApplicationSubscriber;
 use Mine\Core\Subscriber\DbQueryExecutedSubscriber;
@@ -34,4 +35,5 @@ return [
     QueueHandleSubscriber::class,
     // 注册新的 Blueprint 宏
     RegisterBlueprintListener::class,
+    EducationAuditListener::class,
 ];

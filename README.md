@@ -1,6 +1,32 @@
 中文 | [English](./README-en.md) | [日本語](./README-ja.md)
 # 项目介绍
 
+## MineAdmin Education SaaS Local Setup
+
+```bash
+cp .env.example .env
+make runtime-check
+make up
+make backend-smoke
+make admin-build
+make mobile-build
+make smoke
+```
+
+### Local URLs
+
+- Backend: http://127.0.0.1:9501
+- Backend health: http://127.0.0.1:9501/health
+- PC admin dev server: http://127.0.0.1:2888
+
+### Project Layout
+
+- `app/`, `config/`, `databases/`, `tests/`: MineAdmin Hyperf backend.
+- `web/`: MineAdmin Vue PC admin.
+- `mobile-uniapp/`: uni-app teacher and guardian shell.
+- `deployments/`: local Docker services.
+- `scripts/`: local smoke checks.
+
 <p align="center">
     <img src="web/public/logo.svg" width="120" alt="logo" />
 </p>

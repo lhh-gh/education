@@ -22,3 +22,16 @@ public
 *.lock
 storage/swagger/http.json
 storage/uploads
+
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+web/.eslintcache
+web/.stylelintcache
+
+mobile-uniapp/node_modules/
+mobile-uniapp/dist/
+mobile-uniapp/unpackage/
+
+deployments/data/

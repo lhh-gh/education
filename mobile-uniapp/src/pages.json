@@ -1,0 +1,584 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "uni-app"
+      }
+    },
+    {
+      "path": "pages/teacher/index",
+      "style": {
+        "navigationBarTitleText": "Teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/schedule/index",
+      "style": {
+        "navigationBarTitleText": "\u4eca\u65e5\u8bfe\u8868"
+      }
+    },
+    {
+      "path": "pages/teacher/lesson/detail",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u8282\u8be6\u60c5"
+      }
+    },
+    {
+      "path": "pages/teacher/lesson/attendance",
+      "style": {
+        "navigationBarTitleText": "\u70b9\u540d"
+      }
+    },
+    {
+      "path": "pages/teacher/leave/index",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047\u5ba1\u6838"
+      }
+    },
+    {
+      "path": "pages/teacher/leave/detail",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047\u8be6\u60c5"
+      }
+    },
+    {
+      "path": "pages/teacher/operations/changed-lessons",
+      "style": {
+        "navigationBarTitleText": "Changed Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/operations/makeup-attendance",
+      "style": {
+        "navigationBarTitleText": "Make-up Attendance"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/operations/workload-summary",
+      "style": {
+        "navigationBarTitleText": "Workload Summary"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/admissions/trial-lessons",
+      "style": {
+        "navigationBarTitleText": "Trial Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/admissions/trial-feedback",
+      "style": {
+        "navigationBarTitleText": "Trial Feedback"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/growth/trial-lessons",
+      "style": {
+        "navigationBarTitleText": "Growth Trial Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/growth/trial-feedback",
+      "style": {
+        "navigationBarTitleText": "Growth Feedback"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/slips",
+      "style": {
+        "navigationBarTitleText": "Salary Slips"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/slip-detail",
+      "style": {
+        "navigationBarTitleText": "Salary Slip"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/disputes",
+      "style": {
+        "navigationBarTitleText": "Workload Disputes"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/payroll/dispute-form",
+      "style": {
+        "navigationBarTitleText": "Submit Dispute"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/lesson-comments",
+      "style": {
+        "navigationBarTitleText": "Lesson Comments"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/comment-form",
+      "style": {
+        "navigationBarTitleText": "Comment"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/homework-reviews",
+      "style": {
+        "navigationBarTitleText": "Homework Reviews"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/growth-record-form",
+      "style": {
+        "navigationBarTitleText": "Growth Record"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/family/messages",
+      "style": {
+        "navigationBarTitleText": "Family Messages"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/ai/comment-drafts",
+      "style": {
+        "navigationBarTitleText": "AI Comment Drafts"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/ai/comment-draft-detail",
+      "style": {
+        "navigationBarTitleText": "AI Comment Draft"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/workflow/tasks",
+      "style": {
+        "navigationBarTitleText": "Workflow Tasks"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/workflow/task-detail",
+      "style": {
+        "navigationBarTitleText": "Workflow Task"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/materials",
+      "style": {
+        "navigationBarTitleText": "Learning Materials"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/material-detail",
+      "style": {
+        "navigationBarTitleText": "Material Detail"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/favorites",
+      "style": {
+        "navigationBarTitleText": "Favorite Materials"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/lesson-material-usage",
+      "style": {
+        "navigationBarTitleText": "Use Material"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/student-work-form",
+      "style": {
+        "navigationBarTitleText": "Student Work"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/guardian/index",
+      "style": {
+        "navigationBarTitleText": "Guardian"
+      }
+    },
+    {
+      "path": "pages/guardian/student/index",
+      "style": {
+        "navigationBarTitleText": "\u5b66\u751f"
+      }
+    },
+    {
+      "path": "pages/guardian/schedule/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u8868"
+      }
+    },
+    {
+      "path": "pages/guardian/account/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u65f6\u8d26\u6237"
+      }
+    },
+    {
+      "path": "pages/guardian/consumption/index",
+      "style": {
+        "navigationBarTitleText": "\u8bfe\u6d88\u8bb0\u5f55"
+      }
+    },
+    {
+      "path": "pages/guardian/notice/index",
+      "style": {
+        "navigationBarTitleText": "\u901a\u77e5"
+      }
+    },
+    {
+      "path": "pages/guardian/notice/detail",
+      "style": {
+        "navigationBarTitleText": "\u901a\u77e5\u8be6\u60c5"
+      }
+    },
+    {
+      "path": "pages/guardian/leave/create",
+      "style": {
+        "navigationBarTitleText": "\u8bf7\u5047"
+      }
+    },
+    {
+      "path": "pages/guardian/finance/orders",
+      "style": {
+        "navigationBarTitleText": "Finance Orders"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/order-detail",
+      "style": {
+        "navigationBarTitleText": "Finance Order"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/receipts",
+      "style": {
+        "navigationBarTitleText": "Receipts"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/finance/refunds",
+      "style": {
+        "navigationBarTitleText": "Refunds"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/changed-lessons",
+      "style": {
+        "navigationBarTitleText": "Changed Lessons"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/makeup-entitlements",
+      "style": {
+        "navigationBarTitleText": "Make-up Entitlements"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/makeup-records",
+      "style": {
+        "navigationBarTitleText": "Make-up Records"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/operations/renewal-alerts",
+      "style": {
+        "navigationBarTitleText": "Renewal Alerts"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/lesson-comments",
+      "style": {
+        "navigationBarTitleText": "Lesson Comments"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/homework",
+      "style": {
+        "navigationBarTitleText": "Homework"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/homework-submit",
+      "style": {
+        "navigationBarTitleText": "Submit Homework"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/learning-reports",
+      "style": {
+        "navigationBarTitleText": "Learning Reports"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/growth-records",
+      "style": {
+        "navigationBarTitleText": "Growth Records"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/family/messages",
+      "style": {
+        "navigationBarTitleText": "Family Messages"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/materials",
+      "style": {
+        "navigationBarTitleText": "Learning Materials"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/material-detail",
+      "style": {
+        "navigationBarTitleText": "Material Detail"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/showcases",
+      "style": {
+        "navigationBarTitleText": "Showcases"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/showcase-detail",
+      "style": {
+        "navigationBarTitleText": "Showcase Detail"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/admissions/consult",
+      "style": {
+        "navigationBarTitleText": "Admission Consultation"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian"
+      }
+    },
+    {
+      "path": "pages/operator/index",
+      "style": {
+        "navigationBarTitleText": "Operator"
+      }
+    },
+    {
+      "path": "pages/operator/workflow/tasks",
+      "style": {
+        "navigationBarTitleText": "Workflow Tasks"
+      },
+      "meta": {
+        "role": "operator",
+        "requiresProfile": "operator"
+      }
+    },
+    {
+      "path": "pages/operator/workflow/task-detail",
+      "style": {
+        "navigationBarTitleText": "Workflow Task"
+      },
+      "meta": {
+        "role": "operator",
+        "requiresProfile": "operator"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
+}

@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
+
+namespace App\Http\Api\Request\Education\Growth;
+
+use App\Http\Common\Request\Traits\NoAuthorizeTrait;
+use Hyperf\Validation\Request\FormRequest;
+
+final class TeacherTrialFeedbackRequest extends FormRequest
+{
+    use NoAuthorizeTrait;
+
+    public function rules(): array
+    {
+        return [
+            'trial_lesson_id' => ['required', 'integer', 'min:1'],
+            'classroom_performance' => ['required', 'string', 'max:500'],
+            'course_recommendation' => ['required', 'string', 'max:500'],
+            'teacher_note' => ['required', 'string', 'max:500'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return ['trial_lesson_id.required' => 'trial_lesson_id is required'];
+    }
+}

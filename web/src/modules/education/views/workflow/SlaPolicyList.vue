@@ -1,0 +1,64 @@
+<script setup lang="ts">
+import { pageSlaPolicies, saveSlaPolicy } from '../../api/workflow/policy.ts'
+
+defineOptions({ name: 'EducationWorkflowSlaPolicyList' })
+
+const rows = ref<any[]>([])
+const total = ref(0)
+const form = reactive({ policy_code: '', policy_name: '', task_type: '', due_minutes: 60 })
+
+async function loadRows() {
+  const response = await pageSlaPolicies({})
+  rows.value = response.data.list
+  total.value = response.data.total
+}
+
+async function savePolicy() {
+  await saveSlaPolicy(form)
+  await loadRows()
+}
+
+onMounted(loadRows)
+</script>
+
+<template>
+  <div class="mine-layout education-workflow-page pt-3">
+    <el-card shadow="never">
+      <template #header>
+        <div class="page-header">
+          <span>SLA Policies</span>
+          <el-button type="primary" @click="savePolicy">
+            Save
+          </el-button>
+        </div>
+      </template>
+      <el-form inline>
+        <el-form-item label="Code">
+          <el-input v-model="form.policy_code" />
+        </el-form-item>
+        <el-form-item label="Name">
+          <el-input v-model="form.policy_name" />
+        </el-form-item>
+        <el-form-item label="Task Type">
+          <el-input v-model="form.task_type" />
+        </el-form-item>
+        <el-form-item label="Minutes">
+          <el-input-number v-model="form.due_minutes" :min="1" />
+        </el-form-item>
+      </el-form>
+      <el-table :data="rows" row-key="policy_code">
+        <el-table-column prop="policy_code" label="Code" />
+        <el-table-column prop="task_type" label="Task Type" />
+        <el-table-column prop="due_minutes" label="Due Minutes" />
+      </el-table>
+      <el-pagination class="page-pagination" layout="total" :total="total" />
+    </el-card>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.education-workflow-page {
+  .page-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+  .page-pagination { justify-content: flex-end; margin-top: 16px; }
+}
+</style>

@@ -51,9 +51,9 @@ final class RoleControllerTest extends ControllerCase
             'remark',
         ];
         $result = $this->post('/admin/role');
-        self::assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame($result['code'], ResultCode::UNAUTHORIZED->value);
         $result = $this->post('/admin/role', [], ['Authorization' => 'Bearer ' . $token]);
-        self::assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $fill = [
             'name' => Str::random(10),
             'code' => Str::random(10),
@@ -68,7 +68,7 @@ final class RoleControllerTest extends ControllerCase
         self::assertSame($result['code'], ResultCode::SUCCESS->value);
         $this->deletePermissions('permission:role:save');
         $result = $this->post('/admin/role', $fill, ['Authorization' => 'Bearer ' . $token]);
-        self::assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $oldCode = $fill['code'];
         $fill['code'] = Str::random(10);
         $result = $this->post('/admin/role', $fill, ['Authorization' => 'Bearer ' . $token]);
@@ -94,9 +94,9 @@ final class RoleControllerTest extends ControllerCase
             'remark' => Str::random(),
         ]);
         $result = $this->put('/admin/role/' . $entity->id);
-        self::assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame($result['code'], ResultCode::UNAUTHORIZED->value);
         $result = $this->put('/admin/role/' . $entity->id, [], ['Authorization' => 'Bearer ' . $token]);
-        self::assertSame($result['code'], ResultCode::UNPROCESSABLE_ENTITY->value);
+        self::assertSame($result['code'], ResultCode::FORBIDDEN->value);
         $fill = [
             'name' => Str::random(10),
             'code' => Str::random(10),

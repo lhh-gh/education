@@ -131,22 +131,22 @@ class Service
         return true;
     }
 
-    protected function throwParamsFail()
+    protected function throwParamsFail(): void
     {
         throw new BusinessException(ResultCode::FAIL, trans('app-store.params_fail'));
     }
 
-    protected function throwDownloadFail()
+    protected function throwDownloadFail(): void
     {
         throw new BusinessException(ResultCode::FAIL, trans('app-store.download_fail'));
     }
 
-    protected function throwAppInstalled()
+    protected function throwAppInstalled(): void
     {
         throw new BusinessException(ResultCode::FAIL, trans('app-store.app_installed'));
     }
 
-    protected function throwAppNoInstall()
+    protected function throwAppNoInstall(): void
     {
         throw new BusinessException(ResultCode::FAIL, trans('app-store.app_not_installed'));
     }

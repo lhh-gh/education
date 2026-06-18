@@ -41,6 +41,9 @@ enum ResultCode: int
     #[Message('result.method_not_allowed')]
     case METHOD_NOT_ALLOWED = 405;
 
+    #[Message('result.conflict')]
+    case CONFLICT = 409;
+
     #[Message('result.not_acceptable')]
     case NOT_ACCEPTABLE = 406;
 
