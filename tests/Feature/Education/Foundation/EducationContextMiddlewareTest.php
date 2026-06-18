@@ -14,6 +14,8 @@ namespace HyperfTests\Feature\Education\Foundation;
 
 use App\Http\Common\ResultCode;
 use App\Model\Education\Foundation\EducationTenant;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Model\Permission\Role;
 use App\Service\Education\Foundation\UserProfileService;
 use Hyperf\Context\ApplicationContext;
 
@@ -23,6 +25,31 @@ use Hyperf\Context\ApplicationContext;
  */
 final class EducationContextMiddlewareTest extends EducationAdminControllerCase
 {
+    public function testSuperAdminWithoutEducationProfileResolvesPlatformContext(): void
+    {
+        $superAdminRole = Role::query()->create([
+            'name' => 'Super Admin',
+            'code' => 'SuperAdmin',
+            'sort' => 1,
+            'status' => 1,
+            'remark' => '',
+        ]);
+        $this->user->roles()->syncWithoutDetaching($superAdminRole);
+        $this->clearCurrentUserCache();
+
+        $result = $this->get('/admin/education/foundation/tenants/page', ['token' => $this->token]);
+
+        self::assertSame(ResultCode::SUCCESS->value, $result['code']);
+        $context = ApplicationContext::getContainer()
+            ->get(UserProfileService::class)
+            ->resolveForUser((int) $this->user->id, null);
+        self::assertSame(EducationRoleCode::PlatformSuperAdmin, $context->roleCode);
+        self::assertTrue($context->platformAccess);
+        self::assertNull($context->tenantId);
+        self::assertSame([], $context->campusIds);
+        self::assertNull($context->currentCampusId);
+    }
+
     public function testTenantProfileResolvesContextWithoutHeader(): void
     {
         $this->grantPermissions('education:foundation:campus:page');

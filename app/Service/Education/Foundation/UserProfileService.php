@@ -151,6 +151,10 @@ final class UserProfileService
             ->where('user_id', $userId)
             ->get();
         if ($profiles->isEmpty()) {
+            if ($this->userIsSuperAdmin($userId)) {
+                return $this->platformSuperAdminContext($userId, $requestedTenantId);
+            }
+
             throw new BusinessException(ResultCode::FORBIDDEN, 'education user profile is missing', ['user_id' => $userId]);
         }
 
@@ -269,6 +273,25 @@ final class UserProfileService
         if (! User::query()->whereKey($userId)->exists()) {
             throw new BusinessException(ResultCode::NOT_FOUND, 'MineAdmin user not found', ['user_id' => $userId]);
         }
+    }
+
+    private function userIsSuperAdmin(int $userId): bool
+    {
+        $user = User::query()->whereKey($userId)->first();
+
+        return $user instanceof User && $user->isSuperAdmin();
+    }
+
+    private function platformSuperAdminContext(int $userId, ?int $tenantId): EducationUserContext
+    {
+        return new EducationUserContext(
+            userId: $userId,
+            tenantId: $tenantId,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: null
+        );
     }
 
     private function assertUniqueProfileKey(string $profileKey, ?int $ignoreId = null): void
