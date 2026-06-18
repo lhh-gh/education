@@ -539,9 +539,9 @@ V10 is accepted only when:
 
 ### Task 6: V10 Final Gate
 
-- [ ] Run all backend, PC, and mobile commands in `Execution Commands`.
-- [ ] Confirm acceptance gate behavior with seeded leads, follow records, trial lessons, AI config, channel costs, and consultant data.
-- [ ] Update status index only after all gates pass during implementation.
+- [x] Run all backend, PC, and mobile commands in `Execution Commands`.
+- [x] Confirm acceptance gate behavior with seeded leads, follow records, trial lessons, AI config, channel costs, and consultant data.
+- [x] Update status index only after all gates pass during implementation.
 
 ## Self-Review
 
