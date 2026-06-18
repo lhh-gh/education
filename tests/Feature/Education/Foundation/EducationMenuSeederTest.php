@@ -106,6 +106,8 @@ final class EducationMenuSeederTest extends TestCase
         $coursePage = Db::table('menu')->where('name', 'education:academic:course:page')->first();
         $tenantSaveButton = Db::table('menu')->where('name', 'education:foundation:tenant:save')->first();
         $contentReviewButton = Db::table('menu')->where('name', 'education:content:review:handle')->first();
+        $aiModelSaveButton = Db::table('menu')->where('name', 'education:ai:model-config:save')->first();
+        $aiFeatureSaveButton = Db::table('menu')->where('name', 'education:ai:feature-setting:save')->first();
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
@@ -114,6 +116,8 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($coursePage);
         self::assertNotNull($tenantSaveButton);
         self::assertNotNull($contentReviewButton);
+        self::assertNotNull($aiModelSaveButton);
+        self::assertNotNull($aiFeatureSaveButton);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $contentGroup->redirect);
@@ -126,6 +130,9 @@ final class EducationMenuSeederTest extends TestCase
         self::assertSame('保存', $this->menuTitle($tenantSaveButton));
         self::assertSame('处理', $this->menuTitle($contentReviewButton));
         self::assertSame('B', json_decode((string) $contentReviewButton->meta, true)['type']);
+        self::assertSame('保存', $this->menuTitle($aiModelSaveButton));
+        self::assertSame('保存', $this->menuTitle($aiFeatureSaveButton));
+        self::assertSame('B', json_decode((string) $aiFeatureSaveButton->meta, true)['type']);
 
         $moduleTitles = Db::table('menu')
             ->where('parent_id', $root->id)
@@ -167,6 +174,29 @@ final class EducationMenuSeederTest extends TestCase
         $adminRoleId = Db::table('role')->where('code', 'education_tenant_admin')->value('id');
         $guardianRoleId = Db::table('role')->where('code', 'education_guardian')->value('id');
         $educationMenuIds = Db::table('menu')->where('name', 'like', 'education%')->pluck('id')->all();
+        $expectedAiButtons = [
+            'education:ai:model-config:save',
+            'education:ai:feature-setting:save',
+            'education:ai:prompt:save',
+            'education:ai:prompt:publish',
+            'education:ai:generation:create',
+            'education:ai:review:approve',
+            'education:ai:review:handle',
+            'education:ai:recommendation:adopt',
+            'education:ai:safety:handle',
+        ];
+
+        foreach ($expectedAiButtons as $buttonName) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing AI button permission [%s].', $buttonName));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('AI button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
 
         self::assertSame(
             \count($educationMenuIds),

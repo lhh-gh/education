@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { RecommendationTaskRecord } from '../../api/ai/recommendation.ts'
 import { markRecommendationHandled, pageRecommendationTasks } from '../../api/ai/recommendation.ts'
-import { aiErrorTitle, aiTagType } from './aiRules.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
+import { aiErrorTitle, aiStatusLabel, aiTagType } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiRecommendationList' })
 
@@ -10,6 +11,7 @@ const rows = ref<RecommendationTaskRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
 const search = reactive({ page: 1, pageSize: 20, status: 'pending' })
+const canHandle = computed(() => hasAuth('education:ai:recommendation:adopt'))
 
 async function loadRows() {
   loading.value = true
@@ -20,7 +22,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || 'Recommendations loading failed'
+    errorText.value = aiErrorTitle(error?.code) || error?.message || '智能推荐加载失败'
   }
   finally {
     loading.value = false
@@ -40,30 +42,30 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>AI Recommendations</span>
+          <span>智能推荐</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="recommendation_type" label="Type" width="170" />
-        <el-table-column prop="target_type" label="Target" width="140" />
-        <el-table-column prop="assignee_user_id" label="Assignee" width="110" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="recommendation_type" label="推荐类型" width="170" />
+        <el-table-column prop="target_type" label="对象类型" width="140" />
+        <el-table-column prop="assignee_user_id" label="负责人" width="110" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="aiTagType(row.status)">
-              {{ row.status }}
+              {{ aiStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="120">
+        <el-table-column label="操作" width="120">
           <template #default="{ row }">
-            <el-button link type="primary" :disabled="row.status === 'handled'" @click="handle(row)">
-              Handle
+            <el-button v-if="canHandle" link type="primary" :disabled="row.status === 'handled'" @click="handle(row)">
+              处理
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No AI recommendations" />
+          <el-empty description="暂无智能推荐" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

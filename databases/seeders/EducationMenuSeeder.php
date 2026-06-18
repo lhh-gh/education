@@ -179,6 +179,7 @@ class EducationMenuSeeder extends Seeder
     private const ACTION_TITLES = [
         'adopt' => '采纳',
         'adjust' => '调整',
+        'approve' => '通过',
         'assign' => '分配',
         'bind-course' => '绑定课程',
         'bind-student' => '绑定学员',
@@ -367,15 +368,15 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:family:quality:page', 'Service Quality', '/education/family/quality', 'education/views/family/ServiceQualityDashboard'),
                     ]),
                     $this->group('education:ai', 'AI 助手', '/education/ai', '/education/ai/model-configs', 'material-symbols:smart-toy-outline-rounded', [
-                        $this->page('education:ai:model-config:page', 'Model Configs', '/education/ai/model-configs', 'education/views/ai/AiModelConfigList', ['education:ai:model-config:save']),
-                        $this->page('education:ai:prompt:page', 'Prompts', '/education/ai/prompts', 'education/views/ai/PromptTemplateList', ['education:ai:prompt:save']),
-                        $this->page('education:ai:generation:page', 'Generation Tasks', '/education/ai/generation-tasks', 'education/views/ai/GenerationTaskList'),
-                        $this->page('education:ai:review:page', 'Reviews', '/education/ai/reviews', 'education/views/ai/AiReviewList', ['education:ai:review:handle']),
+                        $this->page('education:ai:model-config:page', 'Model Configs', '/education/ai/model-configs', 'education/views/ai/AiModelConfigList', ['education:ai:model-config:save', 'education:ai:feature-setting:save']),
+                        $this->page('education:ai:prompt:page', 'Prompts', '/education/ai/prompts', 'education/views/ai/PromptTemplateList', ['education:ai:prompt:save', 'education:ai:prompt:publish']),
+                        $this->page('education:ai:generation:page', 'Generation Tasks', '/education/ai/generation-tasks', 'education/views/ai/GenerationTaskList', ['education:ai:generation:create']),
+                        $this->page('education:ai:review:page', 'Reviews', '/education/ai/reviews', 'education/views/ai/AiReviewList', ['education:ai:review:approve', 'education:ai:review:handle']),
                         $this->page('education:ai:risk-score:page', 'Risk Scores', '/education/ai/risk-scores', 'education/views/ai/RiskScoreList'),
                         $this->page('education:ai:data-question:create', 'Data Q&A', '/education/ai/data-questions', 'education/views/ai/DataQuestionWorkbench'),
                         $this->page('education:ai:recommendation:page', 'Recommendations', '/education/ai/recommendations', 'education/views/ai/AiRecommendationList', ['education:ai:recommendation:adopt']),
                         $this->page('education:ai:usage:summary', 'Usage', '/education/ai/usage', 'education/views/ai/UsageDashboard'),
-                        $this->page('education:ai:safety:page', 'Safety Events', '/education/ai/safety-events', 'education/views/ai/SafetyEventList'),
+                        $this->page('education:ai:safety:page', 'Safety Events', '/education/ai/safety-events', 'education/views/ai/SafetyEventList', ['education:ai:safety:handle']),
                     ]),
                     $this->group('education:workflow', '工作流中心', '/education/workflow', '/education/workflow/tasks', 'material-symbols:account-tree-outline-rounded', [
                         $this->page('education:workflow:rule:page', 'Rules', '/education/workflow/rules', 'education/views/workflow/WorkflowRuleList', ['education:workflow:rule:save']),
