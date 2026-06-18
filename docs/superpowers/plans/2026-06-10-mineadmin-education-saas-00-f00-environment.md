@@ -1337,7 +1337,7 @@ Commit succeeds with PC admin environment config.
 
 - Create/Modify: `mineadmin-education-saas/mobile-uniapp/*`
 
-- [ ] **Step 1: Install uni-app shell**
+- [x] **Step 1: Install uni-app shell**
 
 Run:
 
@@ -1353,7 +1353,7 @@ mobile-uniapp/package.json exists.
 mobile-uniapp/node_modules exists.
 ```
 
-- [ ] **Step 2: Build mobile H5**
+- [x] **Step 2: Build mobile H5**
 
 Run:
 
@@ -1369,7 +1369,7 @@ mobile smoke ok
 mobile-uniapp/dist/build/h5/index.html exists.
 ```
 
-- [ ] **Step 3: Commit mobile shell**
+- [x] **Step 3: Commit mobile shell**
 
 Run:
 
