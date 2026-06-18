@@ -524,10 +524,10 @@ V12 is accepted only when:
 
 ### Task 2: Repositories and Services
 
-- [ ] Create repositories for materials, versions, attachments, relations, usage, favorites, works, showcases, reviews, reads, and metrics.
-- [ ] Create services for material versioning, publish/review, relation sync, teacher usage/favorite, student work, showcase, read records, and metrics.
-- [ ] Write unit tests listed in `Test Plan`.
-- [ ] Run `composer test -- --filter Education\\\\Content.*ServiceTest`; expected output is all content service tests passing.
+- [x] Create repositories for materials, versions, attachments, relations, usage, favorites, works, showcases, reviews, reads, and metrics.
+- [x] Create services for material versioning, publish/review, relation sync, teacher usage/favorite, student work, showcase, read records, and metrics.
+- [x] Write unit tests listed in `Test Plan`.
+- [x] Run `composer test -- --filter Education\\\\Content.*ServiceTest`; expected output is all content service tests passing.
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
