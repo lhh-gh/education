@@ -4,7 +4,7 @@ import { createSalaryAdjustment } from '../../../api/payroll/slip.ts'
 import { centsToYuan } from '../payrollRules.ts'
 
 const props = defineProps<{ modelValue: boolean, row: SalarySlipRecord | null }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive({ amount_cents: 0, reason: '' })
 const visible = computed({
   get: () => props.modelValue,

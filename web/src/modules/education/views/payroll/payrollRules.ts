@@ -1,7 +1,7 @@
 export type PayrollTagType = '' | 'success' | 'warning' | 'danger' | 'info'
 
 export function centsToYuan(cents?: number | null): string {
-  return `\u00a5${((cents ?? 0) / 100).toFixed(2)}`
+  return `\u00A5${((cents ?? 0) / 100).toFixed(2)}`
 }
 
 export function payrollTagType(value?: string | null): PayrollTagType {

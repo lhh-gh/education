@@ -4,7 +4,7 @@ import { reviewWorkloadDispute } from '../../../api/payroll/dispute.ts'
 import { disputeReviewPayload } from '../payrollRules.ts'
 
 const props = defineProps<{ modelValue: boolean, row: WorkloadDisputeRecord | null }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive({ status: 'approved' as 'approved' | 'rejected', review_note: '' })
 const visible = computed({
   get: () => props.modelValue,

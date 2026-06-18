@@ -3,7 +3,7 @@ import type { SalaryBatchCalculatePayload } from '../../../api/payroll/batch.ts'
 import { calculateSalaryBatch } from '../../../api/payroll/batch.ts'
 
 const props = defineProps<{ modelValue: boolean }>()
-const emit = defineEmits<{ 'update:modelValue': [value: boolean], success: [] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
 const form = reactive<SalaryBatchCalculatePayload>({ salary_month: '', campus_id: undefined })
 const visible = computed({
   get: () => props.modelValue,
