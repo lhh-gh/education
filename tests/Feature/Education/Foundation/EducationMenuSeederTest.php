@@ -100,17 +100,30 @@ final class EducationMenuSeederTest extends TestCase
         $seeder->run();
 
         $root = Db::table('menu')->where('name', 'education')->first();
+        $academicGroup = Db::table('menu')->where('name', 'education:academic')->first();
         $v12 = Db::table('menu')->where('name', 'education:content')->first();
         $tenantPage = Db::table('menu')->where('name', 'education:foundation:tenant:page')->first();
+        $coursePage = Db::table('menu')->where('name', 'education:academic:course:page')->first();
+        $tenantSaveButton = Db::table('menu')->where('name', 'education:foundation:tenant:save')->first();
         $contentReviewButton = Db::table('menu')->where('name', 'education:content:review:handle')->first();
 
         self::assertNotNull($root);
+        self::assertNotNull($academicGroup);
         self::assertNotNull($v12);
         self::assertNotNull($tenantPage);
+        self::assertNotNull($coursePage);
+        self::assertNotNull($tenantSaveButton);
         self::assertNotNull($contentReviewButton);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $v12->redirect);
+
+        self::assertSame('教育 SaaS', json_decode((string) $root->meta, true)['title']);
+        self::assertSame('V1 教务管理', json_decode((string) $academicGroup->meta, true)['title']);
+        self::assertSame('机构管理', json_decode((string) $tenantPage->meta, true)['title']);
+        self::assertSame('课程管理', json_decode((string) $coursePage->meta, true)['title']);
+        self::assertSame('保存', json_decode((string) $tenantSaveButton->meta, true)['title']);
+        self::assertSame('处理', json_decode((string) $contentReviewButton->meta, true)['title']);
         self::assertSame('B', json_decode((string) $contentReviewButton->meta, true)['type']);
 
         self::assertSame(1, Db::table('menu')->where('name', 'education')->count());
