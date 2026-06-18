@@ -10,7 +10,7 @@
 
 **Status:** accepted
 
-**Completion:** incomplete / not implemented. `ready` means this plan is detailed enough to start coding.
+**Completion:** implemented / accepted. V1 core academic gates have passed.
 
 ---
 

@@ -10,7 +10,7 @@
 
 **Status:** accepted
 
-**Completion:** incomplete / not implemented. All V1 child plans are code-level `ready`; implementation still has not started.
+**Completion:** implemented / accepted. V1 core academic gates have passed.
 
 ---
 
