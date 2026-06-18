@@ -556,9 +556,9 @@ V12 is accepted only when:
 
 ### Task 6: V12 Final Gate
 
-- [ ] Run all backend, PC, and mobile commands in `Execution Commands`.
-- [ ] Confirm acceptance gate behavior with seeded materials, versions, attachments, teachers, guardians, works, showcases, and reviews.
-- [ ] Update status index only after all gates pass during implementation.
+- [x] Run all backend, PC, and mobile commands in `Execution Commands`.
+- [x] Confirm acceptance gate behavior with seeded materials, versions, attachments, teachers, guardians, works, showcases, and reviews.
+- [x] Update status index only after all gates pass during implementation.
 
 ## Self-Review
 
