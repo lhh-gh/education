@@ -203,6 +203,26 @@
       }
     },
     {
+      "path": "pages/teacher/workflow/tasks",
+      "style": {
+        "navigationBarTitleText": "Workflow Tasks"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/workflow/task-detail",
+      "style": {
+        "navigationBarTitleText": "Workflow Task"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
@@ -418,6 +438,26 @@
       "path": "pages/operator/index",
       "style": {
         "navigationBarTitleText": "Operator"
+      }
+    },
+    {
+      "path": "pages/operator/workflow/tasks",
+      "style": {
+        "navigationBarTitleText": "Workflow Tasks"
+      },
+      "meta": {
+        "role": "operator",
+        "requiresProfile": "operator"
+      }
+    },
+    {
+      "path": "pages/operator/workflow/task-detail",
+      "style": {
+        "navigationBarTitleText": "Workflow Task"
+      },
+      "meta": {
+        "role": "operator",
+        "requiresProfile": "operator"
       }
     }
   ],
