@@ -943,19 +943,19 @@ Run `php bin/hyperf.php migrate`; expected output is successful creation of all 
 - Create repository and service files listed in `File Structure`.
 - Test: unit test files listed in `Test Plan`.
 
-- [ ] **Step 1: Create repositories**
+- [x] **Step 1: Create repositories**
 
 Implement every repository method listed in the repository task table with tenant and campus filters.
 
-- [ ] **Step 2: Create services**
+- [x] **Step 2: Create services**
 
 Implement lesson change, make-up, consumption review, renewal, workload, and dashboard service responsibilities with database transactions around state changes.
 
-- [ ] **Step 3: Write service tests**
+- [x] **Step 3: Write service tests**
 
 Implement all service cases listed in `Backend service tests`.
 
-- [ ] **Step 4: Run backend unit gate**
+- [x] **Step 4: Run backend unit gate**
 
 Run `composer test -- --filter Education\\\\Operations.*ServiceTest`; expected output is all V2 service tests passing.
 
