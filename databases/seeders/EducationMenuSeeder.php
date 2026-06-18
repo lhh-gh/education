@@ -26,7 +26,7 @@ class EducationMenuSeeder extends Seeder
         'sort' => 0,
         'created_by' => 0,
         'updated_by' => 0,
-        'remark' => 'Education SaaS menu',
+        'remark' => 'Education menu',
     ];
 
     private const ROLE_CODES = [
@@ -44,15 +44,15 @@ class EducationMenuSeeder extends Seeder
     ];
 
     private const MENU_TITLES = [
-        'education' => '教育 SaaS',
-        'education:foundation' => '基础配置',
+        'education' => '教育管理',
+        'education:foundation' => '基础设置',
         'education:foundation:tenant:page' => '机构管理',
         'education:foundation:campus:page' => '校区管理',
         'education:foundation:user-profile:page' => '用户档案',
         'education:foundation:dictionary:page' => '数据字典',
         'education:foundation:feature-flag:page' => '功能开关',
         'education:foundation:audit-log:page' => '审计日志',
-        'education:academic' => 'V1 教务管理',
+        'education:academic' => '教务管理',
         'education:academic:report:dashboard' => '教务看板',
         'education:academic:classroom:page' => '教室管理',
         'education:academic:student:page' => '学员管理',
@@ -75,15 +75,15 @@ class EducationMenuSeeder extends Seeder
         'education:academic:report:consumption' => '消课报表',
         'education:academic:report:account-balance' => '课时余额报表',
         'education:academic:report:leave' => '请假报表',
-        'education:academic:report:acceptance' => 'V1 验收报告',
-        'education:operations' => 'V2 运营管理',
+        'education:academic:report:acceptance' => '验收报告',
+        'education:operations' => '运营中心',
         'education:operations:lesson-change:page' => '调课中心',
         'education:operations:makeup:page' => '补课闭环',
         'education:operations:consumption-review:page' => '消课审核',
         'education:operations:renewal-alert:page' => '续费提醒',
         'education:operations:teacher-workload:report' => '教师工作量',
         'education:operations:dashboard:overview' => '运营看板',
-        'education:admissions' => 'V3 招生 CRM',
+        'education:admissions' => '招生获客',
         'education:admissions:lead-source:page' => '线索来源',
         'education:admissions:lead:page' => '线索池',
         'education:admissions:lead:detail' => '线索详情',
@@ -92,7 +92,7 @@ class EducationMenuSeeder extends Seeder
         'education:admissions:lead:convert' => '线索转化',
         'education:admissions:task:page' => '招生任务',
         'education:admissions:dashboard:overview' => '招生活动看板',
-        'education:finance' => 'V4 财务管理',
+        'education:finance' => '财务中心',
         'education:finance:dashboard:overview' => '财务看板',
         'education:finance:order:page' => '订单管理',
         'education:finance:payment:page' => '收款记录',
@@ -100,7 +100,7 @@ class EducationMenuSeeder extends Seeder
         'education:finance:refund:page' => '退费管理',
         'education:finance:receipt:page' => '票据管理',
         'education:finance:reconciliation:page' => '对账管理',
-        'education:payroll' => 'V5 薪酬管理',
+        'education:payroll' => '薪酬绩效',
         'education:payroll:rule:page' => '薪酬规则',
         'education:payroll:batch:page' => '薪酬批次',
         'education:payroll:slip:page' => '工资条',
@@ -108,7 +108,7 @@ class EducationMenuSeeder extends Seeder
         'education:payroll:payment:page' => '薪酬发放',
         'education:payroll:dispute:page' => '工作量申诉',
         'education:payroll:performance:page' => '教师绩效',
-        'education:group' => 'V6 集团管理',
+        'education:group' => '集团管控',
         'education:group:metric:page' => '集团看板',
         'education:group:org:tree' => '组织架构',
         'education:group:data-permission:page' => '数据权限',
@@ -118,7 +118,7 @@ class EducationMenuSeeder extends Seeder
         'education:group:contract-renewal:page' => '合同续签',
         'education:group:franchise:page' => '加盟管理',
         'education:group:risk-audit:page' => '风控审计',
-        'education:family' => 'V7 家校服务',
+        'education:family' => '家校服务',
         'education:family:comment-template:page' => '评语模板',
         'education:family:performance-tag:page' => '表现标签',
         'education:family:homework:page' => '课后作业',
@@ -126,7 +126,7 @@ class EducationMenuSeeder extends Seeder
         'education:family:growth:page' => '成长记录',
         'education:family:message:page' => '家校消息',
         'education:family:quality:page' => '服务质量',
-        'education:ai' => 'V8 AI 助手',
+        'education:ai' => 'AI 助手',
         'education:ai:model-config:page' => '模型配置',
         'education:ai:prompt:page' => '提示词模板',
         'education:ai:generation:page' => '生成任务',
@@ -136,7 +136,7 @@ class EducationMenuSeeder extends Seeder
         'education:ai:recommendation:page' => '智能推荐',
         'education:ai:usage:summary' => '用量统计',
         'education:ai:safety:page' => '安全事件',
-        'education:workflow' => 'V9 流程预警',
+        'education:workflow' => '工作流中心',
         'education:workflow:rule:page' => '流程规则',
         'education:workflow:task:page' => '流程任务',
         'education:workflow:alert:page' => '预警中心',
@@ -144,7 +144,7 @@ class EducationMenuSeeder extends Seeder
         'education:workflow:escalation:page' => '升级策略',
         'education:workflow:template:page' => '流程模板',
         'education:workflow:metric:page' => '流程指标',
-        'education:growth' => 'V10 增长转化',
+        'education:growth' => '增长转化',
         'education:growth:workbench:view' => '增长工作台',
         'education:growth:score:recalculate' => '线索评分',
         'education:growth:ai-script:generate' => 'AI 话术',
@@ -153,7 +153,7 @@ class EducationMenuSeeder extends Seeder
         'education:growth:channel-roi:page' => '渠道 ROI',
         'education:growth:consultant-metric:page' => '顾问指标',
         'education:growth:loss:create' => '流失原因',
-        'education:standards' => 'V11 课程标准',
+        'education:standards' => '标准化管理',
         'education:standards:package:page' => '服务包',
         'education:standards:stage-goal:page' => '阶段目标',
         'education:standards:ability:page' => '能力点',
@@ -165,7 +165,7 @@ class EducationMenuSeeder extends Seeder
         'education:standards:quality-dashboard:page' => '质量看板',
         'education:standards:version:page' => '标准版本',
         'education:standards:review:page' => '标准评审',
-        'education:content' => 'V12 内容资源',
+        'education:content' => '内容教研',
         'education:content:material:page' => '学习资料',
         'education:content:version:page' => '资料版本',
         'education:content:attachment:page' => '资料附件',
@@ -274,10 +274,10 @@ class EducationMenuSeeder extends Seeder
     private function menus(): array
     {
         return [
-            $this->menu('education', 'Education SaaS', '/education', '', 'material-symbols:school-outline-rounded', [
+            $this->menu('education', '教育管理', '/education', '', 'material-symbols:school-outline-rounded', [
                 'redirect' => '/education/foundation/tenants',
                 'children' => [
-                    $this->group('education:foundation', 'Foundation', '/education/foundation', '/education/foundation/tenants', 'material-symbols:settings-outline-rounded', [
+                    $this->group('education:foundation', '基础设置', '/education/foundation', '/education/foundation/tenants', 'material-symbols:settings-outline-rounded', [
                         $this->page('education:foundation:tenant:page', 'Tenants', '/education/foundation/tenants', 'education/views/foundation/TenantList', ['education:foundation:tenant:save', 'education:foundation:tenant:update', 'education:foundation:tenant:delete']),
                         $this->page('education:foundation:campus:page', 'Campuses', '/education/foundation/campuses', 'education/views/foundation/CampusList', ['education:foundation:campus:save', 'education:foundation:campus:update', 'education:foundation:campus:delete']),
                         $this->page('education:foundation:user-profile:page', 'User Profiles', '/education/foundation/user-profiles', 'education/views/foundation/UserProfileList', ['education:foundation:user-profile:save', 'education:foundation:user-profile:update', 'education:foundation:user-profile:delete']),
@@ -285,7 +285,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:foundation:feature-flag:page', 'Feature Flags', '/education/foundation/feature-flags', 'education/views/foundation/FeatureFlagList', ['education:foundation:feature-flag:save', 'education:foundation:feature-flag:update', 'education:foundation:feature-flag:toggle']),
                         $this->page('education:foundation:audit-log:page', 'Audit Logs', '/education/foundation/audit-logs', 'education/views/foundation/AuditLogList', ['education:foundation:audit-log:detail']),
                     ]),
-                    $this->group('education:academic', 'V1 Academic', '/education/academic', '/education/academic/dashboard', 'material-symbols:auto-stories-outline-rounded', [
+                    $this->group('education:academic', '教务管理', '/education/academic', '/education/academic/dashboard', 'material-symbols:auto-stories-outline-rounded', [
                         $this->page('education:academic:report:dashboard', 'Academic Dashboard', '/education/academic/dashboard', 'education/views/academic/AcademicDashboard'),
                         $this->page('education:academic:classroom:page', 'Classrooms', '/education/academic/classrooms', 'education/views/academic/ClassroomList', ['education:academic:classroom:save', 'education:academic:classroom:update', 'education:academic:classroom:delete']),
                         $this->page('education:academic:student:page', 'Students', '/education/academic/students', 'education/views/academic/StudentList', ['education:academic:student:save', 'education:academic:student:update', 'education:academic:student:delete']),
@@ -308,9 +308,9 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:academic:report:consumption', 'Consumption Report', '/education/academic/reports/consumption', 'education/views/academic/ConsumptionReport'),
                         $this->page('education:academic:report:account-balance', 'Account Balance Report', '/education/academic/reports/account-balances', 'education/views/academic/AccountBalanceReport'),
                         $this->page('education:academic:report:leave', 'Leave Report', '/education/academic/reports/leaves', 'education/views/academic/LeaveReport'),
-                        $this->page('education:academic:report:acceptance', 'V1 Acceptance', '/education/academic/reports/v1-acceptance', 'education/views/academic/V1AcceptanceReport'),
+                        $this->page('education:academic:report:acceptance', '验收报告', '/education/academic/reports/v1-acceptance', 'education/views/academic/V1AcceptanceReport'),
                     ]),
-                    $this->group('education:operations', 'V2 Operations', '/education/operations', '/education/operations/lesson-changes', 'material-symbols:fact-check-outline-rounded', [
+                    $this->group('education:operations', '运营中心', '/education/operations', '/education/operations/lesson-changes', 'material-symbols:fact-check-outline-rounded', [
                         $this->page('education:operations:lesson-change:page', 'Lesson Change Center', '/education/operations/lesson-changes', 'education/views/operations/LessonChangeCenter', ['education:operations:lesson-change:review']),
                         $this->page('education:operations:makeup:page', 'Make-up Closure', '/education/operations/makeups', 'education/views/operations/LeaveMakeupList', ['education:operations:makeup:save']),
                         $this->page('education:operations:consumption-review:page', 'Consumption Review', '/education/operations/consumption-reviews', 'education/views/operations/ConsumptionReviewList', ['education:operations:consumption-review:review']),
@@ -318,7 +318,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:operations:teacher-workload:report', 'Teacher Workloads', '/education/operations/teacher-workloads', 'education/views/operations/TeacherWorkloadReport'),
                         $this->page('education:operations:dashboard:overview', 'Operation Dashboard', '/education/operations/dashboard', 'education/views/operations/OperationDashboard'),
                     ]),
-                    $this->group('education:admissions', 'V3 Admissions', '/education/admissions', '/education/admissions/leads', 'material-symbols:person-search-outline-rounded', [
+                    $this->group('education:admissions', '招生获客', '/education/admissions', '/education/admissions/leads', 'material-symbols:person-search-outline-rounded', [
                         $this->page('education:admissions:lead-source:page', 'Lead Sources', '/education/admissions/lead-sources', 'education/views/admissions/LeadSourceList', ['education:admissions:lead-source:save']),
                         $this->page('education:admissions:lead:page', 'Lead Pool', '/education/admissions/leads', 'education/views/admissions/LeadPool', ['education:admissions:lead:save', 'education:admissions:lead:assign']),
                         $this->page('education:admissions:lead:detail', 'Lead Detail', '/education/admissions/leads/:id', 'education/views/admissions/LeadDetail', ['education:admissions:follow:create']),
@@ -328,7 +328,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:admissions:task:page', 'Admission Tasks', '/education/admissions/tasks', 'education/views/admissions/AdmissionTaskList', ['education:admissions:task:save']),
                         $this->page('education:admissions:dashboard:overview', 'Admissions Dashboard', '/education/admissions/dashboard', 'education/views/admissions/AdmissionDashboard'),
                     ]),
-                    $this->group('education:finance', 'V4 Finance', '/education/finance', '/education/finance/dashboard', 'material-symbols:payments-outline-rounded', [
+                    $this->group('education:finance', '财务中心', '/education/finance', '/education/finance/dashboard', 'material-symbols:payments-outline-rounded', [
                         $this->page('education:finance:dashboard:overview', 'Finance Dashboard', '/education/finance/dashboard', 'education/views/finance/FinanceDashboard'),
                         $this->page('education:finance:order:page', 'Orders', '/education/finance/orders', 'education/views/finance/FinanceOrderList', ['education:finance:order:save', 'education:finance:order:confirm']),
                         $this->page('education:finance:payment:page', 'Payments', '/education/finance/payments', 'education/views/finance/PaymentRecordList', ['education:finance:payment:confirm']),
@@ -337,7 +337,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:finance:receipt:page', 'Receipts', '/education/finance/receipts', 'education/views/finance/ReceiptList', ['education:finance:receipt:issue']),
                         $this->page('education:finance:reconciliation:page', 'Reconciliation', '/education/finance/reconciliation', 'education/views/finance/ReconciliationBatchList', ['education:finance:reconciliation:save']),
                     ]),
-                    $this->group('education:payroll', 'V5 Payroll', '/education/payroll', '/education/payroll/rules', 'material-symbols:price-check-outline-rounded', [
+                    $this->group('education:payroll', '薪酬绩效', '/education/payroll', '/education/payroll/rules', 'material-symbols:price-check-outline-rounded', [
                         $this->page('education:payroll:rule:page', 'Salary Rules', '/education/payroll/rules', 'education/views/payroll/SalaryRuleList', ['education:payroll:rule:save']),
                         $this->page('education:payroll:batch:page', 'Salary Batches', '/education/payroll/batches', 'education/views/payroll/SalaryBatchList', ['education:payroll:batch:calculate']),
                         $this->page('education:payroll:slip:page', 'Salary Slips', '/education/payroll/slips', 'education/views/payroll/SalarySlipList'),
@@ -346,7 +346,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:payroll:dispute:page', 'Workload Disputes', '/education/payroll/disputes', 'education/views/payroll/WorkloadDisputeList', ['education:payroll:dispute:handle']),
                         $this->page('education:payroll:performance:page', 'Teacher Performance', '/education/payroll/performance', 'education/views/payroll/TeacherPerformanceDashboard'),
                     ]),
-                    $this->group('education:group', 'V6 Group', '/education/group', '/education/group/dashboard', 'material-symbols:account-tree-outline-rounded', [
+                    $this->group('education:group', '集团管控', '/education/group', '/education/group/dashboard', 'material-symbols:account-tree-outline-rounded', [
                         $this->page('education:group:metric:page', 'Group Dashboard', '/education/group/dashboard', 'education/views/group/GroupOperationDashboard'),
                         $this->page('education:group:org:tree', 'Org Units', '/education/group/org-units', 'education/views/group/OrgUnitTree', ['education:group:org:save']),
                         $this->page('education:group:data-permission:page', 'Data Permissions', '/education/group/data-permissions', 'education/views/group/DataPermissionList', ['education:group:data-permission:save']),
@@ -357,7 +357,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:group:franchise:page', 'Franchises', '/education/group/franchises', 'education/views/group/FranchiseRecordList', ['education:group:franchise:save']),
                         $this->page('education:group:risk-audit:page', 'Risk Audits', '/education/group/risk-audits', 'education/views/group/RiskAuditEventList'),
                     ]),
-                    $this->group('education:family', 'V7 Family', '/education/family', '/education/family/homework', 'material-symbols:family-restroom-rounded', [
+                    $this->group('education:family', '家校服务', '/education/family', '/education/family/homework', 'material-symbols:family-restroom-rounded', [
                         $this->page('education:family:comment-template:page', 'Comment Templates', '/education/family/comment-templates', 'education/views/family/CommentTemplateList', ['education:family:comment-template:save']),
                         $this->page('education:family:performance-tag:page', 'Performance Tags', '/education/family/performance-tags', 'education/views/family/PerformanceTagList', ['education:family:performance-tag:save']),
                         $this->page('education:family:homework:page', 'Homework', '/education/family/homework', 'education/views/family/HomeworkAssignmentList', ['education:family:homework:save', 'education:family:homework:review']),
@@ -366,7 +366,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:family:message:page', 'Family Messages', '/education/family/messages', 'education/views/family/FamilyMessageMonitor', ['education:family:message:reply']),
                         $this->page('education:family:quality:page', 'Service Quality', '/education/family/quality', 'education/views/family/ServiceQualityDashboard'),
                     ]),
-                    $this->group('education:ai', 'V8 AI', '/education/ai', '/education/ai/model-configs', 'material-symbols:smart-toy-outline-rounded', [
+                    $this->group('education:ai', 'AI 助手', '/education/ai', '/education/ai/model-configs', 'material-symbols:smart-toy-outline-rounded', [
                         $this->page('education:ai:model-config:page', 'Model Configs', '/education/ai/model-configs', 'education/views/ai/AiModelConfigList', ['education:ai:model-config:save']),
                         $this->page('education:ai:prompt:page', 'Prompts', '/education/ai/prompts', 'education/views/ai/PromptTemplateList', ['education:ai:prompt:save']),
                         $this->page('education:ai:generation:page', 'Generation Tasks', '/education/ai/generation-tasks', 'education/views/ai/GenerationTaskList'),
@@ -377,7 +377,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:ai:usage:summary', 'Usage', '/education/ai/usage', 'education/views/ai/UsageDashboard'),
                         $this->page('education:ai:safety:page', 'Safety Events', '/education/ai/safety-events', 'education/views/ai/SafetyEventList'),
                     ]),
-                    $this->group('education:workflow', 'V9 Workflow', '/education/workflow', '/education/workflow/tasks', 'material-symbols:account-tree-outline-rounded', [
+                    $this->group('education:workflow', '工作流中心', '/education/workflow', '/education/workflow/tasks', 'material-symbols:account-tree-outline-rounded', [
                         $this->page('education:workflow:rule:page', 'Rules', '/education/workflow/rules', 'education/views/workflow/WorkflowRuleList', ['education:workflow:rule:save']),
                         $this->page('education:workflow:task:page', 'Tasks', '/education/workflow/tasks', 'education/views/workflow/WorkflowTaskWorkbench', ['education:workflow:task:handle']),
                         $this->page('education:workflow:alert:page', 'Alerts', '/education/workflow/alerts', 'education/views/workflow/OperationAlertList', ['education:workflow:alert:convert']),
@@ -386,7 +386,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:workflow:template:page', 'Templates', '/education/workflow/templates', 'education/views/workflow/WorkflowTemplateList', ['education:workflow:template:save']),
                         $this->page('education:workflow:metric:page', 'Metrics', '/education/workflow/metrics', 'education/views/workflow/WorkflowMetricDashboard'),
                     ]),
-                    $this->group('education:growth', 'V10 Growth', '/education/growth', '/education/growth/workbench', 'material-symbols:trending-up-rounded', [
+                    $this->group('education:growth', '增长转化', '/education/growth', '/education/growth/workbench', 'material-symbols:trending-up-rounded', [
                         $this->page('education:growth:workbench:view', 'Workbench', '/education/growth/workbench', 'education/views/growth/GrowthWorkbench'),
                         $this->page('education:growth:score:recalculate', 'Lead Scores', '/education/growth/lead-scores', 'education/views/growth/LeadScoreList'),
                         $this->page('education:growth:ai-script:generate', 'AI Scripts', '/education/growth/ai-talk-scripts', 'education/views/growth/AiTalkScriptWorkbench'),
@@ -396,7 +396,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:growth:consultant-metric:page', 'Consultant Metrics', '/education/growth/consultant-metrics', 'education/views/growth/ConsultantMetricDashboard'),
                         $this->page('education:growth:loss:create', 'Loss Reasons', '/education/growth/loss-reasons', 'education/views/growth/LossReasonReport'),
                     ]),
-                    $this->group('education:standards', 'V11 Standards', '/education/standards', '/education/standards/packages', 'material-symbols:rule-folder-outline-rounded', [
+                    $this->group('education:standards', '标准化管理', '/education/standards', '/education/standards/packages', 'material-symbols:rule-folder-outline-rounded', [
                         $this->page('education:standards:package:page', 'Packages', '/education/standards/packages', 'education/views/standards/ServicePackageList', ['education:standards:package:save', 'education:standards:package:publish']),
                         $this->page('education:standards:stage-goal:page', 'Stage Goals', '/education/standards/stage-goals', 'education/views/standards/StageGoalEditor', ['education:standards:stage-goal:save']),
                         $this->page('education:standards:ability:page', 'Ability Points', '/education/standards/ability-points', 'education/views/standards/AbilityPointList', ['education:standards:ability:save']),
@@ -409,7 +409,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:standards:version:page', 'Versions', '/education/standards/versions', 'education/views/standards/StandardVersionList', ['education:standards:version:publish']),
                         $this->page('education:standards:review:page', 'Reviews', '/education/standards/reviews', 'education/views/standards/StandardReviewList', ['education:standards:review:handle']),
                     ]),
-                    $this->group('education:content', 'V12 Content', '/education/content', '/education/content/materials', 'material-symbols:folder-open-outline-rounded', [
+                    $this->group('education:content', '内容教研', '/education/content', '/education/content/materials', 'material-symbols:folder-open-outline-rounded', [
                         $this->page('education:content:material:page', 'Materials', '/education/content/materials', 'education/views/content/LearningMaterialList', ['education:content:material:save', 'education:content:material:publish', 'education:content:material:withdraw']),
                         $this->page('education:content:version:page', 'Versions', '/education/content/material-versions', 'education/views/content/MaterialVersionList', ['education:content:version:create']),
                         $this->page('education:content:attachment:page', 'Attachments', '/education/content/attachments', 'education/views/content/MaterialAttachmentList', ['education:content:attachment:upload']),

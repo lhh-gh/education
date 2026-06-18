@@ -101,7 +101,7 @@ final class EducationMenuSeederTest extends TestCase
 
         $root = Db::table('menu')->where('name', 'education')->first();
         $academicGroup = Db::table('menu')->where('name', 'education:academic')->first();
-        $v12 = Db::table('menu')->where('name', 'education:content')->first();
+        $contentGroup = Db::table('menu')->where('name', 'education:content')->first();
         $tenantPage = Db::table('menu')->where('name', 'education:foundation:tenant:page')->first();
         $coursePage = Db::table('menu')->where('name', 'education:academic:course:page')->first();
         $tenantSaveButton = Db::table('menu')->where('name', 'education:foundation:tenant:save')->first();
@@ -109,26 +109,60 @@ final class EducationMenuSeederTest extends TestCase
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
-        self::assertNotNull($v12);
+        self::assertNotNull($contentGroup);
         self::assertNotNull($tenantPage);
         self::assertNotNull($coursePage);
         self::assertNotNull($tenantSaveButton);
         self::assertNotNull($contentReviewButton);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
-        self::assertSame('/education/content/materials', $v12->redirect);
+        self::assertSame('/education/content/materials', $contentGroup->redirect);
 
-        self::assertSame('教育 SaaS', json_decode((string) $root->meta, true)['title']);
-        self::assertSame('V1 教务管理', json_decode((string) $academicGroup->meta, true)['title']);
-        self::assertSame('机构管理', json_decode((string) $tenantPage->meta, true)['title']);
-        self::assertSame('课程管理', json_decode((string) $coursePage->meta, true)['title']);
-        self::assertSame('保存', json_decode((string) $tenantSaveButton->meta, true)['title']);
-        self::assertSame('处理', json_decode((string) $contentReviewButton->meta, true)['title']);
+        self::assertSame('教育管理', $this->menuTitle($root));
+        self::assertSame('教务管理', $this->menuTitle($academicGroup));
+        self::assertSame('内容教研', $this->menuTitle($contentGroup));
+        self::assertSame('机构管理', $this->menuTitle($tenantPage));
+        self::assertSame('课程管理', $this->menuTitle($coursePage));
+        self::assertSame('保存', $this->menuTitle($tenantSaveButton));
+        self::assertSame('处理', $this->menuTitle($contentReviewButton));
         self::assertSame('B', json_decode((string) $contentReviewButton->meta, true)['type']);
+
+        $moduleTitles = Db::table('menu')
+            ->where('parent_id', $root->id)
+            ->orderBy('sort')
+            ->get()
+            ->map(fn (object $menu): string => $this->menuTitle($menu))
+            ->all();
+
+        self::assertSame([
+            '基础设置',
+            '教务管理',
+            '运营中心',
+            '招生获客',
+            '财务中心',
+            '薪酬绩效',
+            '集团管控',
+            '家校服务',
+            'AI 助手',
+            '工作流中心',
+            '增长转化',
+            '标准化管理',
+            '内容教研',
+        ], $moduleTitles);
+
+        self::assertSame((int) $root->id, (int) $academicGroup->parent_id);
+        self::assertSame((int) $root->id, (int) $contentGroup->parent_id);
 
         self::assertSame(1, Db::table('menu')->where('name', 'education')->count());
         self::assertSame(1, Db::table('menu')->where('name', 'education:content:review:handle')->count());
         self::assertGreaterThan(80, Db::table('menu')->where('name', 'like', 'education%')->count());
+        Db::table('menu')
+            ->where('name', 'like', 'education%')
+            ->get()
+            ->each(function (object $menu): void {
+                self::assertStringNotContainsString('教育 SaaS', $this->menuTitle($menu));
+                self::assertDoesNotMatchRegularExpression('/V\d+/u', $this->menuTitle($menu));
+            });
 
         $adminRoleId = Db::table('role')->where('code', 'education_tenant_admin')->value('id');
         $guardianRoleId = Db::table('role')->where('code', 'education_guardian')->value('id');
@@ -142,5 +176,10 @@ final class EducationMenuSeederTest extends TestCase
             0,
             Db::table('role_belongs_menu')->where('role_id', $guardianRoleId)->whereIn('menu_id', $educationMenuIds)->count()
         );
+    }
+
+    private function menuTitle(object $menu): string
+    {
+        return (string) json_decode((string) $menu->meta, true)['title'];
     }
 }
