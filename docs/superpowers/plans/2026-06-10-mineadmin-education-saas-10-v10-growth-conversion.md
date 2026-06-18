@@ -531,11 +531,11 @@ V10 is accepted only when:
 
 ### Task 5: Teacher Mobile
 
-- [ ] Create teacher growth API client.
-- [ ] Register teacher growth pages in `pages.json`.
-- [ ] Implement trial lessons and trial feedback pages with assigned-teacher isolation.
-- [ ] Write `teacher-growth.spec.ts`.
-- [ ] Run `pnpm lint && pnpm test -- growth && pnpm build:h5`; expected output is all mobile gates passing.
+- [x] Create teacher growth API client.
+- [x] Register teacher growth pages in `pages.json`.
+- [x] Implement trial lessons and trial feedback pages with assigned-teacher isolation.
+- [x] Write `teacher-growth.spec.ts`.
+- [x] Run `pnpm lint && pnpm test -- growth && pnpm build:h5`; expected output is all mobile gates passing.
 
 ### Task 6: V10 Final Gate
 
