@@ -821,7 +821,7 @@ Use this status table:
 | 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
 | 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
 | 07 V7 Family | family service | ready | implemented / accepted |
-| 08 V8 AI | AI assistant | ready | incomplete / not implemented |
+| 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | ready | incomplete / not implemented |
 | 10 V10 Growth | growth conversion | ready | incomplete / not implemented |
 | 11 V11 Standards | course standards | ready | incomplete / not implemented |
@@ -878,7 +878,7 @@ done
 | 05 V5 Payroll | teacher payroll | ready | incomplete / not implemented |
 | 06 V6 Group | multi-campus group | ready | incomplete / not implemented |
 | 07 V7 Family | family service | ready | implemented / accepted |
-| 08 V8 AI | AI assistant | ready | incomplete / not implemented |
+| 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | ready | incomplete / not implemented |
 | 10 V10 Growth | growth conversion | ready | incomplete / not implemented |
 | 11 V11 Standards | course standards | ready | incomplete / not implemented |
