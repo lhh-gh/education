@@ -4,6 +4,7 @@ import type { UserProfileRecord } from '../../../api/foundation/userProfile.ts'
 import { pageCampuses } from '../../../api/foundation/campus.ts'
 import { getCampusScopes, saveCampusScopes } from '../../../api/foundation/userProfile.ts'
 import { campusScopeSavePayload, campusScopeValidationError } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   profile: UserProfileRecord | null

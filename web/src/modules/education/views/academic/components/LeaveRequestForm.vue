@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LeaveRequestCreatePayload, LeaveRequestRecord } from '../../../api/academic/lessonChange.ts'
 import { createLeaveRequest } from '../../../api/academic/lessonChange.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationLeaveRequestForm' })
 

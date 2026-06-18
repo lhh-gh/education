@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { CourseRecord, LessonPackageRecord, LessonPackageSavePayload } from '../../../api/academic/courseAccount.ts'
 import { createLessonPackage, pageCourses, updateLessonPackage } from '../../../api/academic/courseAccount.ts'
 import { computePackageTotal } from '../courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', tenantId, campusId, courseId, data = null } = defineProps<{
   mode?: 'create' | 'edit'

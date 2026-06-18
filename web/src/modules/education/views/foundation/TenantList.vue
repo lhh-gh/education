@@ -3,6 +3,7 @@ import type { TenantPageParams, TenantRecord } from '../../api/foundation/tenant
 import { deleteTenant, pageTenants, updateTenantStatus } from '../../api/foundation/tenant.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import TenantForm from './components/TenantForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationTenantList' })
 

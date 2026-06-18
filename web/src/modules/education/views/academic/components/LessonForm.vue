@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { LessonRecord, SingleLessonSchedulePayload } from '../../../api/academic/classSchedule.ts'
 import { updateLesson } from '../../../api/academic/classSchedule.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   tenantId?: number

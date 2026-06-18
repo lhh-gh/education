@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { EducationRoleCode, UserProfileRecord, UserProfileSavePayload } from '../../../api/foundation/userProfile.ts'
 import { createUserProfile, updateUserProfile } from '../../../api/foundation/userProfile.ts'
 import { isPlatformRole } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', data = null } = defineProps<{
   mode?: 'create' | 'edit'

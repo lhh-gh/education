@@ -6,6 +6,7 @@ import NoticeDetailDrawer from './components/NoticeDetailDrawer.vue'
 import NoticeForm from './components/NoticeForm.vue'
 import NoticeReceiptDrawer from './components/NoticeReceiptDrawer.vue'
 import { canEditNotice, canPublishNotice, canWithdrawNotice, noticePriorityType, noticeStatusType } from './noticeRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicNoticeList' })
 

@@ -4,6 +4,7 @@ import { cancelLesson, deleteLesson, pageLessons } from '../../api/academic/clas
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import LessonDetailDrawer from './components/LessonDetailDrawer.vue'
 import LessonForm from './components/LessonForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicLessonList' })
 

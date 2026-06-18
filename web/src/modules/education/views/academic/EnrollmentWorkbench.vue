@@ -4,6 +4,7 @@ import { cancelEnrollment, pageEnrollments } from '../../api/academic/courseAcco
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import EnrollmentCreateDrawer from './components/EnrollmentCreateDrawer.vue'
 import { enrollmentSuccessSummary } from './courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicEnrollmentWorkbench' })
 

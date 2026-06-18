@@ -2,6 +2,7 @@
 import type { NoticeRecord, NoticeSavePayload } from '../../../api/academic/notice.ts'
 import { createNotice, updateNotice } from '../../../api/academic/notice.ts'
 import { defaultNoticeForm, normalizeNoticeFormTarget, targetRequiresId } from '../noticeRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationNoticeForm' })
 

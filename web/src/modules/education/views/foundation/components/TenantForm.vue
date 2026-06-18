@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { TenantRecord, TenantSavePayload } from '../../../api/foundation/tenant.ts'
 import { createTenant, updateTenant } from '../../../api/foundation/tenant.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', data = null } = defineProps<{
   mode?: 'create' | 'edit'

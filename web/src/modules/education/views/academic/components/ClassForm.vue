@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { ClassRecord, ClassSavePayload } from '../../../api/academic/classSchedule.ts'
 import { createClass, updateClass } from '../../../api/academic/classSchedule.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = withDefaults(defineProps<{
   mode?: 'create' | 'edit'

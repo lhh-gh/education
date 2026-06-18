@@ -4,6 +4,7 @@ import { pageStudents } from '../../../api/academic/profile.ts'
 import type { CourseRecord, EnrollmentCreatePayload, EnrollmentCreateResult, LessonPackageRecord } from '../../../api/academic/courseAccount.ts'
 import { createEnrollment, pageCourses, pageLessonPackages } from '../../../api/academic/courseAccount.ts'
 import { computePackageTotal, enrollmentSuccessSummary } from '../courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

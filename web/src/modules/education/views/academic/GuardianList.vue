@@ -3,6 +3,7 @@ import type { GuardianPageParams, GuardianRecord } from '../../api/academic/prof
 import { deleteGuardian, pageGuardians, updateGuardianStatus } from '../../api/academic/profile.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import GuardianForm from './components/GuardianForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicGuardianList' })
 

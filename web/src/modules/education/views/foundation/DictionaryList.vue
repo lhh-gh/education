@@ -27,6 +27,7 @@ import {
 } from './actionRules.ts'
 import DictItemForm from './components/DictItemForm.vue'
 import DictTypeForm from './components/DictTypeForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationDictionaryList' })
 

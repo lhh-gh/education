@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { FeatureFlagRecord, FeatureFlagSavePayload } from '../../../api/foundation/featureFlag.ts'
 import { createFeatureFlag, updateFeatureFlag } from '../../../api/foundation/featureFlag.ts'
 import { dictionaryOwnerTypeOptions, extractApiErrorMessage, isSubmitDisabled, parseJsonObjectText } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', data = null, platformContext = false } = defineProps<{
   mode?: 'create' | 'edit'

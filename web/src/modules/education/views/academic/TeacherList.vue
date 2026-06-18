@@ -3,6 +3,7 @@ import type { TeacherPageParams, TeacherRecord } from '../../api/academic/profil
 import { deleteTeacher, pageTeachers, updateTeacherStatus } from '../../api/academic/profile.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import TeacherForm from './components/TeacherForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicTeacherList' })
 

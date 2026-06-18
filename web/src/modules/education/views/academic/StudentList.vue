@@ -4,6 +4,7 @@ import { deleteStudent, pageStudents, updateStudentStatus } from '../../api/acad
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import StudentForm from './components/StudentForm.vue'
 import StudentGuardianDrawer from './components/StudentGuardianDrawer.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicStudentList' })
 

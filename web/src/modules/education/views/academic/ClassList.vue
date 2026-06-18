@@ -4,6 +4,7 @@ import { changeClassStatus, deleteClass, pageClasses } from '../../api/academic/
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import ClassForm from './components/ClassForm.vue'
 import ClassStudentDrawer from './components/ClassStudentDrawer.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicClassList' })
 

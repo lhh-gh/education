@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { GuardianRecord, GuardianSavePayload } from '../../../api/academic/profile.ts'
 import { createGuardian, updateGuardian } from '../../../api/academic/profile.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', tenantId, data = null } = defineProps<{
   mode?: 'create' | 'edit'

@@ -4,6 +4,7 @@ import { changeCourseStatus, deleteCourse, pageCourses } from '../../api/academi
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import CourseForm from './components/CourseForm.vue'
 import CourseTeacherDrawer from './components/CourseTeacherDrawer.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicCourseList' })
 

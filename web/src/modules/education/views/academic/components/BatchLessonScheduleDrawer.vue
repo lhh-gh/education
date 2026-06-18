@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { BatchLessonSchedulePayload } from '../../../api/academic/classSchedule.ts'
 import { checkScheduleConflict, scheduleBatchLessons } from '../../../api/academic/classSchedule.ts'
 import { batchSchedulePayload, batchScheduleSuccessSummary } from '../classScheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

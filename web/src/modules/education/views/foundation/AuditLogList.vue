@@ -4,6 +4,7 @@ import { getAuditLogDetail, pageAuditLogs } from '../../api/foundation/auditLog.
 import useUserStore from '@/store/modules/useUserStore.ts'
 import { auditLogActionsByPermission, defaultAuditLogSearch, normalizeAuditLogSearch, resetAuditLogSearch } from './auditLogRules.ts'
 import AuditPayloadDrawer from './components/AuditPayloadDrawer.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationAuditLogList' })
 

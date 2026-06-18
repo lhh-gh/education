@@ -19,6 +19,7 @@ import {
   resetFeatureFlagSearch,
 } from './actionRules.ts'
 import FeatureFlagForm from './components/FeatureFlagForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationFeatureFlagList' })
 

@@ -4,6 +4,7 @@ import { changeStudentCourseAccountStatus, pageStudentCourseAccounts } from '../
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import AccountLedgerDrawer from './components/AccountLedgerDrawer.vue'
 import { accountStatusAction } from './courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicAccountLedgerList' })
 

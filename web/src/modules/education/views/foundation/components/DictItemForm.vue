@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { DictItemRecord, DictItemSavePayload } from '../../../api/foundation/dictionary.ts'
 import { createDictItem, updateDictItem } from '../../../api/foundation/dictionary.ts'
 import { extractApiErrorMessage, isSubmitDisabled, parseJsonObjectText } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', dictTypeId, data = null } = defineProps<{
   mode?: 'create' | 'edit'

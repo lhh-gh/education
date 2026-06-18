@@ -4,6 +4,7 @@ import { deleteCampus, pageCampuses, updateCampusStatus } from '../../api/founda
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import { tenantRequired } from './actionRules.ts'
 import CampusForm from './components/CampusForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationCampusList' })
 

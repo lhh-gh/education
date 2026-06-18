@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { ClassroomRecord, ClassroomSavePayload } from '../../../api/academic/profile.ts'
 import { createClassroom, updateClassroom } from '../../../api/academic/profile.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', tenantId, data = null } = defineProps<{
   mode?: 'create' | 'edit'

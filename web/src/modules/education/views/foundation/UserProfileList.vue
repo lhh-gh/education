@@ -5,6 +5,7 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import { isPlatformRole } from './actionRules.ts'
 import CampusScopeForm from './components/CampusScopeForm.vue'
 import UserProfileForm from './components/UserProfileForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationUserProfileList' })
 

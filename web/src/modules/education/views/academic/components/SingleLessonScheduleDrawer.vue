@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { SingleLessonSchedulePayload } from '../../../api/academic/classSchedule.ts'
 import { checkScheduleConflict, scheduleSingleLesson } from '../../../api/academic/classSchedule.ts'
 import { singleSchedulePayload, singleScheduleSuccessSummary } from '../classScheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

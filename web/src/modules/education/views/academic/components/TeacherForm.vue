@@ -4,6 +4,7 @@ import type { UserProfileListItem } from '../../../api/foundation/userProfile.ts
 import type { TeacherRecord, TeacherSavePayload } from '../../../api/academic/profile.ts'
 import { pageUserProfiles } from '../../../api/foundation/userProfile.ts'
 import { createTeacher, teacherProfileSelectorParams, updateTeacher } from '../../../api/academic/profile.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', tenantId, data = null } = defineProps<{
   mode?: 'create' | 'edit'

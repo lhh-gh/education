@@ -3,6 +3,7 @@ import type { ClassroomPageParams, ClassroomRecord } from '../../api/academic/pr
 import { deleteClassroom, pageClassrooms, updateClassroomStatus } from '../../api/academic/profile.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import ClassroomForm from './components/ClassroomForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicClassroomList' })
 

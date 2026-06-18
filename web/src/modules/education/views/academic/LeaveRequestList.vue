@@ -5,6 +5,7 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import LeaveRequestForm from './components/LeaveRequestForm.vue'
 import LeaveReviewDialog from './components/LeaveReviewDialog.vue'
 import { applyLeaveReviewSuccess, canApproveLeave, canCancelLeave, canRejectLeave, leaveStatusType } from './leaveMakeupRescheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicLeaveRequestList' })
 

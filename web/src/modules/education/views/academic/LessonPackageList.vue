@@ -4,6 +4,7 @@ import { changeLessonPackageStatus, deleteLessonPackage, pageLessonPackages } fr
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import LessonPackageForm from './components/LessonPackageForm.vue'
 import { computePackageTotal } from './courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAcademicLessonPackageList' })
 
