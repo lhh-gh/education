@@ -93,6 +93,26 @@
       }
     },
     {
+      "path": "pages/teacher/growth/trial-lessons",
+      "style": {
+        "navigationBarTitleText": "Growth Trial Lessons"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/growth/trial-feedback",
+      "style": {
+        "navigationBarTitleText": "Growth Feedback"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/teacher/payroll/slips",
       "style": {
         "navigationBarTitleText": "Salary Slips"
