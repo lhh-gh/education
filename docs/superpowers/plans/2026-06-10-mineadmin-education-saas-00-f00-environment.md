@@ -818,7 +818,7 @@ Commit succeeds with root environment files.
 - Create: `mineadmin-education-saas/deployments/docker-compose.yml`
 - Create: `mineadmin-education-saas/deployments/mysql/init/001_create_database.sql`
 
-- [ ] **Step 1: Create Docker directories**
+- [x] **Step 1: Create Docker directories**
 
 Run:
 
@@ -833,7 +833,7 @@ Expected:
 deployments/mysql/init exists.
 ```
 
-- [ ] **Step 2: Create Docker Compose file**
+- [x] **Step 2: Create Docker Compose file**
 
 Write `mineadmin-education-saas/deployments/docker-compose.yml`:
 
@@ -890,7 +890,7 @@ Expected:
 Docker Compose defines MySQL 8 and Redis 7 with health checks and persistent volumes.
 ```
 
-- [ ] **Step 3: Create MySQL bootstrap SQL**
+- [x] **Step 3: Create MySQL bootstrap SQL**
 
 Write `mineadmin-education-saas/deployments/mysql/init/001_create_database.sql` using the SQL from `Database Migration Design`.
 
@@ -900,7 +900,7 @@ Expected:
 Bootstrap SQL creates app and test databases and grants the education user access.
 ```
 
-- [ ] **Step 4: Start and verify services**
+- [x] **Step 4: Start and verify services**
 
 Run:
 
@@ -919,7 +919,7 @@ MySQL SELECT 1 returns ok=1.
 Redis PING returns PONG.
 ```
 
-- [ ] **Step 5: Commit Docker files**
+- [x] **Step 5: Commit Docker files**
 
 Run:
 
