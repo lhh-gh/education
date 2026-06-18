@@ -8,7 +8,7 @@
 
 **Tech Stack:** MineAdmin 3.x, Hyperf 3.1, PHP 8.1+, Swoole 5+, Composer, MySQL 8, Redis 7, Docker Compose, Node 20+, Corepack, pnpm, MineAdmin-Vue, uni-app Vue3 Vite TypeScript.
 
-**Status:** ready
+**Status:** accepted
 
 ---
 
@@ -1394,7 +1394,7 @@ Commit succeeds with mobile shell.
 - Verify: `mineadmin-education-saas/admin-web/dist/index.html`
 - Verify: `mineadmin-education-saas/mobile-uniapp/dist/build/h5/index.html`
 
-- [ ] **Step 1: Run complete smoke**
+- [x] **Step 1: Run complete smoke**
 
 Run:
 
@@ -1413,7 +1413,7 @@ admin web smoke ok
 mobile smoke ok
 ```
 
-- [ ] **Step 2: Verify health API manually**
+- [x] **Step 2: Verify health API manually**
 
 Run:
 
@@ -1427,7 +1427,7 @@ Expected:
 {"code":200,"message":"success","data":{"app":"mineadmin-education-saas","database":"ok","redis":"ok"}}
 ```
 
-- [ ] **Step 3: Verify Git status**
+- [x] **Step 3: Verify Git status**
 
 Run:
 
