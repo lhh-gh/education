@@ -2,7 +2,7 @@
 import type { EducationRoleCode, UserProfilePageParams, UserProfileRecord } from '../../api/foundation/userProfile.ts'
 import { pageUserProfiles, updateUserProfileStatus } from '../../api/foundation/userProfile.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { isPlatformRole } from './actionRules.ts'
+import { educationRoleLabel, educationRoleOptions, foundationStatusLabel, foundationStatusOptions, isPlatformRole } from './actionRules.ts'
 import CampusScopeForm from './components/CampusScopeForm.vue'
 import UserProfileForm from './components/UserProfileForm.vue'
 import { useMessage } from '@/hooks/useMessage.ts'
@@ -21,17 +21,8 @@ const rows = ref<UserProfileRecord[]>([])
 const total = ref(0)
 const search = reactive<UserProfilePageParams>(defaultSearch())
 
-const roleOptions: Array<{ label: string, value: EducationRoleCode }> = [
-  { label: 'Platform super admin', value: 'platform_super_admin' },
-  { label: 'Platform operator', value: 'platform_operator' },
-  { label: 'Tenant admin', value: 'tenant_admin' },
-  { label: 'Principal', value: 'principal' },
-  { label: 'Academic staff', value: 'academic_staff' },
-  { label: 'Front desk', value: 'front_desk' },
-  { label: 'Teacher', value: 'teacher' },
-  { label: 'Finance', value: 'finance' },
-  { label: 'Guardian', value: 'guardian' },
-]
+const roleOptions = educationRoleOptions()
+const statusOptions = foundationStatusOptions()
 
 const canCreate = computed(() => hasAuth('education:foundation:user-profile:create'))
 const canEdit = computed(() => hasAuth('education:foundation:user-profile:update'))
@@ -58,8 +49,8 @@ async function loadProfiles() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Profile list loading failed'
-    message.error(error?.message ?? 'Profile list loading failed')
+    errorText.value = error?.message ?? '教育用户档案加载失败'
+    message.error(errorText.value)
   }
   finally {
     loading.value = false
@@ -77,7 +68,7 @@ function handleReset() {
 }
 
 function roleLabel(roleCode: EducationRoleCode): string {
-  return roleOptions.find(item => item.value === roleCode)?.label ?? roleCode
+  return educationRoleLabel(roleCode)
 }
 
 function openCreate() {
@@ -125,9 +116,9 @@ onMounted(loadProfiles)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>User profiles</span>
+          <span>教育用户档案</span>
           <el-button v-if="canCreate" type="primary" @click="openCreate">
-            New profile
+            新增档案
           </el-button>
         </div>
       </template>
@@ -135,67 +126,66 @@ onMounted(loadProfiles)
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
 
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
+        <el-form-item label="机构ID">
           <el-input-number v-model="search.tenant_id" :controls="false" :min="1" />
         </el-form-item>
-        <el-form-item label="Keyword">
-          <el-input v-model="search.keyword" clearable placeholder="Name/mobile/OpenID/UnionID" />
+        <el-form-item label="关键字">
+          <el-input v-model="search.keyword" clearable placeholder="姓名/手机号/OpenID/UnionID" />
         </el-form-item>
-        <el-form-item label="Role">
-          <el-select v-model="search.role_code" class="role-filter" clearable filterable placeholder="All">
+        <el-form-item label="角色">
+          <el-select v-model="search.role_code" class="role-filter" clearable filterable placeholder="全部">
             <el-option v-for="item in roleOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="search.status" class="status-filter" clearable placeholder="All">
-            <el-option label="Enabled" value="enabled" />
-            <el-option label="Disabled" value="disabled" />
+        <el-form-item label="状态">
+          <el-select v-model="search.status" class="status-filter" clearable placeholder="全部">
+            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
 
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="display_name" label="Name" min-width="150" />
-        <el-table-column prop="mobile" label="Mobile" width="140" />
-        <el-table-column prop="role_code" label="Role" min-width="170">
+        <el-table-column prop="display_name" label="姓名" min-width="150" />
+        <el-table-column prop="mobile" label="手机号" width="140" />
+        <el-table-column prop="role_code" label="角色" min-width="170">
           <template #default="{ row }">
             {{ roleLabel(row.role_code) }}
           </template>
         </el-table-column>
-        <el-table-column prop="tenant_id" label="Tenant" width="100" />
-        <el-table-column prop="current_campus_id" label="Campus" width="100" />
-        <el-table-column prop="campus_scope_count" label="Scopes" width="100" />
-        <el-table-column prop="status" label="Status" width="100">
+        <el-table-column prop="tenant_id" label="机构ID" width="100" />
+        <el-table-column prop="current_campus_id" label="当前校区" width="100" />
+        <el-table-column prop="campus_scope_count" label="校区范围" width="100" />
+        <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 'enabled' ? 'success' : 'info'">
-              {{ row.status === 'enabled' ? 'Enabled' : 'Disabled' }}
+              {{ foundationStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="updated_at" label="Updated" width="180" />
-        <el-table-column label="Actions" fixed="right" width="240">
+        <el-table-column prop="updated_at" label="更新时间" width="180" />
+        <el-table-column label="操作" fixed="right" width="240">
           <template #default="{ row }">
             <el-button v-if="canEdit" link type="primary" @click="openEdit(row)">
-              Edit
+              编辑
             </el-button>
             <el-button v-if="canStatus" link type="primary" @click="changeStatus(row)">
-              {{ row.status === 'enabled' ? 'Disable' : 'Enable' }}
+              {{ row.status === 'enabled' ? '停用' : '启用' }}
             </el-button>
             <el-button v-if="canOpenCampusScope(row)" link type="primary" @click="openCampusScope(row)">
-              Scope
+              校区范围
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No profiles" />
+          <el-empty description="暂无教育用户档案" />
         </template>
       </el-table>
 
@@ -209,11 +199,11 @@ onMounted(loadProfiles)
       />
     </el-card>
 
-    <el-dialog v-model="formVisible" :title="dialogMode === 'create' ? 'New profile' : 'Edit profile'" width="640px">
+    <el-dialog v-model="formVisible" :title="dialogMode === 'create' ? '新增档案' : '编辑档案'" width="640px">
       <UserProfileForm :key="currentProfile?.id ?? 'create'" :mode="dialogMode" :data="currentProfile" @success="onFormSuccess" />
     </el-dialog>
 
-    <el-dialog v-model="scopeVisible" title="Campus scope" width="560px">
+    <el-dialog v-model="scopeVisible" title="校区范围" width="560px">
       <CampusScopeForm :profile="scopeProfile" :can-submit="canSaveCampusScope" @success="onScopeSuccess" />
     </el-dialog>
   </div>

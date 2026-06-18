@@ -54,7 +54,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Campus save failed')
+    message.error(error?.message ?? '校区保存失败')
   }
   finally {
     submitting.value = false

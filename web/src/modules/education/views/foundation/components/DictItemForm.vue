@@ -48,7 +48,7 @@ function parseExtra(): Record<string, unknown> | undefined {
   }
   catch {
     message.error('扩展 JSON 格式不正确')
-    throw new Error('invalid extra json')
+    throw new Error('扩展 JSON 格式不正确')
   }
 }
 
@@ -81,7 +81,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary item save failed'))
+    message.error(extractApiErrorMessage(error, '字典项保存失败'))
   }
   finally {
     submitting.value = false

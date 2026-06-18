@@ -11,7 +11,7 @@ describe('audit payload drawer', () => {
       metadata: { campus_id: 2001 },
     } as AuditLogDetail
 
-    expect(auditPayloadSections(detail).map(section => section.title)).toEqual(['Before', 'After', 'Diff', 'Metadata'])
+    expect(auditPayloadSections(detail).map(section => section.title)).toEqual(['变更前', '变更后', '差异', '元数据'])
     expect(formatAuditPayload(detail.diff)).toContain('"before": "Campus East"')
     expect(formatAuditPayload(detail.metadata)).toContain('"campus_id": 2001')
   })

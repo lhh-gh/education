@@ -53,7 +53,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Tenant save failed')
+    message.error(error?.message ?? '机构保存失败')
   }
   finally {
     submitting.value = false

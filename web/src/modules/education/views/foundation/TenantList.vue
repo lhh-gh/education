@@ -40,8 +40,8 @@ async function loadTenants() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Tenant list loading failed'
-    message.error(error?.message ?? '机构列表加载失败')
+    errorText.value = error?.message ?? '机构列表加载失败'
+    message.error(errorText.value)
   }
   finally {
     loading.value = false
@@ -119,7 +119,7 @@ onMounted(loadTenants)
             查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
