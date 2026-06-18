@@ -558,11 +558,11 @@ V4 is accepted only when:
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
-- [ ] Create request classes with integer money validation and finance state validation.
-- [ ] Create schemas matching the API catalog.
-- [ ] Create admin, callback, and guardian controllers with permissions, Result envelope, and audit logging.
-- [ ] Write API, permission, isolation, and audit tests.
-- [ ] Run `composer test -- --filter Education\\\\Finance`; expected output is all V4 backend tests passing.
+- [x] Create request classes with integer money validation and finance state validation.
+- [x] Create schemas matching the API catalog.
+- [x] Create admin, callback, and guardian controllers with permissions, Result envelope, and audit logging.
+- [x] Write API, permission, isolation, and audit tests.
+- [x] Run `composer test -- --filter Education\\\\Finance`; expected output is all V4 backend tests passing.
 
 ### Task 4: PC Admin
 
