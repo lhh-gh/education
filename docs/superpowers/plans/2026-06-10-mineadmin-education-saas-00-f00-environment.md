@@ -1273,7 +1273,7 @@ Commit succeeds with backend health smoke files.
 - Create/Modify: `mineadmin-education-saas/admin-web/*`
 - Modify: `mineadmin-education-saas/admin-web/.env.development`
 
-- [ ] **Step 1: Install MineAdmin Vue**
+- [x] **Step 1: Install MineAdmin Vue**
 
 Run:
 
@@ -1290,7 +1290,7 @@ admin-web/package.json contains package name mineadmin-ui.
 admin-web/node_modules exists.
 ```
 
-- [ ] **Step 2: Configure `.env.development`**
+- [x] **Step 2: Configure `.env.development`**
 
 Write `admin-web/.env.development` with the full values from `PC Admin Page Tasks`.
 
@@ -1300,7 +1300,7 @@ Expected:
 PC admin dev server uses title MineAdmin Education SaaS, port 2888, API base URL http://127.0.0.1:9501, and proxy prefix /dev.
 ```
 
-- [ ] **Step 3: Build PC admin**
+- [x] **Step 3: Build PC admin**
 
 Run:
 
@@ -1316,7 +1316,7 @@ admin web smoke ok
 admin-web/dist/index.html exists.
 ```
 
-- [ ] **Step 4: Commit PC admin environment**
+- [x] **Step 4: Commit PC admin environment**
 
 Run:
 
