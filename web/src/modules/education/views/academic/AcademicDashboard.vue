@@ -4,7 +4,7 @@ import { getAcademicDashboard } from '../../api/academic/report.ts'
 import ReportDateRangeFilter from './components/ReportDateRangeFilter.vue'
 import ReportMetricCard from './components/ReportMetricCard.vue'
 import ReportStateBlock from './components/ReportStateBlock.vue'
-import { dashboardMetricItems, quickReportRange, reportTagType } from './reportRules.ts'
+import { dashboardMetricItems, quickReportRange, reportLevelLabel, reportTagType } from './reportRules.ts'
 
 defineOptions({ name: 'EducationAcademicDashboard' })
 
@@ -25,7 +25,7 @@ async function loadDashboard() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Dashboard loading failed'
+    errorText.value = error?.message ?? '教务看板加载失败'
   }
   finally {
     loading.value = false
@@ -50,7 +50,7 @@ onMounted(loadDashboard)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Academic Dashboard</span>
+          <span>教务看板</span>
         </div>
       </template>
       <ReportDateRangeFilter v-model="filter" :require-range="false" @submit="handleFilter" @reset="handleReset" />
@@ -62,23 +62,23 @@ onMounted(loadDashboard)
         <el-row :gutter="16" class="mt-4">
           <el-col :span="16">
             <el-table :data="dashboard.trends" row-key="date">
-              <el-table-column prop="date" label="Date" width="140" />
-              <el-table-column prop="scheduled_lesson_count" label="Scheduled" />
-              <el-table-column prop="completed_lesson_count" label="Completed" />
-              <el-table-column prop="consumed_units" label="Consumed Units" />
+              <el-table-column prop="date" label="日期" width="140" />
+              <el-table-column prop="scheduled_lesson_count" label="计划课次" />
+              <el-table-column prop="completed_lesson_count" label="完成课次" />
+              <el-table-column prop="consumed_units" label="课消课时" />
             </el-table>
           </el-col>
           <el-col :span="8">
             <el-table :data="dashboard.alerts" row-key="type">
-              <el-table-column prop="title" label="Alert" />
-              <el-table-column label="Level" width="110">
+              <el-table-column prop="title" label="提醒事项" />
+              <el-table-column label="级别" width="110">
                 <template #default="{ row }">
                   <el-tag :type="reportTagType(row.level)">
-                    {{ row.level }}
+                    {{ reportLevelLabel(row.level) }}
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="count" label="Count" width="90" />
+              <el-table-column prop="count" label="数量" width="90" />
             </el-table>
           </el-col>
         </el-row>

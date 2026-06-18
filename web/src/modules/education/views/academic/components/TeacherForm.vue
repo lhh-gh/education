@@ -31,11 +31,11 @@ const model = reactive<TeacherSavePayload>({
 })
 
 const rules: FormRules = {
-  campus_id: [{ required: true, message: 'Campus is required', trigger: 'blur' }],
-  teacher_no: [{ required: true, message: 'Teacher number is required', trigger: 'blur' }],
-  name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-  gender: [{ required: true, message: 'Gender is required', trigger: 'change' }],
-  status: [{ required: true, message: 'Status is required', trigger: 'change' }],
+  campus_id: [{ required: true, message: '请选择校区', trigger: 'blur' }],
+  teacher_no: [{ required: true, message: '请输入教师编号', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入教师姓名', trigger: 'blur' }],
+  gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
+  status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 async function loadTeacherProfiles() {
@@ -56,7 +56,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Teacher save failed')
+    message.error(error?.message ?? '教师保存失败')
   }
   finally {
     submitting.value = false
@@ -69,39 +69,39 @@ defineExpose({ submit, submitting, loadTeacherProfiles })
 
 <template>
   <el-form ref="formRef" :model="model" :rules="rules" label-width="128px">
-    <el-form-item label="Campus ID" prop="campus_id">
+    <el-form-item label="校区ID" prop="campus_id">
       <el-input-number v-model="model.campus_id" :min="1" :controls="false" />
     </el-form-item>
-    <el-form-item label="Profile">
+    <el-form-item label="用户档案">
       <el-select v-model="model.user_profile_id" clearable filterable>
         <el-option v-for="profile in profiles" :key="profile.id" :label="profile.display_name" :value="profile.id" />
       </el-select>
     </el-form-item>
-    <el-form-item label="Teacher No" prop="teacher_no">
+    <el-form-item label="教师编号" prop="teacher_no">
       <el-input v-model="model.teacher_no" maxlength="64" :disabled="mode === 'edit'" />
     </el-form-item>
-    <el-form-item label="Name" prop="name">
+    <el-form-item label="姓名" prop="name">
       <el-input v-model="model.name" maxlength="120" />
     </el-form-item>
-    <el-form-item label="Mobile">
+    <el-form-item label="手机号">
       <el-input v-model="model.mobile" maxlength="30" />
     </el-form-item>
-    <el-form-item label="Gender" prop="gender">
+    <el-form-item label="性别" prop="gender">
       <el-select v-model="model.gender">
-        <el-option label="Male" value="male" />
-        <el-option label="Female" value="female" />
-        <el-option label="Unknown" value="unknown" />
+        <el-option label="男" value="male" />
+        <el-option label="女" value="female" />
+        <el-option label="未知" value="unknown" />
       </el-select>
     </el-form-item>
-    <el-form-item label="Title">
+    <el-form-item label="职称">
       <el-input v-model="model.title" maxlength="80" />
     </el-form-item>
-    <el-form-item label="Status" prop="status">
-      <el-segmented v-model="model.status" :options="[{ label: 'Enabled', value: 'enabled' }, { label: 'Disabled', value: 'disabled' }]" />
+    <el-form-item label="状态" prop="status">
+      <el-segmented v-model="model.status" :options="[{ label: '启用', value: 'enabled' }, { label: '停用', value: 'disabled' }]" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Save
+        保存
       </el-button>
     </el-form-item>
   </el-form>

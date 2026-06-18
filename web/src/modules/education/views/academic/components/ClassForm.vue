@@ -22,14 +22,14 @@ const errorText = ref('')
 const model = reactive<ClassSavePayload>(defaultModel())
 
 const rules: FormRules = {
-  campus_id: [{ required: true, message: 'Campus is required', trigger: 'blur' }],
-  course_id: [{ required: true, message: 'Course is required', trigger: 'blur' }],
-  code: [{ required: true, message: 'Code is required', trigger: 'blur' }],
-  name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
-  class_type: [{ required: true, message: 'Class type is required', trigger: 'change' }],
-  max_students: [{ required: true, message: 'Max students is required', trigger: 'blur' }],
-  lesson_units: [{ required: true, message: 'Lesson units is required', trigger: 'blur' }],
-  status: [{ required: true, message: 'Status is required', trigger: 'change' }],
+  campus_id: [{ required: true, message: '请选择校区', trigger: 'blur' }],
+  course_id: [{ required: true, message: '请选择课程', trigger: 'blur' }],
+  code: [{ required: true, message: '请输入班级编码', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入班级名称', trigger: 'blur' }],
+  class_type: [{ required: true, message: '请选择班型', trigger: 'change' }],
+  max_students: [{ required: true, message: '请输入班级容量', trigger: 'blur' }],
+  lesson_units: [{ required: true, message: '请输入课时数', trigger: 'blur' }],
+  status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
 function defaultModel(): ClassSavePayload {
@@ -68,7 +68,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Class save failed'
+    errorText.value = error?.message ?? '班级保存失败'
     message.error(errorText.value)
   }
   finally {
@@ -82,49 +82,49 @@ defineExpose({ submit, submitting, errorText })
 <template>
   <el-form ref="formRef" :model="model" :rules="rules" label-width="132px">
     <el-alert v-if="errorText" class="form-alert" type="error" show-icon :closable="false" :title="errorText" />
-    <el-form-item label="Campus ID" prop="campus_id">
+    <el-form-item label="校区ID" prop="campus_id">
       <el-input-number v-model="model.campus_id" :min="1" :controls="false" />
     </el-form-item>
-    <el-form-item label="Course ID" prop="course_id">
+    <el-form-item label="课程ID" prop="course_id">
       <el-input-number v-model="model.course_id" :min="1" :controls="false" />
     </el-form-item>
-    <el-form-item label="Main Teacher ID">
+    <el-form-item label="主讲教师ID">
       <el-input-number v-model="model.main_teacher_id" :min="1" :controls="false" />
     </el-form-item>
-    <el-form-item label="Classroom ID">
+    <el-form-item label="教室ID">
       <el-input-number v-model="model.classroom_id" :min="1" :controls="false" />
     </el-form-item>
-    <el-form-item label="Code" prop="code">
+    <el-form-item label="班级编码" prop="code">
       <el-input v-model="model.code" maxlength="64" :disabled="mode === 'edit'" />
     </el-form-item>
-    <el-form-item label="Name" prop="name">
+    <el-form-item label="班级名称" prop="name">
       <el-input v-model="model.name" maxlength="120" />
     </el-form-item>
-    <el-form-item label="Class Type" prop="class_type">
-      <el-segmented v-model="model.class_type" :options="[{ label: 'Group', value: 'group' }, { label: '1:1', value: 'one_to_one' }]" />
+    <el-form-item label="班型" prop="class_type">
+      <el-segmented v-model="model.class_type" :options="[{ label: '班课', value: 'group' }, { label: '1对1', value: 'one_to_one' }]" />
     </el-form-item>
-    <el-form-item label="Max Students" prop="max_students">
+    <el-form-item label="班级容量" prop="max_students">
       <el-input-number v-model="model.max_students" :min="1" :max="999" />
     </el-form-item>
-    <el-form-item label="Date Range">
-      <el-date-picker v-model="model.start_date" value-format="YYYY-MM-DD" type="date" placeholder="Start" />
-      <el-date-picker v-model="model.end_date" value-format="YYYY-MM-DD" type="date" placeholder="End" class="ml-2" />
+    <el-form-item label="开课日期">
+      <el-date-picker v-model="model.start_date" value-format="YYYY-MM-DD" type="date" placeholder="开始日期" />
+      <el-date-picker v-model="model.end_date" value-format="YYYY-MM-DD" type="date" placeholder="结束日期" class="ml-2" />
     </el-form-item>
-    <el-form-item label="Lesson Units" prop="lesson_units">
+    <el-form-item label="课时数" prop="lesson_units">
       <el-input-number v-model="model.lesson_units" :min="0.25" :step="0.25" />
     </el-form-item>
-    <el-form-item label="Status" prop="status">
-      <el-segmented v-model="model.status" :options="[{ label: 'Enabled', value: 'enabled' }, { label: 'Disabled', value: 'disabled' }]" />
+    <el-form-item label="状态" prop="status">
+      <el-segmented v-model="model.status" :options="[{ label: '启用', value: 'enabled' }, { label: '停用', value: 'disabled' }]" />
     </el-form-item>
-    <el-form-item label="Schedule Note">
+    <el-form-item label="排课备注">
       <el-input v-model="model.schedule_note" type="textarea" maxlength="1000" />
     </el-form-item>
-    <el-form-item label="Remark">
+    <el-form-item label="备注">
       <el-input v-model="model.remark" type="textarea" maxlength="500" />
     </el-form-item>
     <el-form-item>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Save
+        保存
       </el-button>
     </el-form-item>
   </el-form>

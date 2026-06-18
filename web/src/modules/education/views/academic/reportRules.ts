@@ -9,7 +9,7 @@ export type ReportState = 'loading' | 'empty' | 'error' | 'forbidden'
 
 export function validateReportDateRange(value: ReportDateRangeValue, requireRange = false, maxDays = 366): string {
   if (requireRange && (!value.start_at || !value.end_at)) {
-    return 'Date range is required'
+    return '请选择日期范围'
   }
   if (!value.start_at || !value.end_at) {
     return ''
@@ -17,14 +17,14 @@ export function validateReportDateRange(value: ReportDateRangeValue, requireRang
   const startAt = new Date(value.start_at.replace(' ', 'T'))
   const endAt = new Date(value.end_at.replace(' ', 'T'))
   if (Number.isNaN(startAt.getTime()) || Number.isNaN(endAt.getTime())) {
-    return 'Date range is invalid'
+    return '日期范围无效'
   }
   if (endAt.getTime() <= startAt.getTime()) {
-    return 'End time must be after start time'
+    return '结束时间必须晚于开始时间'
   }
   const days = (endAt.getTime() - startAt.getTime()) / 86_400_000
   if (days > maxDays) {
-    return `Date range cannot exceed ${maxDays} days`
+    return `日期范围不能超过 ${maxDays} 天`
   }
 
   return ''
@@ -63,10 +63,10 @@ export function reportStateMessage(state: ReportState, message?: string): string
     return message
   }
   const messages: Record<ReportState, string> = {
-    loading: 'Loading report',
-    empty: 'No report data',
-    error: 'Report loading failed',
-    forbidden: 'Permission required',
+    loading: '报表加载中',
+    empty: '暂无报表数据',
+    error: '报表加载失败',
+    forbidden: '暂无查看权限',
   }
 
   return messages[state]
@@ -100,19 +100,32 @@ export function reportTagType(value?: string | null): '' | 'success' | 'warning'
   return ''
 }
 
+export function reportLevelLabel(value?: string | null): string {
+  const labels: Record<string, string> = {
+    normal: '正常',
+    warning: '预警',
+    danger: '高风险',
+    low: '低',
+    medium: '中',
+    high: '高',
+  }
+
+  return value ? labels[value] ?? value : '未知'
+}
+
 export function canShowReportDrillLink(hasPermission: boolean, id?: number | null): boolean {
   return hasPermission && !!id
 }
 
 export function dashboardMetricItems(metrics: Record<string, string | number> = {}): Array<{ title: string, value: string | number, unit?: string }> {
   return [
-    { title: 'Active Students', value: metrics.active_student_count ?? 0 },
-    { title: 'Completed Lessons', value: metrics.completed_lesson_count ?? 0 },
-    { title: 'Attendance', value: metrics.attendance_count ?? 0 },
-    { title: 'Net Consumed', value: metrics.net_consumed_units ?? '0.00', unit: 'units' },
-    { title: 'Available Units', value: metrics.total_available_units ?? '0.00', unit: 'units' },
-    { title: 'Pending Leave', value: metrics.pending_leave_count ?? 0 },
-    { title: 'Unread Notices', value: metrics.unread_notice_receipt_count ?? 0 },
+    { title: '在读学员', value: metrics.active_student_count ?? 0 },
+    { title: '已结课次', value: metrics.completed_lesson_count ?? 0 },
+    { title: '出勤人次', value: metrics.attendance_count ?? 0 },
+    { title: '净课消', value: metrics.net_consumed_units ?? '0.00', unit: '课时' },
+    { title: '可用课时', value: metrics.total_available_units ?? '0.00', unit: '课时' },
+    { title: '待处理请假', value: metrics.pending_leave_count ?? 0 },
+    { title: '未读通知', value: metrics.unread_notice_receipt_count ?? 0 },
   ]
 }
 
