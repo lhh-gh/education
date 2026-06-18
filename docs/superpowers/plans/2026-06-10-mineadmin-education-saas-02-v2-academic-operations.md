@@ -997,23 +997,23 @@ Run `composer test -- --filter Education\\\\Operations`; expected output is all 
 - Create PC API, page, component, and test files listed in `File Structure`.
 - Modify: `mineadmin-education-saas/admin-web/src/router/modules/education.ts`
 
-- [ ] **Step 1: Create typed API clients**
+- [x] **Step 1: Create typed API clients**
 
 Implement the methods listed under `API clients` with request and response TypeScript types matching the API catalog.
 
-- [ ] **Step 2: Add routes and menus**
+- [x] **Step 2: Add routes and menus**
 
 Register every route, route name, menu label, and permission listed in `Routes and menus`.
 
-- [ ] **Step 3: Create page components**
+- [x] **Step 3: Create page components**
 
 Implement every list column, search field, form action, button permission, loading, empty, error, and success state listed in `Page tasks`.
 
-- [ ] **Step 4: Write PC tests**
+- [x] **Step 4: Write PC tests**
 
 Implement all PC test cases listed in `PC tests`.
 
-- [ ] **Step 5: Run PC gate**
+- [x] **Step 5: Run PC gate**
 
 Run `pnpm lint && pnpm test -- operations && pnpm build`; expected output is lint, tests, and build passing.
 
