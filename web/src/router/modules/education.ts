@@ -1278,6 +1278,67 @@ const educationRoutes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: '/education/content',
+        name: 'EducationContent',
+        redirect: '/education/content/materials',
+        meta: {
+          title: 'Content Center',
+          icon: 'material-symbols:folder-managed-outline-rounded',
+          type: 'M',
+          auth: ['education:content:material:page', 'education:content:version:page', 'education:content:attachment:page', 'education:content:relation:page', 'education:content:student-work:page', 'education:content:showcase:page', 'education:content:review:page', 'education:content:metric:page'],
+        },
+        children: [
+          {
+            path: '/education/content/materials',
+            name: 'EducationContentLearningMaterialList',
+            component: () => import('~/education/views/content/LearningMaterialList.vue'),
+            meta: { title: 'Materials', icon: 'material-symbols:folder-open-outline-rounded', type: 'M', auth: ['education:content:material:page'], cache: true },
+          },
+          {
+            path: '/education/content/material-versions',
+            name: 'EducationContentMaterialVersionList',
+            component: () => import('~/education/views/content/MaterialVersionList.vue'),
+            meta: { title: 'Versions', icon: 'material-symbols:published-with-changes-rounded', type: 'M', auth: ['education:content:version:page'], cache: true },
+          },
+          {
+            path: '/education/content/attachments',
+            name: 'EducationContentMaterialAttachmentList',
+            component: () => import('~/education/views/content/MaterialAttachmentList.vue'),
+            meta: { title: 'Attachments', icon: 'material-symbols:attach-file-rounded', type: 'M', auth: ['education:content:attachment:page'], cache: true },
+          },
+          {
+            path: '/education/content/relations',
+            name: 'EducationContentMaterialRelationEditor',
+            component: () => import('~/education/views/content/MaterialRelationEditor.vue'),
+            meta: { title: 'Relations', icon: 'material-symbols:account-tree-outline-rounded', type: 'M', auth: ['education:content:relation:page'], cache: true },
+          },
+          {
+            path: '/education/content/student-works',
+            name: 'EducationContentStudentWorkList',
+            component: () => import('~/education/views/content/StudentWorkList.vue'),
+            meta: { title: 'Student Works', icon: 'material-symbols:assignment-outline-rounded', type: 'M', auth: ['education:content:student-work:page'], cache: true },
+          },
+          {
+            path: '/education/content/showcases',
+            name: 'EducationContentShowcaseList',
+            component: () => import('~/education/views/content/ShowcaseList.vue'),
+            meta: { title: 'Showcases', icon: 'material-symbols:workspace-premium-outline-rounded', type: 'M', auth: ['education:content:showcase:page'], cache: true },
+          },
+          {
+            path: '/education/content/reviews',
+            name: 'EducationContentContentReviewList',
+            component: () => import('~/education/views/content/ContentReviewList.vue'),
+            meta: { title: 'Reviews', icon: 'material-symbols:approval-delegation-outline-rounded', type: 'M', auth: ['education:content:review:page'], cache: true },
+          },
+          {
+            path: '/education/content/metrics',
+            name: 'EducationContentMaterialUsageDashboard',
+            component: () => import('~/education/views/content/MaterialUsageDashboard.vue'),
+            meta: { title: 'Usage Metrics', icon: 'material-symbols:monitoring-outline-rounded', type: 'M', auth: ['education:content:metric:page'], cache: true },
+          },
+        ],
+      },
+      {
         path: '/education/group',
         name: 'EducationGroup',
         redirect: '/education/group/dashboard',
