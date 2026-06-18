@@ -15,6 +15,7 @@ namespace App\Service\Education\Workflow;
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
 use App\Model\Education\Workflow\EducationWorkflowTask;
+use App\Model\Education\Workflow\EducationWorkflowTaskAssignee;
 use App\Repository\Education\Workflow\WorkflowTaskLogRepository;
 use App\Repository\Education\Workflow\WorkflowTaskRepository;
 use Carbon\Carbon;
@@ -110,6 +111,42 @@ final class WorkflowTaskService
             'updated_by' => $userId,
         ]);
         $this->writeLog($task, $userId, 'commented', $this->statusValue($task->status), $this->statusValue($task->status), $content);
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageTasks(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationWorkflowTask::query()->where('tenant_id', $tenantId);
+        if (($filters['status'] ?? '') !== '') {
+            $query->where('status', $filters['status']);
+        }
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function myTasks(int $tenantId, int $userId, array $filters = []): array
+    {
+        $taskIds = EducationWorkflowTaskAssignee::query()
+            ->where('tenant_id', $tenantId)
+            ->where('user_id', $userId)
+            ->pluck('workflow_task_id')
+            ->all();
+        $query = EducationWorkflowTask::query()->where('tenant_id', $tenantId)->whereIn('id', $taskIds);
+        if (($filters['status'] ?? '') !== '') {
+            $query->where('status', $filters['status']);
+        }
+        $list = $query->orderByDesc('id')->get()->toArray();
+
+        return ['list' => $list, 'total' => \count($list)];
     }
 
     /**

@@ -83,4 +83,32 @@ final class AlertService
 
         return ['alert_id' => $alertId, 'converted_task_id' => $task['task_id'], 'status' => 'converted'];
     }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationOperationAlert::query()->where('tenant_id', $tenantId);
+        if (($filters['status'] ?? '') !== '') {
+            $query->where('status', $filters['status']);
+        }
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @return array{alert_id: int, status: string}
+     */
+    public function setStatus(int $alertId, string $status): array
+    {
+        $alert = EducationOperationAlert::query()->findOrFail($alertId);
+        $alert->status = $status;
+        $alert->save();
+
+        return ['alert_id' => $alertId, 'status' => $status];
+    }
 }

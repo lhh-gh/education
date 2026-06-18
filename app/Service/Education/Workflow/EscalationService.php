@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Workflow;
 
+use App\Model\Education\Workflow\EducationWorkflowEscalationPolicy;
 use App\Repository\Education\Workflow\EscalationPolicyRepository;
 use App\Repository\Education\Workflow\WorkflowTaskRepository;
 use Carbon\Carbon;
@@ -47,5 +48,16 @@ final class EscalationService
         }
 
         return ['escalated_count' => $count];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array{policy_id: int}
+     */
+    public function savePolicy(array $data): array
+    {
+        $policy = EducationWorkflowEscalationPolicy::query()->create($data);
+
+        return ['policy_id' => (int) $policy->id];
     }
 }

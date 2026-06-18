@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Workflow;
 
+use App\Model\Education\Workflow\EducationWorkflowSlaPolicy;
 use App\Repository\Education\Workflow\WorkflowTaskRepository;
 use Carbon\Carbon;
 
@@ -38,5 +39,16 @@ final class SlaService
         }
 
         return ['overdue_count' => $count];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array{policy_id: int}
+     */
+    public function savePolicy(array $data): array
+    {
+        $policy = EducationWorkflowSlaPolicy::query()->create($data);
+
+        return ['policy_id' => (int) $policy->id];
     }
 }
