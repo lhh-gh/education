@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace App\Model\Education\Ai;
 
-use App\Model\Enums\Education\Ai\AiTaskStatus;
 use Hyperf\DbConnection\Model\Model;
 
 class EducationAiRecommendationTask extends Model
@@ -27,7 +26,7 @@ class EducationAiRecommendationTask extends Model
 
     protected array $casts = [
         'id' => 'integer', 'tenant_id' => 'integer', 'campus_id' => 'integer', 'target_id' => 'integer',
-        'assignee_user_id' => 'integer', 'status' => AiTaskStatus::class, 'recommendation_json' => 'array',
+        'assignee_user_id' => 'integer', 'recommendation_json' => 'array',
         'handled_at' => 'datetime', 'created_by' => 'integer', 'updated_by' => 'integer',
         'created_at' => 'datetime', 'updated_at' => 'datetime',
     ];
