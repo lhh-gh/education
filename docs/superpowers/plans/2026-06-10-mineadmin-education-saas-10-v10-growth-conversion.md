@@ -508,10 +508,10 @@ V10 is accepted only when:
 
 ### Task 2: Repositories and Services
 
-- [ ] Create repositories for scores, strategies, scripts, funnel, ROI, consultant metrics, loss reasons, and campaigns.
-- [ ] Create services for score calculation, suggestions, AI scripts, trial feedback, ROI, metrics, loss, funnel, and workbench.
-- [ ] Write unit tests listed in `Test Plan`.
-- [ ] Run `composer test -- --filter Education\\\\Growth.*ServiceTest`; expected output is all growth service tests passing.
+- [x] Create repositories for scores, strategies, scripts, funnel, ROI, consultant metrics, loss reasons, and campaigns.
+- [x] Create services for score calculation, suggestions, AI scripts, trial feedback, ROI, metrics, loss, funnel, and workbench.
+- [x] Write unit tests listed in `Test Plan`.
+- [x] Run `composer test -- --filter Education\\\\Growth.*ServiceTest`; expected output is all growth service tests passing.
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
