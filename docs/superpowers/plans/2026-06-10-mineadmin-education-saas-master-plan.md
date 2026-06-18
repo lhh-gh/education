@@ -825,7 +825,7 @@ Use this status table:
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |
 | 10 V10 Growth | growth conversion | accepted | implemented / accepted |
 | 11 V11 Standards | course standards | accepted | implemented / accepted |
-| 12 V12 Content | learning content | ready | incomplete / not implemented |
+| 12 V12 Content | learning content | accepted | implemented / accepted |
 ```
 
 - [ ] **Step 2: Mark a detailed plan as ready only after self-review**
@@ -882,7 +882,7 @@ done
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |
 | 10 V10 Growth | growth conversion | accepted | implemented / accepted |
 | 11 V11 Standards | course standards | accepted | implemented / accepted |
-| 12 V12 Content | learning content | ready | incomplete / not implemented |
+| 12 V12 Content | learning content | accepted | implemented / accepted |
 
 ## Self-Review
 
