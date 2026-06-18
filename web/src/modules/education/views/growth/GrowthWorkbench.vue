@@ -46,7 +46,7 @@ onMounted(loadWorkbench)
           <el-input-number v-model="filters.owner_user_id" :min="1" controls-position="right" />
         </el-form-item>
         <el-form-item label="Level">
-          <el-select v-model="filters.score_level" clearable style="width: 150px">
+          <el-select v-model="filters.score_level" clearable style="width: 150px;">
             <el-option label="Hot" value="hot" />
             <el-option label="High" value="high" />
           </el-select>

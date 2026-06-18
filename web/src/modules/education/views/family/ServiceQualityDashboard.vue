@@ -95,8 +95,8 @@ onMounted(loadRows)
 }
 
 .metric-title {
-  color: var(--el-text-color-secondary);
   font-size: 13px;
+  color: var(--el-text-color-secondary);
 }
 
 .metric-value {

@@ -4,7 +4,7 @@ import { containsBlockedAiPromise } from '../growthRules.ts'
 defineOptions({ name: 'EducationGrowthAiTalkScriptEditor' })
 
 const props = defineProps<{ modelValue: string }>()
-const emit = defineEmits<{ 'update:modelValue': [value: string], confirm: [value: string] }>()
+const emit = defineEmits<{ 'update:modelValue': [value: string], 'confirm': [value: string] }>()
 
 const localValue = computed({
   get: () => props.modelValue,

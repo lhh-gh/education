@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { consultantMetricFilterPayload, consultantConversionRate } from '../growthRules.ts'
+import { consultantConversionRate, consultantMetricFilterPayload } from '../growthRules.ts'
 
 describe('consultant metric dashboard', () => {
   it('sends_consultant_and_date_filters', () => {

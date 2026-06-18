@@ -122,6 +122,7 @@ onMounted(loadRows)
 <style scoped lang="scss">
 .education-finance-page {
   .page-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+
   .page-alert,
   .search-form { margin-bottom: 12px; }
   .page-pagination { justify-content: flex-end; margin-top: 16px; }

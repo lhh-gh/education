@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { generateAiTalkScript, confirmAiTalkScript } from '../../../api/growth/ai-script.ts'
+import { confirmAiTalkScript, generateAiTalkScript } from '../../../api/growth/ai-script.ts'
 import { saveGrowthCampaign } from '../../../api/growth/campaign.ts'
 import { getChannelRoi, saveChannelCost } from '../../../api/growth/channel-roi.ts'
 import { getConsultantMetrics } from '../../../api/growth/consultant-metric.ts'

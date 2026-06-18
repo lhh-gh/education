@@ -170,7 +170,7 @@ export interface AccountLedgerRecord {
 export type CourseSavePayload = Omit<Partial<CourseRecord>, 'id' | 'created_at' | 'updated_at' | 'teacher_count' | 'package_count'> & Pick<CourseRecord, 'campus_id' | 'code' | 'name' | 'unit_minutes' | 'status'>
 export type LessonPackageSavePayload = Omit<Partial<LessonPackageRecord>, 'id' | 'created_at' | 'updated_at' | 'course_name' | 'total_units'> & Pick<LessonPackageRecord, 'campus_id' | 'course_id' | 'code' | 'name' | 'lesson_units' | 'bonus_units' | 'list_price' | 'sale_price' | 'status'>
 export type EnrollmentCreatePayload = Pick<EnrollmentRecord, 'campus_id' | 'student_id' | 'course_id' | 'lesson_package_id'> & Partial<Pick<EnrollmentRecord, 'deal_amount' | 'enrolled_at' | 'remark' | 'tenant_id'>>
-export type EnrollmentCreateResult = {
+export interface EnrollmentCreateResult {
   enrollment: EnrollmentRecord
   account: StudentCourseAccountRecord | null
 }

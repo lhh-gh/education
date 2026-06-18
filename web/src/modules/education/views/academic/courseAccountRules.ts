@@ -73,7 +73,7 @@ export function computePackageTotal(lessonUnits: number | string, bonusUnits: nu
 export function enrollmentSuccessSummary(result: EnrollmentCreateResult): string {
   const accountText = result.account ? `account ${result.account.id}` : 'pending account'
   const availableText = result.account ? result.account.available_units : 'pending'
-  const separator = ' \u00b7 '
+  const separator = ' \u00B7 '
 
   return `${result.enrollment.enrollment_no}${separator}${accountText}${separator}available ${availableText}`
 }
