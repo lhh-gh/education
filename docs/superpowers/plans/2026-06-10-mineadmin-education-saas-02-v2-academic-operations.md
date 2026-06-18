@@ -966,27 +966,27 @@ Run `composer test -- --filter Education\\\\Operations.*ServiceTest`; expected o
 - Create request, controller, and schema files listed in `File Structure`.
 - Test: feature/API tests listed in `Test Plan`.
 
-- [ ] **Step 1: Create request classes**
+- [x] **Step 1: Create request classes**
 
 Implement validation rules and messages exactly as listed in `Request validation`.
 
-- [ ] **Step 2: Create schemas**
+- [x] **Step 2: Create schemas**
 
 Document request, success, validation failure, and business failure payloads from the API catalog.
 
-- [ ] **Step 3: Create admin controllers**
+- [x] **Step 3: Create admin controllers**
 
 Implement endpoint matrix permissions, request injection, service calls, result envelope, and audit logging.
 
-- [ ] **Step 4: Create mobile controllers**
+- [x] **Step 4: Create mobile controllers**
 
 Implement teacher and guardian endpoints with F06 mobile context and role isolation checks.
 
-- [ ] **Step 5: Write feature tests**
+- [x] **Step 5: Write feature tests**
 
 Implement API, permission, isolation, and audit tests listed in `Feature/API tests`.
 
-- [ ] **Step 6: Run backend feature gate**
+- [x] **Step 6: Run backend feature gate**
 
 Run `composer test -- --filter Education\\\\Operations`; expected output is all V2 backend tests passing.
 
