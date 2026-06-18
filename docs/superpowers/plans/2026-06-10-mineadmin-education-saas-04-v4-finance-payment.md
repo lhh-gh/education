@@ -566,11 +566,11 @@ V4 is accepted only when:
 
 ### Task 4: PC Admin
 
-- [ ] Create typed API clients.
-- [ ] Register finance routes and menus in `education.ts`.
-- [ ] Create order, payment, channel, refund, receipt, reconciliation, and dashboard pages.
-- [ ] Write PC tests listed in `Test Plan`.
-- [ ] Run `pnpm lint && pnpm test -- finance && pnpm build`; expected output is all PC gates passing.
+- [x] Create typed API clients.
+- [x] Register finance routes and menus in `education.ts`.
+- [x] Create order, payment, channel, refund, receipt, reconciliation, and dashboard pages.
+- [x] Write PC tests listed in `Test Plan`.
+- [x] Run `pnpm lint && pnpm test -- finance && pnpm build`; expected output is all PC gates passing.
 
 ### Task 5: Guardian Mobile
 
