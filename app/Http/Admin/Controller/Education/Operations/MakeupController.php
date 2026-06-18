@@ -51,7 +51,7 @@ final class MakeupController extends AbstractController
     #[Permission(code: 'education:operations:makeup:page')]
     public function entitlements(MakeupEntitlementPageRequest $request): Result
     {
-        return $this->success($this->entitlementRepository->pageAvailable($request->validated(), $this->context()->tenantId));
+        return $this->success($this->entitlementRepository->pageAvailable($request->validated(), $this->context()));
     }
 
     #[Post(path: '/admin/education/operations/makeup-entitlements/{id}/arrange', operationId: 'educationOperationMakeupArrange', summary: 'Arrange makeup', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
@@ -78,7 +78,7 @@ final class MakeupController extends AbstractController
     #[Permission(code: 'education:operations:makeup:page')]
     public function records(MakeupEntitlementPageRequest $request): Result
     {
-        return $this->success($this->recordRepository->pageByStudent($request->validated(), $this->context()->tenantId));
+        return $this->success($this->recordRepository->pageByStudent($request->validated(), $this->context()));
     }
 
     private function context(): EducationUserContext

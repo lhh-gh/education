@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Operations;
 
 use App\Repository\Education\Operations\DailyOperationMetricRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class OperationDashboardService
 {
@@ -23,11 +24,11 @@ final class OperationDashboardService
         return $this->repository->upsertDailyMetric($data)->toArray();
     }
 
-    public function overview(int $tenantId, ?int $campusId = null): array
+    public function overview(EducationUserContext $context, ?int $campusId = null): array
     {
         return [
-            'summary' => $this->repository->dashboardSummary($tenantId, $campusId),
-            'trend' => $this->repository->trend($tenantId, $campusId),
+            'summary' => $this->repository->dashboardSummary($context, $campusId),
+            'trend' => $this->repository->trend($context, $campusId),
         ];
     }
 }

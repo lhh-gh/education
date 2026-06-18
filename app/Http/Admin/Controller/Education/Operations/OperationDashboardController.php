@@ -44,7 +44,7 @@ final class OperationDashboardController extends AbstractController
     {
         $params = $request->validated();
 
-        return $this->success($this->service->overview($this->context()->tenantId, isset($params['campus_id']) ? (int) $params['campus_id'] : null));
+        return $this->success($this->service->overview($this->context(), isset($params['campus_id']) ? (int) $params['campus_id'] : null));
     }
 
     private function context(): EducationUserContext
