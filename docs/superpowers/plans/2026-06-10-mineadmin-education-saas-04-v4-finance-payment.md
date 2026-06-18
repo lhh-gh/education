@@ -574,11 +574,11 @@ V4 is accepted only when:
 
 ### Task 5: Guardian Mobile
 
-- [ ] Create guardian finance API client.
-- [ ] Register guardian finance pages in `pages.json`.
-- [ ] Implement orders, details, receipts, and refunds with selected-student isolation.
-- [ ] Write `guardian-finance.spec.ts`.
-- [ ] Run `pnpm lint && pnpm test -- finance && pnpm build:h5`; expected output is all mobile gates passing.
+- [x] Create guardian finance API client.
+- [x] Register guardian finance pages in `pages.json`.
+- [x] Implement orders, details, receipts, and refunds with selected-student isolation.
+- [x] Write `guardian-finance.spec.ts`.
+- [x] Run `pnpm lint && pnpm test -- finance && pnpm build:h5`; expected output is all mobile gates passing.
 
 ### Task 6: V4 Final Gate
 
