@@ -823,7 +823,7 @@ Use this status table:
 | 07 V7 Family | family service | ready | implemented / accepted |
 | 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |
-| 10 V10 Growth | growth conversion | ready | incomplete / not implemented |
+| 10 V10 Growth | growth conversion | accepted | implemented / accepted |
 | 11 V11 Standards | course standards | ready | incomplete / not implemented |
 | 12 V12 Content | learning content | ready | incomplete / not implemented |
 ```
@@ -880,7 +880,7 @@ done
 | 07 V7 Family | family service | ready | implemented / accepted |
 | 08 V8 AI | AI assistant | ready | implemented / accepted |
 | 09 V9 Workflow | workflow and alerts | accepted | implemented / accepted |
-| 10 V10 Growth | growth conversion | ready | incomplete / not implemented |
+| 10 V10 Growth | growth conversion | accepted | implemented / accepted |
 | 11 V11 Standards | course standards | ready | incomplete / not implemented |
 | 12 V12 Content | learning content | ready | incomplete / not implemented |
 
