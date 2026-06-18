@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+/**
+ * This file is part of MineAdmin.
+ *
+ * @link     https://www.mineadmin.com
+ * @document https://doc.mineadmin.com
+ * @contact  root@imoi.cn
+ * @license  https://github.com/mineadmin/MineAdmin/blob/master/LICENSE
+ */
+
+namespace App\Service\Education\Workflow;
+
+use App\Repository\Education\Workflow\WorkflowTemplateRepository;
+
+final class WorkflowTemplateService
+{
+    public function __construct(
+        private readonly WorkflowTemplateRepository $templateRepository
+    ) {}
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array{template_id: int}
+     */
+    public function save(array $data): array
+    {
+        $template = $this->templateRepository->create($data);
+
+        return ['template_id' => (int) $template->id];
+    }
+}
