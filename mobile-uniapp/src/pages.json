@@ -183,6 +183,26 @@
       }
     },
     {
+      "path": "pages/teacher/ai/comment-drafts",
+      "style": {
+        "navigationBarTitleText": "AI Comment Drafts"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/ai/comment-draft-detail",
+      "style": {
+        "navigationBarTitleText": "AI Comment Draft"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
