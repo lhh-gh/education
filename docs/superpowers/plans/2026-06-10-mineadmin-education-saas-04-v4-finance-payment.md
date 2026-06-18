@@ -8,7 +8,7 @@
 
 **Tech Stack:** MineAdmin 3.x, Hyperf 3.1, PHP 8.3+, MySQL 8, Redis queue, WeChat Pay adapter boundary, MineAdmin-Vue, Vue3, TypeScript, uni-app, pnpm, PHPUnit/co-phpunit.
 
-**Status:** ready
+**Status:** accepted
 
 **Completion:** implemented / accepted. Final backend, PC, and mobile gates passed.
 
@@ -582,13 +582,13 @@ V4 is accepted only when:
 
 ### Task 6: V4 Final Gate
 
-- [ ] Run all backend, PC, and mobile commands in `Execution Commands`.
-- [ ] Confirm acceptance gate behavior with seeded paid, unpaid, refunded, and reconciled orders.
-- [ ] Update status index only after all gates pass during implementation.
+- [x] Run all backend, PC, and mobile commands in `Execution Commands`.
+- [x] Confirm acceptance gate behavior with seeded paid, unpaid, refunded, and reconciled orders.
+- [x] Update status index only after all gates pass during implementation.
 
 ## Self-Review
 
 - Spec coverage: Covers orders, items, channels, payment records, callbacks, offline collection, refunds, receipts, reconciliation, guardian lookup, finance dashboard, permissions, and audit.
 - MineAdmin fit: Uses MineAdmin 3.x backend paths, PC pages, and uni-app guardian pages.
 - Code-level readiness: Migration fields, indexes, rollback, API failures, backend layer tasks, PC/mobile states, tests, commands, and acceptance gates are specified.
-- Implementation status: No code has been implemented; this is a ready implementation plan only.
+- Implementation status: V4 code, tests, and gates have been implemented and accepted in this repository.
