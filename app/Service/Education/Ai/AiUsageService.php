@@ -35,4 +35,16 @@ final class AiUsageService
             'cost_cents' => (int) $query->sum('cost_cents'),
         ];
     }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiUsageLog::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('usage_date')->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
 }

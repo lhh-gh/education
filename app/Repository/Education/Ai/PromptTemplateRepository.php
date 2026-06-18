@@ -36,4 +36,13 @@ final class PromptTemplateRepository
             ->orderByDesc('version')
             ->first();
     }
+
+    public function byCodeVersion(int $tenantId, string $templateCode, int $version): ?EducationAiPromptTemplate
+    {
+        return EducationAiPromptTemplate::query()
+            ->where('tenant_id', $tenantId)
+            ->where('template_code', $templateCode)
+            ->where('version', $version)
+            ->first();
+    }
 }

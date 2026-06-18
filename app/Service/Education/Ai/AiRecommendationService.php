@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Ai;
 
+use App\Model\Education\Ai\EducationAiRecommendationTask;
 use App\Repository\Education\Ai\AiRecommendationRepository;
 
 final class AiRecommendationService
@@ -32,5 +33,17 @@ final class AiRecommendationService
     public function markHandled(int $id): void
     {
         $this->repository->markHandled($id);
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiRecommendationTask::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

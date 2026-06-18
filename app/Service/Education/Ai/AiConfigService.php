@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Ai;
 
+use App\Model\Education\Ai\EducationAiModelConfig;
 use App\Repository\Education\Ai\AiConfigRepository;
 
 final class AiConfigService
@@ -42,5 +43,17 @@ final class AiConfigService
         $setting = $this->repository->saveFeatureSetting($data);
 
         return ['id' => (int) $setting->id, 'feature_code' => (string) $setting->feature_code];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageModelConfigs(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiModelConfig::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Ai;
 
+use App\Model\Education\Ai\EducationAiRiskScore;
 use App\Repository\Education\Ai\RiskPredictionRepository;
 
 final class RiskPredictionService
@@ -49,5 +50,17 @@ final class RiskPredictionService
         }
 
         return ['risk_score_id' => (int) $score->id];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiRiskScore::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('score_date')->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

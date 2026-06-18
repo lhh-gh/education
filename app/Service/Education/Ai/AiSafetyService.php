@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Ai;
 
+use App\Model\Education\Ai\EducationAiSafetyEvent;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiSafetyRepository;
 use Carbon\Carbon;
@@ -48,5 +49,26 @@ final class AiSafetyService
         ]);
 
         return ['safety_event_id' => (int) $event->id];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiSafetyEvent::query()->where('tenant_id', $tenantId);
+        if (($filters['risk_level'] ?? '') !== '') {
+            $query->where('risk_level', $filters['risk_level']);
+        }
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
+
+    public function markHandled(int $id): void
+    {
+        EducationAiSafetyEvent::query()->where('id', $id)->update(['handled' => true]);
     }
 }

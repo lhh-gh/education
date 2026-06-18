@@ -14,6 +14,7 @@ namespace App\Service\Education\Ai;
 
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
+use App\Model\Education\Ai\EducationAiGenerationTask;
 use App\Repository\Education\Ai\AiConfigRepository;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiUsageRepository;
@@ -63,6 +64,60 @@ final class AiGenerationService
         ]);
 
         return ['task_id' => (int) $task->id, 'status' => 'queued'];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array{task_id: int, status: string}
+     */
+    public function requestAdminGenerationTask(array $data, EducationUserContext $context): array
+    {
+        $tenantId = (int) $context->tenantId;
+        $featureCode = (string) $data['feature_code'];
+        $feature = $this->configRepository->enabledFeature($tenantId, $featureCode);
+        $prompt = $this->promptRepository->publishedForFeature($tenantId, $featureCode);
+        if ($feature === null || $prompt === null) {
+            throw new BusinessException(ResultCode::CONFLICT, 'ai feature is not configured', ['feature_code' => $featureCode]);
+        }
+
+        $task = $this->generationRepository->createTask([
+            'tenant_id' => $tenantId,
+            'campus_id' => $context->currentCampusId,
+            'task_no' => uniqid('AIT', true),
+            'feature_code' => $featureCode,
+            'model_config_id' => (int) $feature->model_config_id,
+            'prompt_template_id' => (int) $prompt->id,
+            'business_type' => (string) $data['business_type'],
+            'business_id' => $data['business_id'] ?? null,
+            'requester_user_id' => $context->userId,
+            'status' => 'queued',
+            'context_hash' => hash('sha256', json_encode($data, \JSON_THROW_ON_ERROR)),
+            'queued_at' => Carbon::now(),
+            'created_by' => $context->userId,
+            'updated_by' => $context->userId,
+        ]);
+
+        return ['task_id' => (int) $task->id, 'status' => 'queued'];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageTasks(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiGenerationTask::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function resultDetail(int $id): array
+    {
+        return $this->generationRepository->result($id)->toArray();
     }
 
     /**

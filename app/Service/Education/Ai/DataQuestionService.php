@@ -14,6 +14,8 @@ namespace App\Service\Education\Ai;
 
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
+use App\Model\Education\Ai\EducationAiDataQuestionLog;
+use App\Model\Education\Ai\EducationAiMetricCatalog;
 use App\Repository\Education\Ai\AiMetricCatalogRepository;
 use App\Repository\Education\Ai\DataQuestionRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -62,5 +64,29 @@ final class DataQuestionService
         ]);
 
         return ['question_log_id' => (int) $log->id, 'status' => 'succeeded', 'answer_text' => $answer];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageLogs(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiDataQuestionLog::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageMetricCatalogs(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiMetricCatalog::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderBy('metric_group')->orderBy('metric_code')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

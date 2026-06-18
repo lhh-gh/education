@@ -14,6 +14,7 @@ namespace App\Service\Education\Ai;
 
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
+use App\Model\Education\Ai\EducationAiGenerationResult;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiReviewRepository;
 use App\Service\Education\Foundation\EducationUserContext;
@@ -29,13 +30,16 @@ final class AiReviewService
     /**
      * @return array{generation_result_id: int, review_status: string}
      */
-    public function approve(int $resultId, EducationUserContext $context, string $note = ''): array
+    public function approve(int $resultId, EducationUserContext $context, string $note = '', ?string $editedText = null): array
     {
         $result = $this->generationRepository->result($resultId);
         if ($result->safety_status instanceof \BackedEnum && $result->safety_status->value === 'blocked') {
             throw new BusinessException(ResultCode::CONFLICT, 'ai result was blocked by safety policy', ['generation_result_id' => $resultId]);
         }
 
+        if ($editedText !== null && $editedText !== '') {
+            $result->result_text = $editedText;
+        }
         $result->review_status = 'approved';
         $result->visible_to_guardian = false;
         $result->updated_by = $context->userId;
@@ -53,5 +57,17 @@ final class AiReviewService
         ]);
 
         return ['generation_result_id' => $resultId, 'review_status' => 'approved'];
+    }
+
+    /**
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pagePending(int $tenantId, int $page = 1, int $pageSize = 20): array
+    {
+        $query = EducationAiGenerationResult::query()->where('tenant_id', $tenantId);
+        $total = (int) $query->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }
