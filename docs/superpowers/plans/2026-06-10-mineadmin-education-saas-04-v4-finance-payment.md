@@ -551,10 +551,10 @@ V4 is accepted only when:
 
 ### Task 2: Repositories and Services
 
-- [ ] Create repositories with tenant/campus filters, row lock methods, and idempotency lookups.
-- [ ] Create services for order, channel, payment, callback, offline collection, refund, receipt, reconciliation, and dashboard.
-- [ ] Write unit tests for payment idempotency, refund safety, reconciliation matching, and order duplication.
-- [ ] Run `composer test -- --filter Education\\\\Finance.*ServiceTest`; expected output is all finance service tests passing.
+- [x] Create repositories with tenant/campus filters, row lock methods, and idempotency lookups.
+- [x] Create services for order, channel, payment, callback, offline collection, refund, receipt, reconciliation, and dashboard.
+- [x] Write unit tests for payment idempotency, refund safety, reconciliation matching, and order duplication.
+- [x] Run `composer test -- --filter Education\\\\Finance.*ServiceTest`; expected output is all finance service tests passing.
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
