@@ -243,6 +243,56 @@
       }
     },
     {
+      "path": "pages/teacher/content/materials",
+      "style": {
+        "navigationBarTitleText": "Learning Materials"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/material-detail",
+      "style": {
+        "navigationBarTitleText": "Material Detail"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/favorites",
+      "style": {
+        "navigationBarTitleText": "Favorite Materials"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/lesson-material-usage",
+      "style": {
+        "navigationBarTitleText": "Use Material"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
+      "path": "pages/teacher/content/student-work-form",
+      "style": {
+        "navigationBarTitleText": "Student Work"
+      },
+      "meta": {
+        "role": "teacher",
+        "requiresProfile": "teacher"
+      }
+    },
+    {
       "path": "pages/guardian/index",
       "style": {
         "navigationBarTitleText": "Guardian"
@@ -437,6 +487,50 @@
       "path": "pages/guardian/family/messages",
       "style": {
         "navigationBarTitleText": "Family Messages"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/materials",
+      "style": {
+        "navigationBarTitleText": "Learning Materials"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/material-detail",
+      "style": {
+        "navigationBarTitleText": "Material Detail"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/showcases",
+      "style": {
+        "navigationBarTitleText": "Showcases"
+      },
+      "meta": {
+        "role": "guardian",
+        "requiresProfile": "guardian",
+        "requiresSelectedStudent": true
+      }
+    },
+    {
+      "path": "pages/guardian/content/showcase-detail",
+      "style": {
+        "navigationBarTitleText": "Showcase Detail"
       },
       "meta": {
         "role": "guardian",

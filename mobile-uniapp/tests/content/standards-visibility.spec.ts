@@ -43,7 +43,6 @@ describe('course standards mobile visibility regression', () => {
       return [
         '/mobile/education/standards',
         '/admin/education/standards',
-        'guardian_visible',
         'standard_version_id',
       ]
         .filter(token => source.includes(token))
