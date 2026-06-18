@@ -944,7 +944,7 @@ Commit succeeds with Docker service files.
 - Create: `mineadmin-education-saas/scripts/smoke-admin-web.sh`
 - Create: `mineadmin-education-saas/scripts/smoke-mobile.sh`
 
-- [ ] **Step 1: Create scripts directory**
+- [x] **Step 1: Create scripts directory**
 
 Run:
 
@@ -959,7 +959,7 @@ Expected:
 scripts directory exists.
 ```
 
-- [ ] **Step 2: Create runtime checker**
+- [x] **Step 2: Create runtime checker**
 
 Write `mineadmin-education-saas/scripts/check-runtime.sh`:
 
@@ -1007,7 +1007,7 @@ Expected:
 Script exits 0 and prints runtime ok when required local tools and PHP extensions exist.
 ```
 
-- [ ] **Step 3: Create service checker**
+- [x] **Step 3: Create service checker**
 
 Write `mineadmin-education-saas/scripts/check-services.sh`:
 
@@ -1029,7 +1029,7 @@ Expected:
 Script exits 0 and prints services ok when MySQL and Redis are reachable.
 ```
 
-- [ ] **Step 4: Create backend smoke script**
+- [x] **Step 4: Create backend smoke script**
 
 Write `mineadmin-education-saas/scripts/smoke-backend.sh`:
 
@@ -1070,7 +1070,7 @@ Expected:
 Script exits 0, confirms Hyperf command list, confirms /health code 200, and runs EnvironmentHealthTest.
 ```
 
-- [ ] **Step 5: Create PC admin smoke script**
+- [x] **Step 5: Create PC admin smoke script**
 
 Write `mineadmin-education-saas/scripts/smoke-admin-web.sh`:
 
@@ -1094,7 +1094,7 @@ Expected:
 Script exits 0 and dist/index.html exists.
 ```
 
-- [ ] **Step 6: Create mobile smoke script**
+- [x] **Step 6: Create mobile smoke script**
 
 Write `mineadmin-education-saas/scripts/smoke-mobile.sh`:
 
@@ -1117,7 +1117,7 @@ Expected:
 Script exits 0 and dist/build/h5/index.html exists.
 ```
 
-- [ ] **Step 7: Make scripts executable**
+- [x] **Step 7: Make scripts executable**
 
 Run:
 
@@ -1133,7 +1133,7 @@ Expected:
 runtime ok
 ```
 
-- [ ] **Step 8: Commit smoke scripts**
+- [x] **Step 8: Commit smoke scripts**
 
 Run:
 
