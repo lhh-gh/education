@@ -539,11 +539,11 @@ V12 is accepted only when:
 
 ### Task 4: PC Admin
 
-- [ ] Create typed API clients.
-- [ ] Register content routes and menus in `education.ts`.
-- [ ] Create material, version, attachment, relation, student work, showcase, review, and metrics pages.
-- [ ] Write PC tests listed in `Test Plan`.
-- [ ] Run `pnpm lint && pnpm test -- content && pnpm build`; expected output is all PC gates passing.
+- [x] Create typed API clients.
+- [x] Register content routes and menus in `education.ts`.
+- [x] Create material, version, attachment, relation, student work, showcase, review, and metrics pages.
+- [x] Write PC tests listed in `Test Plan`.
+- [x] Run `pnpm lint && pnpm test -- content && pnpm build`; expected output is all PC gates passing.
 
 ### Task 5: Teacher and Guardian Mobile
 
