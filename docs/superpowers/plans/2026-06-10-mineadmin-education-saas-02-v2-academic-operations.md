@@ -916,23 +916,23 @@ V2 is accepted only when:
 - Create migration, enum, and model files listed in `File Structure`.
 - Test: `mineadmin-education-saas/backend/tests/Feature/Education/Operations/AcademicOperationMigrationTest.php`
 
-- [ ] **Step 1: Write migration from the table design**
+- [x] **Step 1: Write migration from the table design**
 
 Implement every table, column, index, soft delete, and reverse-order rollback exactly as defined in `Database Migration Design`.
 
-- [ ] **Step 2: Create enums**
+- [x] **Step 2: Create enums**
 
 Create enum classes with the values listed in `MineAdmin Backend Module Design`.
 
-- [ ] **Step 3: Create models**
+- [x] **Step 3: Create models**
 
 Create models with table names, fillable fields, casts, tenant/campus scope helpers, and SoftDeletes for mutable tables.
 
-- [ ] **Step 4: Write migration tests**
+- [x] **Step 4: Write migration tests**
 
 Assert table existence, tenant/campus columns, unique indexes, decimal columns, JSON columns, and rollback safety.
 
-- [ ] **Step 5: Run migration gate**
+- [x] **Step 5: Run migration gate**
 
 Run `php bin/hyperf.php migrate`; expected output is successful creation of all V2 operation tables.
 
