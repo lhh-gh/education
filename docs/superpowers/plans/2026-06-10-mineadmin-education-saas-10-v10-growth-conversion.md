@@ -515,11 +515,11 @@ V10 is accepted only when:
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
-- [ ] Create request classes with lead, strategy, script, cost, loss, campaign, dashboard, and teacher trial feedback validation.
-- [ ] Create schemas matching the API catalog.
-- [ ] Create admin and teacher mobile controllers with permissions, Result envelope, V3/V8 integration, and audit logging.
-- [ ] Write API, permission, isolation, AI safety, and audit tests.
-- [ ] Run `composer test -- --filter Education\\\\Growth`; expected output is all V10 backend tests passing.
+- [x] Create request classes with lead, strategy, script, cost, loss, campaign, dashboard, and teacher trial feedback validation.
+- [x] Create schemas matching the API catalog.
+- [x] Create admin and teacher mobile controllers with permissions, Result envelope, V3/V8 integration, and audit logging.
+- [x] Write API, permission, isolation, AI safety, and audit tests.
+- [x] Run `composer test -- --filter Education\\\\Growth`; expected output is all V10 backend tests passing.
 
 ### Task 4: PC Admin
 
