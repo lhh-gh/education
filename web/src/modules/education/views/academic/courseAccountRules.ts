@@ -71,11 +71,11 @@ export function computePackageTotal(lessonUnits: number | string, bonusUnits: nu
 }
 
 export function enrollmentSuccessSummary(result: EnrollmentCreateResult): string {
-  const accountText = result.account ? `account ${result.account.id}` : 'pending account'
-  const availableText = result.account ? result.account.available_units : 'pending'
+  const accountText = result.account ? `课时账户 ${result.account.id}` : '待生成账户'
+  const availableText = result.account ? result.account.available_units : '待确认'
   const separator = ' \u00B7 '
 
-  return `${result.enrollment.enrollment_no}${separator}${accountText}${separator}available ${availableText}`
+  return `${result.enrollment.enrollment_no}${separator}${accountText}${separator}可用课时 ${availableText}`
 }
 
 export function accountStatusAction(status: StudentCourseAccountStatus): 'freeze' | 'unfreeze' | 'closed' {
@@ -87,6 +87,50 @@ export function accountStatusAction(status: StudentCourseAccountStatus): 'freeze
   }
 
   return 'closed'
+}
+
+export function enrollmentStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    pending: '待确认',
+    confirmed: '已确认',
+    cancelled: '已取消',
+  }
+
+  return status ? labels[status] ?? status : '未知'
+}
+
+export function accountStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    active: '正常',
+    frozen: '冻结',
+    closed: '已关闭',
+  }
+
+  return status ? labels[status] ?? status : '未知'
+}
+
+export function accountStatusActionLabel(status: StudentCourseAccountStatus): string {
+  const action = accountStatusAction(status)
+  if (action === 'freeze') {
+    return '冻结'
+  }
+  if (action === 'unfreeze') {
+    return '解冻'
+  }
+
+  return '已关闭'
+}
+
+export function balanceLevelLabel(level?: string | null): string {
+  const labels: Record<string, string> = {
+    zero: '已耗尽',
+    low: '低课时',
+    normal: '正常',
+    expired: '已过期',
+    expiring_soon: '即将过期',
+  }
+
+  return level ? labels[level] ?? level : '未知'
 }
 
 export function ledgerRowsBySource<T extends Pick<AccountLedgerRecord, 'source_type'>>(rows: T[], sourceType?: AccountLedgerSourceType): T[] {

@@ -9,7 +9,7 @@ describe('enrollment workbench', () => {
     expect(enrollmentSuccessSummary({
       enrollment: { enrollment_no: 'ENR001', status: 'confirmed' },
       account: { id: 601, available_units: '24.00' },
-    })).toBe('ENR001 · account 601 · available 24.00')
+    })).toBe('ENR001 · 课时账户 601 · 可用课时 24.00')
   })
 
   it('cancel_failure_keeps_confirm_dialog_open', () => {

@@ -5,7 +5,7 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import BatchLessonScheduleDrawer from './components/BatchLessonScheduleDrawer.vue'
 import ScheduleConflictDrawer from './components/ScheduleConflictDrawer.vue'
 import SingleLessonScheduleDrawer from './components/SingleLessonScheduleDrawer.vue'
-import { calendarEventSummary } from './classScheduleRules.ts'
+import { calendarEventSummary, lessonStatusLabel, lessonStatusTagType } from './classScheduleRules.ts'
 
 defineOptions({ name: 'EducationAcademicLessonScheduleCalendar' })
 
@@ -42,7 +42,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Schedule calendar loading failed'
+    errorText.value = error?.message ?? '排课日历加载失败'
   }
   finally {
     loading.value = false
@@ -67,57 +67,57 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Lesson Schedule</span>
+          <span>排课日历</span>
           <div class="page-actions">
             <el-button v-if="canSingle" type="primary" @click="singleVisible = true">
-              Single
+              单次排课
             </el-button>
             <el-button v-if="canBatch" @click="batchVisible = true">
-              Batch
+              批量排课
             </el-button>
           </div>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
+        <el-form-item label="机构ID">
           <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Campus ID">
+        <el-form-item label="校区ID">
           <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Class ID">
+        <el-form-item label="班级ID">
           <el-input-number v-model="search.class_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Teacher ID">
+        <el-form-item label="教师ID">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Classroom ID">
+        <el-form-item label="教室ID">
           <el-input-number v-model="search.classroom_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 130px;">
-            <el-option label="Scheduled" value="scheduled" />
-            <el-option label="Cancelled" value="cancelled" />
-            <el-option label="Completed" value="completed" />
+            <el-option label="待上课" value="scheduled" />
+            <el-option label="已取消" value="cancelled" />
+            <el-option label="已完成" value="completed" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Range">
-          <el-date-picker v-model="search.start_at" value-format="YYYY-MM-DD HH:mm:ss" type="datetime" placeholder="Start" />
-          <el-date-picker v-model="search.end_at" value-format="YYYY-MM-DD HH:mm:ss" type="datetime" placeholder="End" class="ml-2" />
+        <el-form-item label="时间范围">
+          <el-date-picker v-model="search.start_at" value-format="YYYY-MM-DD HH:mm:ss" type="datetime" placeholder="开始时间" />
+          <el-date-picker v-model="search.end_at" value-format="YYYY-MM-DD HH:mm:ss" type="datetime" placeholder="结束时间" class="ml-2" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-skeleton v-if="loading" :rows="6" animated />
       <div v-else class="calendar-list">
-        <el-empty v-if="rows.length === 0" description="No lessons in selected range" />
+        <el-empty v-if="rows.length === 0" description="当前范围暂无课次" />
         <div v-for="lesson in rows" v-else :key="lesson.id" class="calendar-row">
           <div>
             <strong>{{ lesson.title }}</strong>
@@ -126,8 +126,8 @@ onMounted(loadRows)
           <div class="calendar-time">
             {{ lesson.start_at }} - {{ lesson.end_at }}
           </div>
-          <el-tag size="small" :type="lesson.status === 'cancelled' ? 'danger' : 'success'">
-            {{ lesson.status }}
+          <el-tag size="small" :type="lessonStatusTagType(lesson.status)">
+            {{ lessonStatusLabel(lesson.status) }}
           </el-tag>
         </div>
       </div>

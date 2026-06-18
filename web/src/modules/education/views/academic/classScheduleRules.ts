@@ -70,15 +70,15 @@ export function classActionsByPermission(codes: string[], status: AcademicRecord
 }
 
 export function classFormStateAfterFailure(error: { message?: string }): VisibleFailureState {
-  return { visible: true, message: error.message ?? 'Class save failed' }
+  return { visible: true, message: error.message ?? '班级保存失败' }
 }
 
 export function classStudentDrawerStateAfterFailure(error: { message?: string }): VisibleFailureState {
-  return { visible: true, message: error.message ?? 'Class students save failed' }
+  return { visible: true, message: error.message ?? '班级学员保存失败' }
 }
 
 export function scheduleDrawerStateAfterFailure(error: { message?: string }): VisibleFailureState {
-  return { visible: true, message: error.message ?? 'Schedule failed' }
+  return { visible: true, message: error.message ?? '排课失败' }
 }
 
 export function classStudentSavePayload(values: Array<number | string>): { students: Array<{ student_id: number }> } {
@@ -160,6 +160,30 @@ export function conflictDrawerRows(result: any): Array<Record<string, unknown>> 
       student_id: conflict.student_id,
     }))
   })
+}
+
+export function lessonStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    scheduled: '待上课',
+    completed: '已完成',
+    cancelled: '已取消',
+  }
+
+  return status ? labels[status] ?? status : '未知'
+}
+
+export function lessonStatusTagType(status?: string | null): 'success' | 'warning' | 'danger' | 'info' {
+  if (status === 'completed') {
+    return 'success'
+  }
+  if (status === 'scheduled') {
+    return 'warning'
+  }
+  if (status === 'cancelled') {
+    return 'danger'
+  }
+
+  return 'info'
 }
 
 export function batchConflictCalendarRows<T>(rows: T[], result: { has_conflict?: boolean }): T[] {

@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   retryText?: string
 }>(), {
   message: '',
-  retryText: 'Retry',
+  retryText: '重试',
 })
 
 const emit = defineEmits<{

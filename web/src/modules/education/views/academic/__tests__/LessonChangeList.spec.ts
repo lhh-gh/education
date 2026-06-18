@@ -22,8 +22,8 @@ describe('lesson change list', () => {
 
     expect(route.path).toBe('/education/academic/lesson-changes')
     expect(route.meta?.auth).toEqual(['education:academic:lesson-change:page'])
-    expect(lessonChangeTypeLabel('makeup')).toBe('Make-up')
-    expect(detailDrawerTitle({ id: 1, tenant_id: 1, campus_id: 1, change_no: 'CHG001', change_type: 'reschedule', status: 'confirmed', source_lesson_id: 11, class_id: 21, course_id: 31, lesson_units: '1.00', reason: 'move' })).toBe('Reschedule CHG001')
+    expect(lessonChangeTypeLabel('makeup')).toBe('补课')
+    expect(detailDrawerTitle({ id: 1, tenant_id: 1, campus_id: 1, change_no: 'CHG001', change_type: 'reschedule', status: 'confirmed', source_lesson_id: 11, class_id: 21, course_id: 31, lesson_units: '1.00', reason: 'move' })).toBe('调课 CHG001')
   })
 
   it('action_buttons_follow_permissions', () => {

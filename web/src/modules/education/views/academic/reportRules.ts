@@ -131,13 +131,56 @@ export function dashboardMetricItems(metrics: Record<string, string | number> = 
 
 export function summaryMetricItems(summary: Record<string, string | number> = {}, keys: string[]): Array<{ title: string, value: string | number }> {
   return keys.map(key => ({
-    title: key.replace(/_/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase()),
+    title: reportMetricLabel(key),
     value: summary[key] ?? 0,
   }))
 }
 
 export function acceptanceOverallType(status: 'pass' | 'fail'): 'success' | 'danger' {
   return status === 'pass' ? 'success' : 'danger'
+}
+
+export function reportMetricLabel(key: string): string {
+  const labels: Record<string, string> = {
+    total_records: '记录数',
+    present_count: '出勤',
+    late_count: '迟到',
+    absent_count: '缺勤',
+    leave_count: '请假',
+    attendance_rate: '出勤率',
+    decrease_units: '扣减课时',
+    rollback_units: '回滚课时',
+    net_units: '净课消',
+    active_row_count: '有效记录',
+    reversed_row_count: '回滚记录',
+    total_count: '总数',
+    pending_count: '待审批',
+    approved_count: '已通过',
+    rejected_count: '已拒绝',
+    cancelled_count: '已取消',
+    makeup_scheduled_count: '已安排补课',
+    guardian_source_count: '家长提交',
+    account_count: '账户数',
+    active_count: '正常账户',
+    total_purchased_units: '购买课时',
+    total_consumed_units: '已消课时',
+    total_available_units: '可用课时',
+    low_balance_count: '低课时账户',
+    expiring_count: '即将过期',
+  }
+
+  return labels[key] ?? key
+}
+
+export function passFailLabel(status?: string | null): string {
+  if (status === 'pass') {
+    return '通过'
+  }
+  if (status === 'fail') {
+    return '未通过'
+  }
+
+  return status ?? '未知'
 }
 
 function formatReportDateTime(value: Date): string {

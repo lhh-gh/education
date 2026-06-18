@@ -42,7 +42,7 @@ export function leaveStatusType(status: LeaveRequestStatus): 'info' | 'success' 
 }
 
 export function lessonChangeTypeLabel(type: LessonChangeType): string {
-  return type === 'makeup' ? 'Make-up' : 'Reschedule'
+  return type === 'makeup' ? '补课' : '调课'
 }
 
 export function lessonChangeStatusType(status: LessonChangeStatus): 'success' | 'danger' {
@@ -66,9 +66,52 @@ export function conflictMessage(error: any): string {
     return `${type}: ${lessonIds.join(',')}`
   }
 
-  return error?.message ?? 'Schedule conflict'
+  return error?.message ?? '排课冲突'
 }
 
 export function detailDrawerTitle(row?: LessonChangeRecord | null): string {
-  return row ? `${lessonChangeTypeLabel(row.change_type)} ${row.change_no}` : 'Lesson Change Detail'
+  return row ? `${lessonChangeTypeLabel(row.change_type)} ${row.change_no}` : '调补课详情'
+}
+
+export function leaveStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    pending: '待审批',
+    approved: '已通过',
+    rejected: '已拒绝',
+    cancelled: '已取消',
+    makeup_scheduled: '已安排补课',
+    closed: '已关闭',
+  }
+
+  return status ? labels[status] ?? status : '未知'
+}
+
+export function leaveSourceLabel(source?: string | null): string {
+  const labels: Record<string, string> = {
+    staff: '员工',
+    guardian: '家长',
+    teacher: '教师',
+  }
+
+  return source ? labels[source] ?? source : '未知'
+}
+
+export function leaveTypeLabel(type?: string | null): string {
+  const labels: Record<string, string> = {
+    sick: '病假',
+    personal: '事假',
+    school: '校内活动',
+    other: '其他',
+  }
+
+  return type ? labels[type] ?? type : '未知'
+}
+
+export function lessonChangeStatusLabel(status?: string | null): string {
+  const labels: Record<string, string> = {
+    confirmed: '已确认',
+    cancelled: '已取消',
+  }
+
+  return status ? labels[status] ?? status : '未知'
 }

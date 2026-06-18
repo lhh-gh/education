@@ -51,6 +51,9 @@ onMounted(loadDashboard)
       <template #header>
         <div class="page-header">
           <span>教务看板</span>
+          <el-button type="primary" :loading="loading" @click="loadDashboard">
+            刷新
+          </el-button>
         </div>
       </template>
       <ReportDateRangeFilter v-model="filter" :require-range="false" @submit="handleFilter" @reset="handleReset" />
@@ -66,6 +69,9 @@ onMounted(loadDashboard)
               <el-table-column prop="scheduled_lesson_count" label="计划课次" />
               <el-table-column prop="completed_lesson_count" label="完成课次" />
               <el-table-column prop="consumed_units" label="课消课时" />
+              <template #empty>
+                <el-empty description="暂无趋势数据" />
+              </template>
             </el-table>
           </el-col>
           <el-col :span="8">
@@ -79,6 +85,9 @@ onMounted(loadDashboard)
                 </template>
               </el-table-column>
               <el-table-column prop="count" label="数量" width="90" />
+              <template #empty>
+                <el-empty description="暂无提醒事项" />
+              </template>
             </el-table>
           </el-col>
         </el-row>
