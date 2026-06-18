@@ -531,11 +531,11 @@ V12 is accepted only when:
 
 ### Task 3: Requests, Schemas, Controllers, and API Tests
 
-- [ ] Create admin and mobile request classes with validation for material, version, relation, publish, review, usage, work, showcase, and guardian student ids.
-- [ ] Create schemas matching the API catalog.
-- [ ] Create admin, teacher, and guardian controllers with permissions, Result envelope, role isolation, read receipts, and audit logging.
-- [ ] Write API, permission, isolation, visibility, read record, and audit tests.
-- [ ] Run `composer test -- --filter Education\\\\Content`; expected output is all V12 backend tests passing.
+- [x] Create admin and mobile request classes with validation for material, version, relation, publish, review, usage, work, showcase, and guardian student ids.
+- [x] Create schemas matching the API catalog.
+- [x] Create admin, teacher, and guardian controllers with permissions, Result envelope, role isolation, read receipts, and audit logging.
+- [x] Write API, permission, isolation, visibility, read record, and audit tests.
+- [x] Run `composer test -- --filter Education\\\\Content`; expected output is all V12 backend tests passing.
 
 ### Task 4: PC Admin
 
