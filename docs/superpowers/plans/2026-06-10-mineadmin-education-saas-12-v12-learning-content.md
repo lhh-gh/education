@@ -547,12 +547,12 @@ V12 is accepted only when:
 
 ### Task 5: Teacher and Guardian Mobile
 
-- [ ] Create teacher and guardian content API clients.
-- [ ] Register V12 mobile pages in `pages.json`.
-- [ ] Implement teacher material search/detail/favorite/usage/student-work pages.
-- [ ] Implement guardian material/showcase list/detail pages with read records.
-- [ ] Write mobile tests listed in `Test Plan`.
-- [ ] Run `pnpm lint && pnpm test -- content && pnpm build:h5`; expected output is all mobile gates passing.
+- [x] Create teacher and guardian content API clients.
+- [x] Register V12 mobile pages in `pages.json`.
+- [x] Implement teacher material search/detail/favorite/usage/student-work pages.
+- [x] Implement guardian material/showcase list/detail pages with read records.
+- [x] Write mobile tests listed in `Test Plan`.
+- [x] Run `pnpm lint && pnpm test -- content && pnpm build:h5`; expected output is all mobile gates passing.
 
 ### Task 6: V12 Final Gate
 
