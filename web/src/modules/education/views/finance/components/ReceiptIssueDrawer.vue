@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FinanceOrderRecord } from '../../../api/finance/order.ts'
 import { issueReceipt } from '../../../api/finance/receipt.ts'
+import { financePageText } from '../financeRules.ts'
 
 const props = defineProps<{ modelValue: boolean, order: FinanceOrderRecord | null }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
@@ -31,17 +32,17 @@ async function submit() {
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="Issue Receipt" size="420px">
+  <el-drawer v-model="visible" :title="financePageText.drawers.receiptIssue.title" size="420px">
     <el-form label-width="110px" :model="form">
-      <el-form-item label="Amount">
+      <el-form-item :label="financePageText.drawers.receiptIssue.fields.amount">
         <el-input-number v-model="form.amount_cents" :min="1" :controls="false" />
       </el-form-item>
-      <el-form-item label="PDF URL">
+      <el-form-item :label="financePageText.drawers.receiptIssue.fields.pdfUrl">
         <el-input v-model="form.pdf_url" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submit">
-          Issue
+          {{ financePageText.drawers.receiptIssue.issue }}
         </el-button>
       </el-form-item>
     </el-form>

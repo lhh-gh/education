@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RefundRequestRecord } from '../../../api/finance/refund.ts'
 import { approveRefundRequest } from '../../../api/finance/refund.ts'
-import { validateRefundAmount } from '../financeRules.ts'
+import { financePageText, validateRefundAmount } from '../financeRules.ts'
 
 const props = defineProps<{ modelValue: boolean, row: RefundRequestRecord | null, refundableCents?: number }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
@@ -23,18 +23,18 @@ async function submit() {
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="Refund Approval" size="420px">
+  <el-drawer v-model="visible" :title="financePageText.drawers.refundApproval.title" size="420px">
     <el-alert v-if="errorText" type="error" show-icon :closable="false" :title="errorText" />
     <el-form class="mt-3" label-width="110px">
-      <el-form-item label="Refund">
+      <el-form-item :label="financePageText.drawers.refundApproval.fields.refund">
         <span>{{ row?.refund_no }}</span>
       </el-form-item>
-      <el-form-item label="Review Note">
+      <el-form-item :label="financePageText.drawers.refundApproval.fields.reviewNote">
         <el-input v-model="form.review_note" type="textarea" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :disabled="!!errorText" @click="submit">
-          Approve
+          {{ financePageText.drawers.refundApproval.approve }}
         </el-button>
       </el-form-item>
     </el-form>

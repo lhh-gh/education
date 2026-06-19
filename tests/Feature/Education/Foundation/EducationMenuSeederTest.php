@@ -101,6 +101,7 @@ final class EducationMenuSeederTest extends TestCase
 
         $root = Db::table('menu')->where('name', 'education')->first();
         $academicGroup = Db::table('menu')->where('name', 'education:academic')->first();
+        $financeGroup = Db::table('menu')->where('name', 'education:finance')->first();
         $contentGroup = Db::table('menu')->where('name', 'education:content')->first();
         $tenantPage = Db::table('menu')->where('name', 'education:foundation:tenant:page')->first();
         $coursePage = Db::table('menu')->where('name', 'education:academic:course:page')->first();
@@ -117,6 +118,7 @@ final class EducationMenuSeederTest extends TestCase
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
+        self::assertNotNull($financeGroup);
         self::assertNotNull($contentGroup);
         self::assertNotNull($tenantPage);
         self::assertNotNull($coursePage);
@@ -136,6 +138,7 @@ final class EducationMenuSeederTest extends TestCase
 
         self::assertSame('教育管理', $this->menuTitle($root));
         self::assertSame('教务管理', $this->menuTitle($academicGroup));
+        self::assertSame('财务中心', $this->menuTitle($financeGroup));
         self::assertSame('内容教研', $this->menuTitle($contentGroup));
         self::assertSame('机构管理', $this->menuTitle($tenantPage));
         self::assertSame('课程管理', $this->menuTitle($coursePage));
@@ -178,7 +181,25 @@ final class EducationMenuSeederTest extends TestCase
         ], $moduleTitles);
 
         self::assertSame((int) $root->id, (int) $academicGroup->parent_id);
+        self::assertSame((int) $root->id, (int) $financeGroup->parent_id);
         self::assertSame((int) $root->id, (int) $contentGroup->parent_id);
+
+        $financePageTitles = Db::table('menu')
+            ->where('parent_id', $financeGroup->id)
+            ->orderBy('sort')
+            ->get()
+            ->map(fn (object $menu): string => $this->menuTitle($menu))
+            ->all();
+
+        self::assertSame([
+            '财务看板',
+            '订单管理',
+            '收款记录',
+            '支付渠道',
+            '退费管理',
+            '票据管理',
+            '对账管理',
+        ], $financePageTitles);
 
         self::assertSame(1, Db::table('menu')->where('name', 'education')->count());
         self::assertSame(1, Db::table('menu')->where('name', 'education:content:review:handle')->count());
@@ -240,6 +261,29 @@ final class EducationMenuSeederTest extends TestCase
                 1,
                 Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
                 \sprintf('Admission button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
+
+        $expectedFinanceButtons = [
+            'education:finance:order:create' => '新增',
+            'education:finance:payment:offline' => '线下收款',
+            'education:finance:payment-channel:save' => '保存',
+            'education:finance:refund:create' => '新增',
+            'education:finance:refund:approve' => '通过',
+            'education:finance:receipt:issue' => '开票',
+            'education:finance:reconciliation:import' => '导入',
+        ];
+
+        foreach ($expectedFinanceButtons as $buttonName => $buttonTitle) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing finance button permission [%s].', $buttonName));
+            self::assertSame($buttonTitle, $this->menuTitle($button));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('Finance button permission [%s] is not bound to education tenant admin.', $buttonName)
             );
         }
 

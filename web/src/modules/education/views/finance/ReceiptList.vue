@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ReceiptRecord } from '../../api/finance/receipt.ts'
-import { pageReceipts, voidReceipt } from '../../api/finance/receipt.ts'
-import { centsToYuan, financeTagType } from './financeRules.ts'
+import { pageReceipts } from '../../api/finance/receipt.ts'
+import { centsToYuan, financePageText, financeStatusLabel, financeTagType } from './financeRules.ts'
 
 defineOptions({ name: 'EducationFinanceReceiptList' })
 
@@ -15,11 +15,6 @@ async function loadRows() {
   total.value = response.data.total
 }
 
-async function voidRow(row: ReceiptRecord) {
-  await voidReceipt(row.id)
-  await loadRows()
-}
-
 onMounted(loadRows)
 </script>
 
@@ -28,36 +23,40 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Receipts</span>
+          <span>{{ financePageText.receipts.title }}</span>
           <el-button type="primary" @click="loadRows">
-            Refresh
+            {{ financePageText.receipts.refresh }}
           </el-button>
         </div>
       </template>
       <el-table :data="rows" row-key="id">
-        <el-table-column prop="receipt_no" label="Receipt No" min-width="180" />
-        <el-table-column prop="student_id" label="Student" width="110" />
-        <el-table-column label="Amount" width="130">
+        <el-table-column prop="receipt_no" :label="financePageText.receipts.columns.receiptNo" min-width="180" />
+        <el-table-column prop="student_id" :label="financePageText.receipts.columns.student" width="110" />
+        <el-table-column :label="financePageText.receipts.columns.amount" width="130">
           <template #default="{ row }">
             {{ centsToYuan(row.amount_cents) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="130">
+        <el-table-column :label="financePageText.receipts.columns.status" width="130">
           <template #default="{ row }">
             <el-tag :type="financeTagType(row.status)">
-              {{ row.status }}
+              {{ financeStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" fixed="right" width="120">
-          <template #default="{ row }">
-            <el-button link type="danger" @click="voidRow(row)">
-              Void
-            </el-button>
-          </template>
-        </el-table-column>
+        <template #empty>
+          <el-empty :description="financePageText.receipts.empty" />
+        </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
   </div>
 </template>
+
+<style scoped lang="scss">
+.education-finance-page {
+  .page-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+
+  .page-pagination { justify-content: flex-end; margin-top: 16px; }
+}
+</style>
