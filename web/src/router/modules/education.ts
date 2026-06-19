@@ -391,7 +391,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationAdmissions',
         redirect: '/education/admissions/leads',
         meta: {
-          title: 'Admissions CRM',
+          title: '招生获客',
           icon: 'material-symbols:hub-outline-rounded',
           type: 'M',
           auth: ['education:admissions:lead-source:page', 'education:admissions:lead:page', 'education:admissions:trial:page', 'education:admissions:lead:convert', 'education:admissions:task:page', 'education:admissions:dashboard:overview'],
@@ -402,7 +402,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadSourceList',
             component: () => import('~/education/views/admissions/LeadSourceList.vue'),
             meta: {
-              title: 'Lead Sources',
+              title: '线索来源',
               icon: 'material-symbols:source-environment-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead-source:page'],
@@ -414,7 +414,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadPool',
             component: () => import('~/education/views/admissions/LeadPool.vue'),
             meta: {
-              title: 'Lead Pool',
+              title: '线索池',
               icon: 'material-symbols:group-search-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead:page'],
@@ -426,7 +426,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadDetail',
             component: () => import('~/education/views/admissions/LeadDetail.vue'),
             meta: {
-              title: 'Lead Detail',
+              title: '线索详情',
               icon: 'material-symbols:contact-page-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead:detail'],
@@ -438,7 +438,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTrialCalendar',
             component: () => import('~/education/views/admissions/TrialLessonCalendar.vue'),
             meta: {
-              title: 'Trial Calendar',
+              title: '试听日历',
               icon: 'material-symbols:event-available-outline-rounded',
               type: 'M',
               auth: ['education:admissions:trial:page'],
@@ -450,7 +450,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTrialFeedbackList',
             component: () => import('~/education/views/admissions/TrialFeedbackList.vue'),
             meta: {
-              title: 'Trial Feedback',
+              title: '试听反馈',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:admissions:trial-feedback:create'],
@@ -462,7 +462,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionConversionWorkbench',
             component: () => import('~/education/views/admissions/LeadConversionWorkbench.vue'),
             meta: {
-              title: 'Conversion',
+              title: '线索转化',
               icon: 'material-symbols:published-with-changes-rounded',
               type: 'M',
               auth: ['education:admissions:lead:convert'],
@@ -474,7 +474,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTaskList',
             component: () => import('~/education/views/admissions/AdmissionTaskList.vue'),
             meta: {
-              title: 'Admission Tasks',
+              title: '招生任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:admissions:task:page'],
@@ -486,7 +486,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionDashboard',
             component: () => import('~/education/views/admissions/AdmissionDashboard.vue'),
             meta: {
-              title: 'Admissions Dashboard',
+              title: '招生看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:admissions:dashboard:overview'],

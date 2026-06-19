@@ -10,7 +10,7 @@ const form = reactive({ tenant_id: undefined as number | undefined, campus_id: u
 
 async function submitConversion() {
   if (!form.lead_id || !form.lesson_package_id) {
-    errorText.value = 'Lead and package are required'
+    errorText.value = '线索和课包必填'
     return
   }
   try {
@@ -27,15 +27,15 @@ async function submitConversion() {
 <template>
   <div class="mine-layout admission-page pt-3">
     <el-card shadow="never">
-      <template #header><div class="page-header"><span>Conversion Workbench</span><el-button type="primary" @click="submitConversion">Convert</el-button></div></template>
+      <template #header><div class="page-header"><span>线索转化</span><el-button type="primary" @click="submitConversion">转化</el-button></div></template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :model="form" label-width="130px">
-        <el-form-item label="Lead"><el-input-number v-model="form.lead_id" :controls="false" /></el-form-item>
-        <el-form-item label="Student"><el-input v-model="form.student_name" /></el-form-item>
-        <el-form-item label="Guardian"><el-input v-model="form.guardian_name" /></el-form-item>
-        <el-form-item label="Package"><el-input-number v-model="form.lesson_package_id" :controls="false" /></el-form-item>
+        <el-form-item label="线索"><el-input-number v-model="form.lead_id" :controls="false" /></el-form-item>
+        <el-form-item label="学员"><el-input v-model="form.student_name" /></el-form-item>
+        <el-form-item label="家长"><el-input v-model="form.guardian_name" /></el-form-item>
+        <el-form-item label="课包"><el-input-number v-model="form.lesson_package_id" :controls="false" /></el-form-item>
       </el-form>
-      <el-result v-if="result" icon="success" title="Conversion succeeded" :sub-title="`Student #${result.student_id}, Enrollment #${result.enrollment_id}`" />
+      <el-result v-if="result" icon="success" title="转化成功" :sub-title="`学员 #${result.student_id}，报名 #${result.enrollment_id}`" />
     </el-card>
   </div>
 </template>

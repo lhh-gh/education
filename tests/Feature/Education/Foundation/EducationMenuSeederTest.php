@@ -110,6 +110,10 @@ final class EducationMenuSeederTest extends TestCase
         $aiFeatureSaveButton = Db::table('menu')->where('name', 'education:ai:feature-setting:save')->first();
         $aiDataQuestionPage = Db::table('menu')->where('name', 'education:ai:data-question:page')->first();
         $aiDataQuestionCreateButton = Db::table('menu')->where('name', 'education:ai:data-question:create')->first();
+        $admissionLeadCreateButton = Db::table('menu')->where('name', 'education:admissions:lead:create')->first();
+        $admissionLeadSourceCreateButton = Db::table('menu')->where('name', 'education:admissions:lead-source:create')->first();
+        $admissionTrialCreateButton = Db::table('menu')->where('name', 'education:admissions:trial:create')->first();
+        $admissionTrialAttendanceButton = Db::table('menu')->where('name', 'education:admissions:trial:attendance')->first();
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
@@ -122,6 +126,10 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($aiFeatureSaveButton);
         self::assertNotNull($aiDataQuestionPage);
         self::assertNotNull($aiDataQuestionCreateButton);
+        self::assertNotNull($admissionLeadCreateButton);
+        self::assertNotNull($admissionLeadSourceCreateButton);
+        self::assertNotNull($admissionTrialCreateButton);
+        self::assertNotNull($admissionTrialAttendanceButton);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $contentGroup->redirect);
@@ -140,6 +148,11 @@ final class EducationMenuSeederTest extends TestCase
         self::assertSame('数据问答', $this->menuTitle($aiDataQuestionPage));
         self::assertSame('新增', $this->menuTitle($aiDataQuestionCreateButton));
         self::assertSame('B', json_decode((string) $aiDataQuestionCreateButton->meta, true)['type']);
+        self::assertSame('新增', $this->menuTitle($admissionLeadCreateButton));
+        self::assertSame('新增', $this->menuTitle($admissionLeadSourceCreateButton));
+        self::assertSame('新增', $this->menuTitle($admissionTrialCreateButton));
+        self::assertSame('考勤', $this->menuTitle($admissionTrialAttendanceButton));
+        self::assertSame('B', json_decode((string) $admissionTrialAttendanceButton->meta, true)['type']);
 
         $moduleTitles = Db::table('menu')
             ->where('parent_id', $root->id)
@@ -204,6 +217,29 @@ final class EducationMenuSeederTest extends TestCase
                 1,
                 Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
                 \sprintf('AI button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
+
+        $expectedAdmissionButtons = [
+            'education:admissions:lead-source:create',
+            'education:admissions:lead:create',
+            'education:admissions:lead:assign',
+            'education:admissions:lead:follow',
+            'education:admissions:lead:convert',
+            'education:admissions:trial:create',
+            'education:admissions:trial:attendance',
+            'education:admissions:trial-feedback:create',
+        ];
+
+        foreach ($expectedAdmissionButtons as $buttonName) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing admission button permission [%s].', $buttonName));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('Admission button permission [%s] is not bound to education tenant admin.', $buttonName)
             );
         }
 

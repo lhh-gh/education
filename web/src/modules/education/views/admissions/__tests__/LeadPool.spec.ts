@@ -57,6 +57,6 @@ describe('lead pool', () => {
     const permissions = admissionPermissions(code => code === 'education:admissions:lead:assign')
     expect(permissions.assignLead).toBe(true)
     expect(permissions.createLead).toBe(false)
-    expect(admissionErrorText({ code: 409, data: { lead_id: 99 } })).toBe('Duplicate lead #99')
+    expect(admissionErrorText({ code: 409, data: { lead_id: 99 } })).toBe('线索已存在：#99')
   })
 })

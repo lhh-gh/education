@@ -25,19 +25,19 @@ onMounted(loadOverview)
 <template>
   <div class="mine-layout admission-page pt-3">
     <el-card shadow="never">
-      <template #header><div class="page-header"><span>Admissions Dashboard</span><el-button @click="loadOverview">Refresh</el-button></div></template>
+      <template #header><div class="page-header"><span>招生看板</span><el-button @click="loadOverview">刷新</el-button></div></template>
       <el-skeleton v-if="loading" :rows="4" animated />
       <el-row v-else :gutter="12">
         <el-col v-for="item in [
-          ['New Leads', overview?.new_leads_count ?? 0],
-          ['Follows', overview?.follow_count ?? 0],
-          ['Trials', overview?.trial_count ?? 0],
-          ['Converted', overview?.converted_count ?? 0],
+          ['新增线索', overview?.new_leads_count ?? 0],
+          ['跟进次数', overview?.follow_count ?? 0],
+          ['试听数', overview?.trial_count ?? 0],
+          ['已转化', overview?.converted_count ?? 0],
         ]" :key="item[0]" :span="6">
           <el-statistic :title="String(item[0])" :value="Number(item[1])" />
         </el-col>
       </el-row>
-      <el-empty v-if="!loading && !overview" description="No dashboard data" />
+      <el-empty v-if="!loading && !overview" description="暂无招生看板数据" />
     </el-card>
   </div>
 </template>
