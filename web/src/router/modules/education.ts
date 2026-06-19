@@ -683,7 +683,7 @@ const educationRoutes: RouteRecordRaw[] = [
         redirect: '/education/payroll/rules',
         meta: {
           title: '薪酬绩效',
-          icon: 'material-symbols:price-check-outline-rounded',
+          icon: 'material-symbols:price-check-rounded',
           type: 'M',
           auth: ['education:payroll:rule:page', 'education:payroll:batch:page', 'education:payroll:slip:page', 'education:payroll:review:page', 'education:payroll:payment:page', 'education:payroll:dispute:page', 'education:payroll:performance:page'],
         },

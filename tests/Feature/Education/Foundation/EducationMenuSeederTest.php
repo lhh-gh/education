@@ -102,6 +102,7 @@ final class EducationMenuSeederTest extends TestCase
         $root = Db::table('menu')->where('name', 'education')->first();
         $academicGroup = Db::table('menu')->where('name', 'education:academic')->first();
         $financeGroup = Db::table('menu')->where('name', 'education:finance')->first();
+        $payrollGroup = Db::table('menu')->where('name', 'education:payroll')->first();
         $contentGroup = Db::table('menu')->where('name', 'education:content')->first();
         $tenantPage = Db::table('menu')->where('name', 'education:foundation:tenant:page')->first();
         $coursePage = Db::table('menu')->where('name', 'education:academic:course:page')->first();
@@ -119,6 +120,7 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
         self::assertNotNull($financeGroup);
+        self::assertNotNull($payrollGroup);
         self::assertNotNull($contentGroup);
         self::assertNotNull($tenantPage);
         self::assertNotNull($coursePage);
@@ -182,6 +184,8 @@ final class EducationMenuSeederTest extends TestCase
 
         self::assertSame((int) $root->id, (int) $academicGroup->parent_id);
         self::assertSame((int) $root->id, (int) $financeGroup->parent_id);
+        self::assertSame((int) $root->id, (int) $payrollGroup->parent_id);
+        self::assertSame('material-symbols:price-check-rounded', $this->menuIcon($payrollGroup));
         self::assertSame((int) $root->id, (int) $contentGroup->parent_id);
 
         $financePageTitles = Db::table('menu')
@@ -300,5 +304,10 @@ final class EducationMenuSeederTest extends TestCase
     private function menuTitle(object $menu): string
     {
         return (string) json_decode((string) $menu->meta, true)['title'];
+    }
+
+    private function menuIcon(object $menu): string
+    {
+        return (string) json_decode((string) $menu->meta, true)['icon'];
     }
 }

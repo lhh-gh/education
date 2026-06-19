@@ -18,10 +18,25 @@ function findRoute(name: string): RouteRecordRaw {
   return route
 }
 
+function expectMaterialSymbolsIconExists(icon: unknown): void {
+  expect(icon).toEqual(expect.any(String))
+
+  const [collection, name] = String(icon).split(':')
+  expect(collection).toBe('material-symbols')
+
+  const iconJson = readFileSync(
+    resolve(process.cwd(), `node_modules/@iconify/json/json/${collection}.json`),
+    'utf8',
+  )
+
+  expect(iconJson).toContain(`"${name}"`)
+}
+
 describe('payroll MineAdmin alignment', () => {
   it('uses_chinese_route_titles_and_supported_icon_for_payroll_menu', () => {
     expect(findRoute('EducationPayroll').meta?.title).toBe('薪酬绩效')
-    expect(findRoute('EducationPayroll').meta?.icon).toBe('material-symbols:price-check-outline-rounded')
+    expect(findRoute('EducationPayroll').meta?.icon).toBe('material-symbols:price-check-rounded')
+    expectMaterialSymbolsIconExists(findRoute('EducationPayroll').meta?.icon)
 
     const expectedRoutes = [
       ['EducationPayrollSalaryRuleList', '薪酬规则'],

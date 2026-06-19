@@ -343,7 +343,7 @@ class EducationMenuSeeder extends Seeder
                         $this->page('education:finance:receipt:page', '票据管理', '/education/finance/receipts', 'education/views/finance/ReceiptList', ['education:finance:receipt:issue']),
                         $this->page('education:finance:reconciliation:page', '对账管理', '/education/finance/reconciliation', 'education/views/finance/ReconciliationBatchList', ['education:finance:reconciliation:import']),
                     ]),
-                    $this->group('education:payroll', '薪酬绩效', '/education/payroll', '/education/payroll/rules', 'material-symbols:price-check-outline-rounded', [
+                    $this->group('education:payroll', '薪酬绩效', '/education/payroll', '/education/payroll/rules', 'material-symbols:price-check-rounded', [
                         $this->page('education:payroll:rule:page', 'Salary Rules', '/education/payroll/rules', 'education/views/payroll/SalaryRuleList', ['education:payroll:rule:save']),
                         $this->page('education:payroll:batch:page', 'Salary Batches', '/education/payroll/batches', 'education/views/payroll/SalaryBatchList', ['education:payroll:batch:calculate']),
                         $this->page('education:payroll:slip:page', 'Salary Slips', '/education/payroll/slips', 'education/views/payroll/SalarySlipList'),
