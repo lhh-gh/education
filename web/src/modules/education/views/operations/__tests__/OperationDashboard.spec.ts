@@ -12,6 +12,6 @@ describe('operation dashboard', () => {
   })
 
   it('renders_empty_metric_defaults', () => {
-    expect(operationDashboardMetricItems({})[0]).toEqual({ title: 'Lesson Changes', value: 0 })
+    expect(operationDashboardMetricItems({})[0]).toEqual({ title: '调课申请', value: 0 })
   })
 })

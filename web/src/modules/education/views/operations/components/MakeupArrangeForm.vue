@@ -25,24 +25,24 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="model" title="Arrange Make-up" width="480px">
+  <el-dialog v-model="model" title="安排补课" width="480px">
     <el-form label-width="130px">
-      <el-form-item label="Entitlement">
+      <el-form-item label="补课权益">
         <span>{{ row?.id }}</span>
       </el-form-item>
-      <el-form-item label="Make-up Lesson">
+      <el-form-item label="补课课次">
         <el-input-number v-model="form.makeup_lesson_id" :min="1" :controls="false" />
       </el-form-item>
-      <el-form-item label="Arranged At">
+      <el-form-item label="安排时间">
         <el-date-picker v-model="form.arranged_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="model = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Arrange
+        安排
       </el-button>
     </template>
   </el-dialog>

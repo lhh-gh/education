@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DailyOperationMetric, OperationOverview, OperationTrendRow, RenewalAlertSummary } from '../../api/operations/dashboard.ts'
 import { getConsumptionTrend, getDailyOperationMetrics, getOperationOverview, getRenewalAlertSummary } from '../../api/operations/dashboard.ts'
-import { buildDashboardChartParams, operationDashboardMetricItems } from './operationRules.ts'
+import { buildDashboardChartParams, conflictErrorText, operationDashboardMetricItems } from './operationRules.ts'
 
 defineOptions({ name: 'EducationOperationDashboard' })
 
@@ -31,7 +31,7 @@ async function loadDashboard() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Operation dashboard loading failed'
+    errorText.value = conflictErrorText(error)
   }
   finally {
     loading.value = false
@@ -46,20 +46,20 @@ onMounted(loadDashboard)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Operation Dashboard</span>
+          <span>运营看板</span>
           <el-button type="primary" @click="loadDashboard">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="filter" class="search-form">
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="filter.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Date Range">
-          <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="Start" />
-          <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="End" />
+        <el-form-item label="日期范围">
+          <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="开始时间" />
+          <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="结束时间" />
         </el-form-item>
       </el-form>
       <el-skeleton v-if="loading" :rows="8" animated />
@@ -77,27 +77,27 @@ onMounted(loadDashboard)
         <el-row :gutter="16" class="mt-4">
           <el-col :span="12">
             <el-table :data="trend" row-key="date">
-              <el-table-column prop="date" label="Date" />
-              <el-table-column prop="consumed_units" label="Consumed" />
-              <el-table-column prop="review_count" label="Reviews" />
+              <el-table-column prop="date" label="日期" />
+              <el-table-column prop="consumed_units" label="消课课时" />
+              <el-table-column prop="review_count" label="审核数" />
               <template #empty>
-                <el-empty description="No trend data" />
+                <el-empty description="暂无趋势数据" />
               </template>
             </el-table>
           </el-col>
           <el-col :span="12">
             <el-table :data="daily" row-key="date">
-              <el-table-column prop="date" label="Date" />
-              <el-table-column prop="lesson_change_count" label="Changes" />
-              <el-table-column prop="makeup_count" label="Make-ups" />
-              <el-table-column prop="renewal_alert_count" label="Renewals" />
+              <el-table-column prop="date" label="日期" />
+              <el-table-column prop="lesson_change_count" label="调课数" />
+              <el-table-column prop="makeup_count" label="补课数" />
+              <el-table-column prop="renewal_alert_count" label="续费提醒" />
               <template #empty>
-                <el-empty description="No metric data" />
+                <el-empty description="暂无运营指标" />
               </template>
             </el-table>
           </el-col>
         </el-row>
-        <el-alert v-if="renewal" class="mt-4" type="warning" show-icon :closable="false" :title="`Urgent ${renewal.urgent_count}, Warning ${renewal.warning_count}, Normal ${renewal.normal_count}`" />
+        <el-alert v-if="renewal" class="mt-4" type="warning" show-icon :closable="false" :title="`紧急 ${renewal.urgent_count}，预警 ${renewal.warning_count}，普通 ${renewal.normal_count}`" />
       </template>
     </el-card>
   </div>

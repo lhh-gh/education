@@ -4,7 +4,7 @@ import { batchChangeLessons, pageLessonChangeRequests } from '../../api/operatio
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import LessonChangeForm from './components/LessonChangeForm.vue'
 import LessonChangeReviewDrawer from './components/LessonChangeReviewDrawer.vue'
-import { conflictErrorText, operationPermissions, operationTagType } from './operationRules.ts'
+import { conflictErrorText, operationPermissions, operationStatusLabel, operationTagType, operationTypeLabel } from './operationRules.ts'
 
 defineOptions({ name: 'EducationOperationLessonChangeCenter' })
 
@@ -31,7 +31,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Lesson change list loading failed'
+    errorText.value = conflictErrorText(error)
   }
   finally {
     loading.value = false
@@ -50,7 +50,7 @@ async function batchCancel() {
   }
   try {
     await batchChangeLessons({ tenant_id: search.tenant_id, campus_id: search.campus_id, lesson_ids: selectedIds.value, change_type: 'cancel', reason: 'batch cancel' })
-    successText.value = 'Batch change submitted'
+    successText.value = '批量调课已提交'
     loadRows()
   }
   catch (error: any) {
@@ -70,13 +70,13 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Lesson Change Center</span>
+          <span>调课中心</span>
           <div>
             <el-button v-if="permissions.batchLessonChange" @click="batchCancel">
-              Batch Cancel
+              批量取消
             </el-button>
             <el-button type="primary" @click="formVisible = true">
-              New Change
+              新建调课
             </el-button>
           </div>
         </div>
@@ -85,58 +85,62 @@ onMounted(loadRows)
       <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-alert v-if="conflictText" class="page-alert" type="error" show-icon :closable="true" :title="conflictText" @close="conflictText = ''" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Teacher">
+        <el-form-item label="教师">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 150px;">
-            <el-option v-for="item in ['pending', 'approved', 'rejected', 'applied', 'cancelled']" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in ['pending', 'approved', 'rejected', 'applied', 'cancelled']" :key="item" :label="operationStatusLabel(item)" :value="item" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Type">
+        <el-form-item label="类型">
           <el-select v-model="search.change_type" clearable style="width: 180px;">
-            <el-option v-for="item in ['reschedule', 'suspend', 'cancel', 'replace_teacher', 'replace_classroom', 'substitute_teacher']" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in ['reschedule', 'suspend', 'cancel', 'replace_teacher', 'replace_classroom', 'substitute_teacher']" :key="item" :label="operationTypeLabel(item)" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-skeleton v-if="loading" :rows="5" animated />
       <el-table v-else :data="rows" row-key="id" @selection-change="handleSelection">
         <el-table-column type="selection" width="48" />
-        <el-table-column prop="lesson_id" label="Lesson" width="110" />
-        <el-table-column prop="change_type" label="Type" width="160" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="lesson_id" label="课次" width="110" />
+        <el-table-column label="类型" width="160">
+          <template #default="{ row }">
+            {{ operationTypeLabel(row.change_type) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="operationTagType(row.status)">
-              {{ row.status }}
+              {{ operationStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="requested_by" label="Requested By" width="130" />
-        <el-table-column prop="approved_at" label="Approved At" width="180" />
-        <el-table-column prop="reason" label="Reason" min-width="180" show-overflow-tooltip />
-        <el-table-column label="Actions" fixed="right" width="220">
+        <el-table-column prop="requested_by" label="申请人" width="130" />
+        <el-table-column prop="approved_at" label="审批时间" width="180" />
+        <el-table-column prop="reason" label="原因" min-width="180" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" width="220">
           <template #default="{ row }">
             <el-button link type="primary" @click="openReview(row, 'approve')">
-              Approve
+              通过
             </el-button>
             <el-button link type="danger" @click="openReview(row, 'reject')">
-              Reject
+              驳回
             </el-button>
             <el-button link @click="openReview(row, 'apply')">
-              Apply
+              生效
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No lesson changes" />
+          <el-empty description="暂无调课记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

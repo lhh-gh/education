@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LessonChangeRequestRecord } from '../../../api/operations/lesson-change.ts'
 import { applyLessonChangeRequest, approveLessonChangeRequest, rejectLessonChangeRequest } from '../../../api/operations/lesson-change.ts'
+import { operationStatusLabel, operationTypeLabel } from '../operationRules.ts'
 
 const props = defineProps<{ row: LessonChangeRequestRecord | null, action: 'approve' | 'reject' | 'apply', error?: string }>()
 const emit = defineEmits<{ success: [] }>()
@@ -33,29 +34,29 @@ async function submit() {
 </script>
 
 <template>
-  <el-drawer v-model="model" title="Review Lesson Change" size="420px">
+  <el-drawer v-model="model" title="调课审批" size="420px">
     <el-alert v-if="error" class="mb-3" type="error" show-icon :closable="false" :title="error" />
     <el-descriptions v-if="row" :column="1" border>
-      <el-descriptions-item label="Lesson">
+      <el-descriptions-item label="课次">
         {{ row.lesson_id }}
       </el-descriptions-item>
-      <el-descriptions-item label="Type">
-        {{ row.change_type }}
+      <el-descriptions-item label="类型">
+        {{ operationTypeLabel(row.change_type) }}
       </el-descriptions-item>
-      <el-descriptions-item label="Status">
-        {{ row.status }}
+      <el-descriptions-item label="状态">
+        {{ operationStatusLabel(row.status) }}
       </el-descriptions-item>
-      <el-descriptions-item label="Reason">
+      <el-descriptions-item label="原因">
         {{ row.reason }}
       </el-descriptions-item>
     </el-descriptions>
-    <el-input v-if="action !== 'apply'" v-model="note" class="mt-3" type="textarea" placeholder="Review note" />
+    <el-input v-if="action !== 'apply'" v-model="note" class="mt-3" type="textarea" placeholder="审核备注" />
     <template #footer>
       <el-button @click="model = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Confirm
+        确认
       </el-button>
     </template>
   </el-drawer>

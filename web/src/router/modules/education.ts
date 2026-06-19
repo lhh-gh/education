@@ -500,7 +500,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationOperations',
         redirect: '/education/operations/dashboard',
         meta: {
-          title: 'Academic Operations',
+          title: '运营中心',
           icon: 'material-symbols:monitoring-outline-rounded',
           type: 'M',
           auth: ['education:operations:lesson-change:page', 'education:operations:makeup:page', 'education:operations:consumption-review:page', 'education:operations:renewal-alert:page', 'education:operations:teacher-workload:report', 'education:operations:dashboard:overview'],
@@ -511,7 +511,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationLessonChangeCenter',
             component: () => import('~/education/views/operations/LessonChangeCenter.vue'),
             meta: {
-              title: 'Lesson Change Center',
+              title: '调课中心',
               icon: 'material-symbols:move-up-outline-rounded',
               type: 'M',
               auth: ['education:operations:lesson-change:page'],
@@ -523,7 +523,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationMakeupList',
             component: () => import('~/education/views/operations/LeaveMakeupList.vue'),
             meta: {
-              title: 'Leave Make-up Closure',
+              title: '补课闭环',
               icon: 'material-symbols:event-available-outline-rounded',
               type: 'M',
               auth: ['education:operations:makeup:page'],
@@ -535,7 +535,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationConsumptionReviewList',
             component: () => import('~/education/views/operations/ConsumptionReviewList.vue'),
             meta: {
-              title: 'Consumption Review',
+              title: '消课审核',
               icon: 'material-symbols:fact-check-outline-rounded',
               type: 'M',
               auth: ['education:operations:consumption-review:page'],
@@ -547,7 +547,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationRenewalAlertList',
             component: () => import('~/education/views/operations/RenewalAlertList.vue'),
             meta: {
-              title: 'Renewal Alerts',
+              title: '续费提醒',
               icon: 'material-symbols:notification-important-outline-rounded',
               type: 'M',
               auth: ['education:operations:renewal-alert:page'],
@@ -559,7 +559,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationTeacherWorkloadReport',
             component: () => import('~/education/views/operations/TeacherWorkloadReport.vue'),
             meta: {
-              title: 'Teacher Workloads',
+              title: '教师工作量',
               icon: 'material-symbols:bar-chart-outline-rounded',
               type: 'M',
               auth: ['education:operations:teacher-workload:report'],
@@ -571,7 +571,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationDashboard',
             component: () => import('~/education/views/operations/OperationDashboard.vue'),
             meta: {
-              title: 'Operation Dashboard',
+              title: '运营看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:operations:dashboard:overview'],

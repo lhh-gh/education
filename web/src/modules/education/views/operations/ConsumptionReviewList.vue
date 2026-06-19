@@ -3,7 +3,7 @@ import type { ConsumptionReviewPageParams, ConsumptionReviewRecord } from '../..
 import { createConsumptionAdjustment, pageConsumptionReviews } from '../../api/operations/consumption-review.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import ConsumptionReviewDrawer from './components/ConsumptionReviewDrawer.vue'
-import { operationPermissions, operationTagType } from './operationRules.ts'
+import { conflictErrorText, operationPermissions, operationStatusLabel, operationTagType } from './operationRules.ts'
 
 defineOptions({ name: 'EducationOperationConsumptionReviewList' })
 
@@ -26,7 +26,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Consumption reviews loading failed'
+    errorText.value = conflictErrorText(error)
   }
   finally {
     loading.value = false
@@ -42,15 +42,15 @@ function open(row: ConsumptionReviewRecord, next: 'approve' | 'reject') {
 async function adjust(row: ConsumptionReviewRecord) {
   const originalId = row.consumption_ids?.[0]
   if (!originalId) {
-    errorText.value = 'Original consumption is required'
+    errorText.value = '请选择原消课记录'
     return
   }
   try {
-    await createConsumptionAdjustment(originalId, { tenant_id: row.tenant_id, campus_id: row.campus_id ?? undefined, credits: '-1.00', reason: 'wrong attendance status' })
+    await createConsumptionAdjustment(originalId, { tenant_id: row.tenant_id, campus_id: row.campus_id ?? undefined, credits: '-1.00', reason: '考勤状态有误' })
     loadRows()
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Adjustment failed'
+    errorText.value = conflictErrorText(error)
   }
 }
 
@@ -62,58 +62,58 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Consumption Review</span>
+          <span>消课审核</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Teacher">
+        <el-form-item label="教师">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 150px;">
-            <el-option label="pending" value="pending" />
-            <el-option label="approved" value="approved" />
-            <el-option label="rejected" value="rejected" />
+            <el-option label="待处理" value="pending" />
+            <el-option label="已通过" value="approved" />
+            <el-option label="已驳回" value="rejected" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="lesson_id" label="Lesson" width="110" />
-        <el-table-column prop="teacher_id" label="Teacher" width="110" />
-        <el-table-column prop="submitted_at" label="Submitted At" width="180" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="lesson_id" label="课次" width="110" />
+        <el-table-column prop="teacher_id" label="教师" width="110" />
+        <el-table-column prop="submitted_at" label="提交时间" width="180" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="operationTagType(row.status)">
-              {{ row.status }}
+              {{ operationStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="reviewed_by" label="Reviewed By" width="130" />
-        <el-table-column prop="review_note" label="Review Note" min-width="180" show-overflow-tooltip />
-        <el-table-column label="Actions" fixed="right" width="220">
+        <el-table-column prop="reviewed_by" label="审核人" width="130" />
+        <el-table-column prop="review_note" label="审核备注" min-width="180" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" width="220">
           <template #default="{ row }">
             <el-button v-if="permissions.approveConsumption" link type="primary" @click="open(row, 'approve')">
-              Approve
+              通过
             </el-button>
             <el-button v-if="permissions.approveConsumption" link type="danger" @click="open(row, 'reject')">
-              Reject
+              驳回
             </el-button>
             <el-button v-if="permissions.adjustConsumption" link @click="adjust(row)">
-              Adjust
+              调整
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No consumption reviews" />
+          <el-empty description="暂无消课审核记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

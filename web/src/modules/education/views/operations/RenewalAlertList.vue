@@ -3,7 +3,7 @@ import type { RenewalAlertPageParams, RenewalAlertRecord } from '../../api/opera
 import { closeRenewalAlert, ignoreRenewalAlert, pageRenewalAlerts } from '../../api/operations/renewal.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import RenewalFollowDrawer from './components/RenewalFollowDrawer.vue'
-import { operationPermissions, operationTagType, sortRenewalAlerts } from './operationRules.ts'
+import { conflictErrorText, operationPermissions, operationStatusLabel, operationTagType, operationTypeLabel, sortRenewalAlerts } from './operationRules.ts'
 
 defineOptions({ name: 'EducationOperationRenewalAlertList' })
 
@@ -26,7 +26,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Renewal alerts loading failed'
+    errorText.value = conflictErrorText(error)
   }
   finally {
     loading.value = false
@@ -56,63 +56,71 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Renewal Alerts</span>
+          <span>续费提醒</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Level">
+        <el-form-item label="级别">
           <el-select v-model="search.alert_level" clearable style="width: 140px;">
-            <el-option label="urgent" value="urgent" />
-            <el-option label="warning" value="warning" />
-            <el-option label="normal" value="normal" />
+            <el-option label="紧急" value="urgent" />
+            <el-option label="预警" value="warning" />
+            <el-option label="普通" value="normal" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 140px;">
-            <el-option label="open" value="open" />
-            <el-option label="ignored" value="ignored" />
-            <el-option label="closed" value="closed" />
+            <el-option label="待跟进" value="open" />
+            <el-option label="已忽略" value="ignored" />
+            <el-option label="已关闭" value="closed" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="sortedRows" row-key="id">
-        <el-table-column prop="student_id" label="Student" width="110" />
-        <el-table-column prop="course_id" label="Course" width="110" />
-        <el-table-column prop="alert_type" label="Type" width="150" />
-        <el-table-column label="Level" width="110">
+        <el-table-column prop="student_id" label="学员" width="110" />
+        <el-table-column prop="course_id" label="课程" width="110" />
+        <el-table-column label="类型" width="150">
+          <template #default="{ row }">
+            {{ operationTypeLabel(row.alert_type) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="级别" width="110">
           <template #default="{ row }">
             <el-tag :type="operationTagType(row.alert_level)">
-              {{ row.alert_level }}
+              {{ operationStatusLabel(row.alert_level) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="Status" width="110" />
-        <el-table-column prop="due_date" label="Due Date" width="150" />
-        <el-table-column prop="assignee_id" label="Assignee" width="110" />
-        <el-table-column label="Actions" fixed="right" width="190">
+        <el-table-column label="状态" width="110">
+          <template #default="{ row }">
+            {{ operationStatusLabel(row.status) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="due_date" label="到期日期" width="150" />
+        <el-table-column prop="assignee_id" label="负责人" width="110" />
+        <el-table-column label="操作" fixed="right" width="190">
           <template #default="{ row }">
             <el-button v-if="permissions.renewalFollow" link type="primary" @click="openFollow(row)">
-              Follow
+              跟进
             </el-button>
             <el-button link @click="ignore(row)">
-              Ignore
+              忽略
             </el-button>
             <el-button link type="success" @click="close(row)">
-              Close
+              关闭
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No renewal alerts" />
+          <el-empty description="暂无续费提醒" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

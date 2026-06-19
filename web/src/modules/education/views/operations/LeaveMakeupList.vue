@@ -3,7 +3,7 @@ import type { MakeupEntitlementPageParams, MakeupEntitlementRecord } from '../..
 import { cancelMakeupRecord, pageMakeupEntitlements } from '../../api/operations/makeup.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import MakeupArrangeForm from './components/MakeupArrangeForm.vue'
-import { operationPermissions, operationTagType } from './operationRules.ts'
+import { conflictErrorText, operationPermissions, operationStatusLabel, operationTagType } from './operationRules.ts'
 
 defineOptions({ name: 'EducationOperationMakeupList' })
 
@@ -25,7 +25,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Make-up list loading failed'
+    errorText.value = conflictErrorText(error)
   }
   finally {
     loading.value = false
@@ -39,11 +39,11 @@ function openArrange(row: MakeupEntitlementRecord) {
 
 async function cancelArrangement(row: MakeupEntitlementRecord) {
   try {
-    await cancelMakeupRecord(row.id, { tenant_id: row.tenant_id, campus_id: row.campus_id ?? undefined, reason: 'cancel arrangement' })
+    await cancelMakeupRecord(row.id, { tenant_id: row.tenant_id, campus_id: row.campus_id ?? undefined, reason: '取消补课安排' })
     loadRows()
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Cancel failed'
+    errorText.value = conflictErrorText(error)
   }
 }
 
@@ -55,55 +55,55 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Leave Make-up Closure</span>
+          <span>补课闭环</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Student">
+        <el-form-item label="学员">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Course">
+        <el-form-item label="课程">
           <el-input-number v-model="search.course_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 150px;">
-            <el-option v-for="item in ['available', 'arranged', 'used', 'expired', 'cancelled']" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in ['available', 'arranged', 'used', 'expired', 'cancelled']" :key="item" :label="operationStatusLabel(item)" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="student_id" label="Student" width="110" />
-        <el-table-column prop="course_id" label="Course" width="110" />
-        <el-table-column prop="source_lesson_id" label="Source Lesson" width="130" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="student_id" label="学员" width="110" />
+        <el-table-column prop="course_id" label="课程" width="110" />
+        <el-table-column prop="source_lesson_id" label="来源课次" width="130" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="operationTagType(row.status)">
-              {{ row.status }}
+              {{ operationStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="expires_at" label="Expires At" width="180" />
-        <el-table-column label="Actions" fixed="right" width="180">
+        <el-table-column prop="expires_at" label="过期时间" width="180" />
+        <el-table-column label="操作" fixed="right" width="180">
           <template #default="{ row }">
             <el-button v-if="permissions.arrangeMakeup && row.status === 'available'" link type="primary" @click="openArrange(row)">
-              Arrange
+              安排
             </el-button>
             <el-button v-if="row.status === 'arranged'" link type="danger" @click="cancelArrangement(row)">
-              Cancel
+              取消
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No make-up entitlement" />
+          <el-empty description="暂无补课权益" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
