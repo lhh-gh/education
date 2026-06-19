@@ -37,29 +37,6 @@ final class RenewalAlertRepository
         return ['list' => $list, 'total' => $total];
     }
 
-    private function scopedQuery(array $params, EducationUserContext $context): mixed
-    {
-        $query = EducationRenewalAlert::query();
-        if ($context->platformAccess) {
-            if (isset($params['tenant_id']) && $params['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $params['tenant_id']);
-            }
-
-            return $query;
-        }
-
-        if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        $query->where('tenant_id', $context->tenantId);
-        if ($context->roleCode !== EducationRoleCode::TenantAdmin) {
-            $query->whereIn('campus_id', $context->campusIds ?: [0]);
-        }
-
-        return $query;
-    }
-
     public function summaryByLevel(array $params, EducationUserContext $context): array
     {
         $query = $this->scopedQuery($params, $context)->where('status', 'open');
@@ -116,5 +93,28 @@ final class RenewalAlertRepository
         $alert->update(['status' => 'closed']);
 
         return $alert->refresh();
+    }
+
+    private function scopedQuery(array $params, EducationUserContext $context): mixed
+    {
+        $query = EducationRenewalAlert::query();
+        if ($context->platformAccess) {
+            if (isset($params['tenant_id']) && $params['tenant_id'] !== '') {
+                $query->where('tenant_id', (int) $params['tenant_id']);
+            }
+
+            return $query;
+        }
+
+        if ($context->tenantId === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $query->where('tenant_id', $context->tenantId);
+        if ($context->roleCode !== EducationRoleCode::TenantAdmin) {
+            $query->whereIn('campus_id', $context->campusIds ?: [0]);
+        }
+
+        return $query;
     }
 }

@@ -92,6 +92,7 @@ jobs:
           DB_DRIVER: mysql
           DB_HOST: 127.0.0.1
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: ./.github/ci/run.code-coverage.sh
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4-beta

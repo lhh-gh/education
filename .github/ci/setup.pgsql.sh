@@ -9,6 +9,7 @@ done
 
 echo -e "Init PostgreSQL database..."
 docker exec postgres psql -d postgres -U postgres -c "create database mineadmin"
+docker exec postgres psql -d postgres -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'mineadmin_test'" | grep -q 1 || docker exec postgres psql -d postgres -U postgres -c "create database mineadmin_test"
 echo -e "Done\n"
 
 wait

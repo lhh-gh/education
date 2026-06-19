@@ -137,6 +137,7 @@ jobs:
           DB_DRIVER: mysql
           DB_HOST: 127.0.0.1
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: ./.github/ci/run.test.sh
       - name: Clear Redis Cache
         run: |
@@ -151,6 +152,7 @@ jobs:
           DB_PASSWORD: postgres
           DB_CHARSET: utf8
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: ./.github/ci/run.test.sh
   tests-swow:
     needs: cs-fix
@@ -241,6 +243,7 @@ jobs:
           DB_DRIVER: mysql
           DB_HOST: 127.0.0.1
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: |
           vendor/bin/phpunit --group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
           vendor/bin/phpunit --exclude-group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
@@ -257,6 +260,7 @@ jobs:
           DB_PASSWORD: postgres
           DB_CHARSET: utf8
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: |
           vendor/bin/phpunit --group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
           vendor/bin/phpunit --exclude-group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always

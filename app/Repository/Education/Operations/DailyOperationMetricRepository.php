@@ -97,10 +97,10 @@ final class DailyOperationMetricRepository
     private function applyDateFilters(mixed $query, array $params): void
     {
         if (isset($params['start_at']) && $params['start_at'] !== '') {
-            $query->where('metric_date', '>=', substr((string) $params['start_at'], 0, 10));
+            $query->where('metric_date', '>=', mb_substr((string) $params['start_at'], 0, 10));
         }
         if (isset($params['end_at']) && $params['end_at'] !== '') {
-            $query->where('metric_date', '<=', substr((string) $params['end_at'], 0, 10));
+            $query->where('metric_date', '<=', mb_substr((string) $params['end_at'], 0, 10));
         }
     }
 }
