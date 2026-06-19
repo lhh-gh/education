@@ -60,6 +60,28 @@ final class RenewalAlertRepository
         return $query;
     }
 
+    public function summaryByLevel(array $params, EducationUserContext $context): array
+    {
+        $query = $this->scopedQuery($params, $context)->where('status', 'open');
+        if (isset($params['start_at']) && $params['start_at'] !== '') {
+            $query->where('created_at', '>=', $params['start_at']);
+        }
+        if (isset($params['end_at']) && $params['end_at'] !== '') {
+            $query->where('created_at', '<=', $params['end_at']);
+        }
+        $rows = $query
+            ->selectRaw('alert_level, COUNT(*) as row_count')
+            ->groupBy('alert_level')
+            ->get()
+            ->keyBy('alert_level');
+
+        return [
+            'urgent_count' => (int) ($rows->get('urgent')->row_count ?? 0),
+            'warning_count' => (int) ($rows->get('warning')->row_count ?? 0),
+            'normal_count' => (int) ($rows->get('normal')->row_count ?? 0),
+        ];
+    }
+
     public function findOpenAlert(int $tenantId, int $accountId, string $alertType): ?EducationRenewalAlert
     {
         return EducationRenewalAlert::query()
