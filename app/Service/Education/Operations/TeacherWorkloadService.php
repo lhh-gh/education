@@ -59,4 +59,9 @@ final class TeacherWorkloadService
                 : [],
         ];
     }
+
+    public function summary(array $params, EducationUserContext $context): array
+    {
+        return $this->repository->summaryReport($params, $context);
+    }
 }

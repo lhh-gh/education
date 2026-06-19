@@ -28,6 +28,7 @@ use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Mine\Access\Attribute\Permission;
 use Mine\Swagger\Attributes\PageResponse;
+use Mine\Swagger\Attributes\ResultResponse;
 
 #[HyperfServer(name: 'http')]
 #[Middleware(middleware: AccessTokenMiddleware::class, priority: 100)]
@@ -45,6 +46,14 @@ final class TeacherWorkloadController extends AbstractController
         $params = $request->validated();
 
         return $this->success($this->service->report($params, $this->context()));
+    }
+
+    #[Get(path: '/admin/education/operations/reports/teacher-workloads/summary', operationId: 'educationOperationTeacherWorkloadSummary', summary: 'Teacher workload summary', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:operations:teacher-workload:report')]
+    public function summary(TeacherWorkloadPageRequest $request): Result
+    {
+        return $this->success($this->service->summary($request->validated(), $this->context()));
     }
 
     private function context(): EducationUserContext

@@ -60,13 +60,26 @@ final class TeacherWorkloadRepository
     public function pageReport(array $params, EducationUserContext $context): array
     {
         $query = $this->scopedQuery($params, $context);
-        foreach (['campus_id', 'teacher_id', 'workload_type'] as $field) {
-            if (isset($params[$field]) && $params[$field] !== '') {
-                $query->where($field, $params[$field]);
-            }
-        }
+        $this->applyReportFilters($query, $params);
 
         return $query->orderByDesc('recorded_at')->get()->map(static fn ($row): array => $row->toArray())->all();
+    }
+
+    public function summaryReport(array $params, EducationUserContext $context): array
+    {
+        $query = $this->scopedQuery($params, $context);
+        $this->applyReportFilters($query, $params);
+        $row = $query
+            ->selectRaw('COUNT(*) as row_count, SUM(credits) as total_credits, SUM(student_count) as student_count, SUM(present_count) as present_count')
+            ->first();
+
+        return [
+            'teacher_id' => isset($params['teacher_id']) && $params['teacher_id'] !== '' ? (int) $params['teacher_id'] : null,
+            'total_credits' => number_format((float) ($row->total_credits ?? 0), 2, '.', ''),
+            'row_count' => (int) ($row->row_count ?? 0),
+            'student_count' => (int) ($row->student_count ?? 0),
+            'present_count' => (int) ($row->present_count ?? 0),
+        ];
     }
 
     public function summaryByCampus(int $tenantId, ?int $campusId = null): array
@@ -104,5 +117,20 @@ final class TeacherWorkloadRepository
         }
 
         return $query;
+    }
+
+    private function applyReportFilters(mixed $query, array $params): void
+    {
+        foreach (['campus_id', 'teacher_id', 'workload_type'] as $field) {
+            if (isset($params[$field]) && $params[$field] !== '') {
+                $query->where($field, $params[$field]);
+            }
+        }
+        if (isset($params['start_at']) && $params['start_at'] !== '') {
+            $query->where('recorded_at', '>=', $params['start_at']);
+        }
+        if (isset($params['end_at']) && $params['end_at'] !== '') {
+            $query->where('recorded_at', '<=', $params['end_at']);
+        }
     }
 }
