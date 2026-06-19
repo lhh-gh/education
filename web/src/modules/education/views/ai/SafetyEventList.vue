@@ -2,16 +2,24 @@
 import type { SafetyEventRecord } from '../../api/ai/safety.ts'
 import { markSafetyHandled, pageSafetyEvents } from '../../api/ai/safety.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { aiErrorTitle, aiStatusLabel, aiTagType } from './aiRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiSafetyEventList' })
 
+const message = useMessage()
 const loading = ref(false)
 const rows = ref<SafetyEventRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
+const successText = ref('')
 const search = reactive({ page: 1, pageSize: 20, risk_level: '' })
 const canHandle = computed(() => hasAuth('education:ai:safety:handle'))
+
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
 
 async function loadRows() {
   loading.value = true
@@ -22,7 +30,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || '安全事件加载失败'
+    handleError(error, '安全事件加载失败')
   }
   finally {
     loading.value = false
@@ -30,8 +38,15 @@ async function loadRows() {
 }
 
 async function handle(row: SafetyEventRecord) {
-  await markSafetyHandled(row.id)
-  await loadRows()
+  try {
+    await markSafetyHandled(row.id)
+    successText.value = '安全事件已处理'
+    message.success(successText.value)
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '安全事件处理失败')
+  }
 }
 
 onMounted(loadRows)
@@ -46,6 +61,7 @@ onMounted(loadRows)
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+      <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-form inline>
         <el-form-item label="风险等级">
           <el-select v-model="search.risk_level" clearable style="width: 140px;">
@@ -71,6 +87,13 @@ onMounted(loadRows)
         </el-table-column>
         <el-table-column prop="event_type" label="事件类型" width="160" />
         <el-table-column prop="summary" label="摘要" min-width="240" />
+        <el-table-column label="处理状态" width="120">
+          <template #default="{ row }">
+            <el-tag :type="row.handled ? 'success' : 'warning'">
+              {{ row.handled ? '已处理' : '待处理' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="120">
           <template #default="{ row }">
             <el-button v-if="canHandle" link type="primary" :disabled="row.handled" @click="handle(row)">

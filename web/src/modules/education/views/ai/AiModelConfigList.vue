@@ -3,7 +3,7 @@ import type { AiModelConfigRecord } from '../../api/ai/config.ts'
 import { pageModelConfigs, saveFeatureSetting, saveModelConfig } from '../../api/ai/config.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
-import { aiErrorTitle, aiFeatureSafetyLevelLabel, aiModelConfigText, aiStatusLabel, aiTagType, maskedSecret } from './aiRules.ts'
+import { aiErrorMessage, aiFeatureSafetyLevelLabel, aiModelConfigText, aiStatusLabel, aiTagType, maskedSecret } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiModelConfigList' })
 
@@ -21,7 +21,7 @@ const canSaveModel = computed(() => hasAuth('education:ai:model-config:save'))
 const canSaveFeature = computed(() => hasAuth('education:ai:feature-setting:save'))
 
 function handleError(error: any, fallback: string) {
-  errorText.value = aiErrorTitle(error?.code) || error?.message || fallback
+  errorText.value = aiErrorMessage(error, fallback)
   message.error(errorText.value)
 }
 

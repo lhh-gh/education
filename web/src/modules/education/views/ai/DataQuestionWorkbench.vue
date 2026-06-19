@@ -2,10 +2,12 @@
 import type { DataQuestionLogRecord, MetricCatalogRecord } from '../../api/ai/data-question.ts'
 import { askDataQuestion, pageDataQuestionLogs, pageMetricCatalogs } from '../../api/ai/data-question.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { aiErrorTitle, aiStatusLabel, aiTagType, containsRawSql } from './aiRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType, containsRawSql } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiDataQuestionWorkbench' })
 
+const message = useMessage()
 const loading = ref(false)
 const logs = ref<DataQuestionLogRecord[]>([])
 const metrics = ref<MetricCatalogRecord[]>([])
@@ -15,6 +17,11 @@ const answerText = ref('')
 const search = reactive({ page: 1, pageSize: 20 })
 const form = reactive({ question_text: '', metric_codes: [] as string[] })
 const canAsk = computed(() => hasAuth('education:ai:data-question:create'))
+
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
 
 async function loadRows() {
   loading.value = true
@@ -29,7 +36,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || '数据问答加载失败'
+    handleError(error, '数据问答加载失败')
   }
   finally {
     loading.value = false
@@ -39,12 +46,19 @@ async function loadRows() {
 async function askQuestion() {
   if (containsRawSql(form.question_text)) {
     errorText.value = '问题内容不能包含原始 SQL'
+    message.error(errorText.value)
     return
   }
 
-  const response = await askDataQuestion({ ...form })
-  answerText.value = response.data.answer_text
-  await loadRows()
+  try {
+    const response = await askDataQuestion({ ...form })
+    answerText.value = response.data.answer_text
+    message.success('问题已提交')
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '数据问答提交失败')
+  }
 }
 
 onMounted(loadRows)

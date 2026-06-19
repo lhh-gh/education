@@ -23,25 +23,29 @@ describe('education ai routes', () => {
     expect(findRoute('EducationAi')).toMatchObject({
       path: '/education/ai',
       redirect: '/education/ai/model-configs',
+      meta: {
+        title: 'AI 助手',
+      },
     })
 
     const expectedRoutes = [
-      ['EducationAiModelConfigList', '/education/ai/model-configs', ['education:ai:model-config:page']],
-      ['EducationAiPromptTemplateList', '/education/ai/prompts', ['education:ai:prompt:page']],
-      ['EducationAiGenerationTaskList', '/education/ai/generation-tasks', ['education:ai:generation:page']],
-      ['EducationAiReviewList', '/education/ai/reviews', ['education:ai:review:page']],
-      ['EducationAiRiskScoreList', '/education/ai/risk-scores', ['education:ai:risk-score:page']],
-      ['EducationAiDataQuestionWorkbench', '/education/ai/data-questions', ['education:ai:data-question:create']],
-      ['EducationAiRecommendationList', '/education/ai/recommendations', ['education:ai:recommendation:page']],
-      ['EducationAiUsageDashboard', '/education/ai/usage', ['education:ai:usage:summary']],
-      ['EducationAiSafetyEventList', '/education/ai/safety-events', ['education:ai:safety:page']],
+      ['EducationAiModelConfigList', '/education/ai/model-configs', '模型配置', ['education:ai:model-config:page']],
+      ['EducationAiPromptTemplateList', '/education/ai/prompts', '提示词模板', ['education:ai:prompt:page']],
+      ['EducationAiGenerationTaskList', '/education/ai/generation-tasks', '生成任务', ['education:ai:generation:page']],
+      ['EducationAiReviewList', '/education/ai/reviews', 'AI 审核', ['education:ai:review:page']],
+      ['EducationAiRiskScoreList', '/education/ai/risk-scores', '风险评分', ['education:ai:risk-score:page']],
+      ['EducationAiDataQuestionWorkbench', '/education/ai/data-questions', '数据问答', ['education:ai:data-question:page']],
+      ['EducationAiRecommendationList', '/education/ai/recommendations', '智能推荐', ['education:ai:recommendation:page']],
+      ['EducationAiUsageDashboard', '/education/ai/usage', '用量统计', ['education:ai:usage:summary']],
+      ['EducationAiSafetyEventList', '/education/ai/safety-events', '安全事件', ['education:ai:safety:page']],
     ] as const
 
-    for (const [name, path, auth] of expectedRoutes) {
+    for (const [name, path, title, auth] of expectedRoutes) {
       const route = findRoute(name)
 
       expect(route.path).toBe(path)
       expect(route.component).toEqual(expect.any(Function))
+      expect(route.meta?.title).toBe(title)
       expect(route.meta?.auth).toEqual(auth)
     }
   })

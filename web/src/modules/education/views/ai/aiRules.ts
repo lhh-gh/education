@@ -121,6 +121,14 @@ export function aiErrorTitle(code?: number): string {
   return ''
 }
 
+export function aiErrorMessage(error: any, fallback: string): string {
+  if (error?.message === 'Permission denied') {
+    return '暂无操作权限'
+  }
+
+  return aiErrorTitle(error?.code) || error?.message || fallback
+}
+
 export function maskedSecret(): string {
   return '********'
 }

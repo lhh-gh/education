@@ -71,7 +71,7 @@ final class AiModelConfigController extends AbstractController
 
     #[Post(path: '/admin/education/ai/feature-settings', operationId: 'educationAiFeatureSettingSave', summary: 'AI feature setting save', tags: ['Education AI'])]
     #[ResultResponse(instance: new Result())]
-    #[Permission(code: 'education:ai:model-config:save')]
+    #[Permission(code: 'education:ai:feature-setting:save')]
     public function saveFeatureSetting(AiFeatureSettingSaveRequest $request): Result
     {
         $context = $this->context();

@@ -876,10 +876,10 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationAi',
         redirect: '/education/ai/model-configs',
         meta: {
-          title: 'AI Assistant',
+          title: 'AI 助手',
           icon: 'material-symbols:psychology-outline-rounded',
           type: 'M',
-          auth: ['education:ai:model-config:page', 'education:ai:prompt:page', 'education:ai:generation:page', 'education:ai:review:page', 'education:ai:risk-score:page', 'education:ai:data-question:create', 'education:ai:recommendation:page', 'education:ai:usage:summary', 'education:ai:safety:page'],
+          auth: ['education:ai:model-config:page', 'education:ai:prompt:page', 'education:ai:generation:page', 'education:ai:review:page', 'education:ai:risk-score:page', 'education:ai:data-question:page', 'education:ai:recommendation:page', 'education:ai:usage:summary', 'education:ai:safety:page'],
         },
         children: [
           {
@@ -887,7 +887,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiModelConfigList',
             component: () => import('~/education/views/ai/AiModelConfigList.vue'),
             meta: {
-              title: 'Model Configs',
+              title: '模型配置',
               icon: 'material-symbols:tune-outline-rounded',
               type: 'M',
               auth: ['education:ai:model-config:page'],
@@ -899,7 +899,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiPromptTemplateList',
             component: () => import('~/education/views/ai/PromptTemplateList.vue'),
             meta: {
-              title: 'Prompts',
+              title: '提示词模板',
               icon: 'material-symbols:prompt-suggestion-outline-rounded',
               type: 'M',
               auth: ['education:ai:prompt:page'],
@@ -911,7 +911,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiGenerationTaskList',
             component: () => import('~/education/views/ai/GenerationTaskList.vue'),
             meta: {
-              title: 'Generation Tasks',
+              title: '生成任务',
               icon: 'material-symbols:queue-play-next-outline-rounded',
               type: 'M',
               auth: ['education:ai:generation:page'],
@@ -923,7 +923,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiReviewList',
             component: () => import('~/education/views/ai/AiReviewList.vue'),
             meta: {
-              title: 'Reviews',
+              title: 'AI 审核',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:ai:review:page'],
@@ -935,7 +935,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiRiskScoreList',
             component: () => import('~/education/views/ai/RiskScoreList.vue'),
             meta: {
-              title: 'Risk Scores',
+              title: '风险评分',
               icon: 'material-symbols:warning-outline-rounded',
               type: 'M',
               auth: ['education:ai:risk-score:page'],
@@ -947,10 +947,10 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiDataQuestionWorkbench',
             component: () => import('~/education/views/ai/DataQuestionWorkbench.vue'),
             meta: {
-              title: 'Data Q&A',
+              title: '数据问答',
               icon: 'material-symbols:query-stats-outline-rounded',
               type: 'M',
-              auth: ['education:ai:data-question:create'],
+              auth: ['education:ai:data-question:page'],
               cache: true,
             },
           },
@@ -959,7 +959,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiRecommendationList',
             component: () => import('~/education/views/ai/AiRecommendationList.vue'),
             meta: {
-              title: 'Recommendations',
+              title: '智能推荐',
               icon: 'material-symbols:tips-and-updates-outline-rounded',
               type: 'M',
               auth: ['education:ai:recommendation:page'],
@@ -971,7 +971,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiUsageDashboard',
             component: () => import('~/education/views/ai/UsageDashboard.vue'),
             meta: {
-              title: 'Usage',
+              title: '用量统计',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:ai:usage:summary'],
@@ -983,7 +983,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiSafetyEventList',
             component: () => import('~/education/views/ai/SafetyEventList.vue'),
             meta: {
-              title: 'Safety Events',
+              title: '安全事件',
               icon: 'material-symbols:shield-outline-rounded',
               type: 'M',
               auth: ['education:ai:safety:page'],

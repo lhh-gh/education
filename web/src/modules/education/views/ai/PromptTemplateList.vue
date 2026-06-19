@@ -2,10 +2,12 @@
 import type { PromptTemplateRecord } from '../../api/ai/prompt.ts'
 import { pagePromptTemplates, publishPromptTemplate, savePromptTemplate } from '../../api/ai/prompt.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { aiErrorTitle, aiStatusLabel, aiTagType } from './aiRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiPromptTemplateList' })
 
+const message = useMessage()
 const loading = ref(false)
 const rows = ref<PromptTemplateRecord[]>([])
 const total = ref(0)
@@ -16,6 +18,11 @@ const form = reactive({ template_code: '', feature_code: 'lesson_comment', templ
 const canSavePrompt = computed(() => hasAuth('education:ai:prompt:save'))
 const canPublishPrompt = computed(() => hasAuth('education:ai:prompt:publish'))
 
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
+
 async function loadRows() {
   loading.value = true
   try {
@@ -25,7 +32,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || '提示词模板加载失败'
+    handleError(error, '提示词模板加载失败')
   }
   finally {
     loading.value = false
@@ -33,15 +40,27 @@ async function loadRows() {
 }
 
 async function savePrompt() {
-  await savePromptTemplate({ ...form })
-  successText.value = '提示词模板已保存'
-  await loadRows()
+  try {
+    await savePromptTemplate({ ...form })
+    successText.value = '提示词模板已保存'
+    message.success(successText.value)
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '提示词模板保存失败')
+  }
 }
 
 async function publish(row: PromptTemplateRecord) {
-  await publishPromptTemplate(row.template_code, { version: row.version })
-  successText.value = '提示词模板已发布'
-  await loadRows()
+  try {
+    await publishPromptTemplate(row.template_code, { version: row.version })
+    successText.value = '提示词模板已发布'
+    message.success(successText.value)
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '提示词模板发布失败')
+  }
 }
 
 onMounted(loadRows)

@@ -108,6 +108,8 @@ final class EducationMenuSeederTest extends TestCase
         $contentReviewButton = Db::table('menu')->where('name', 'education:content:review:handle')->first();
         $aiModelSaveButton = Db::table('menu')->where('name', 'education:ai:model-config:save')->first();
         $aiFeatureSaveButton = Db::table('menu')->where('name', 'education:ai:feature-setting:save')->first();
+        $aiDataQuestionPage = Db::table('menu')->where('name', 'education:ai:data-question:page')->first();
+        $aiDataQuestionCreateButton = Db::table('menu')->where('name', 'education:ai:data-question:create')->first();
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
@@ -118,6 +120,8 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($contentReviewButton);
         self::assertNotNull($aiModelSaveButton);
         self::assertNotNull($aiFeatureSaveButton);
+        self::assertNotNull($aiDataQuestionPage);
+        self::assertNotNull($aiDataQuestionCreateButton);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $contentGroup->redirect);
@@ -133,6 +137,9 @@ final class EducationMenuSeederTest extends TestCase
         self::assertSame('保存', $this->menuTitle($aiModelSaveButton));
         self::assertSame('保存', $this->menuTitle($aiFeatureSaveButton));
         self::assertSame('B', json_decode((string) $aiFeatureSaveButton->meta, true)['type']);
+        self::assertSame('数据问答', $this->menuTitle($aiDataQuestionPage));
+        self::assertSame('新增', $this->menuTitle($aiDataQuestionCreateButton));
+        self::assertSame('B', json_decode((string) $aiDataQuestionCreateButton->meta, true)['type']);
 
         $moduleTitles = Db::table('menu')
             ->where('parent_id', $root->id)
@@ -182,7 +189,9 @@ final class EducationMenuSeederTest extends TestCase
             'education:ai:generation:create',
             'education:ai:review:approve',
             'education:ai:review:handle',
+            'education:ai:data-question:create',
             'education:ai:recommendation:adopt',
+            'education:ai:recommendation:handle',
             'education:ai:safety:handle',
         ];
 

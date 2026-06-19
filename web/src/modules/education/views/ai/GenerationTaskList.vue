@@ -2,10 +2,12 @@
 import type { GenerationResultRecord, GenerationTaskRecord } from '../../api/ai/generation.ts'
 import { createGenerationTask, getGenerationResult, pageGenerationTasks } from '../../api/ai/generation.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { aiErrorTitle, aiStatusLabel, aiTagType, shouldPollGenerationStatus } from './aiRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType, shouldPollGenerationStatus } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiGenerationTaskList' })
 
+const message = useMessage()
 const loading = ref(false)
 const rows = ref<GenerationTaskRecord[]>([])
 const total = ref(0)
@@ -17,6 +19,11 @@ const search = reactive({ page: 1, pageSize: 20, feature_code: '' })
 const form = reactive({ feature_code: 'lesson_comment', business_type: 'lesson_student', business_id: undefined as number | undefined })
 const canCreateTask = computed(() => hasAuth('education:ai:generation:create'))
 let timer: ReturnType<typeof setInterval> | undefined
+
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
 
 function stopPolling() {
   if (timer) {
@@ -42,7 +49,7 @@ async function loadRows() {
     refreshPolling()
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || '生成任务加载失败'
+    handleError(error, '生成任务加载失败')
   }
   finally {
     loading.value = false
@@ -50,15 +57,26 @@ async function loadRows() {
 }
 
 async function createTask() {
-  await createGenerationTask({ ...form })
-  successText.value = '生成任务已入队'
-  await loadRows()
+  try {
+    await createGenerationTask({ ...form })
+    successText.value = '生成任务已入队'
+    message.success(successText.value)
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '生成任务创建失败')
+  }
 }
 
 async function openResult(row: GenerationTaskRecord) {
-  const response = await getGenerationResult(row.id)
-  result.value = response.data
-  resultVisible.value = true
+  try {
+    const response = await getGenerationResult(row.id)
+    result.value = response.data
+    resultVisible.value = true
+  }
+  catch (error: any) {
+    handleError(error, '生成结果加载失败')
+  }
 }
 
 onMounted(loadRows)

@@ -69,7 +69,7 @@ final class PromptTemplateController extends AbstractController
 
     #[Post(path: '/admin/education/ai/prompt-templates/{templateCode}/publish', operationId: 'educationAiPromptTemplatePublish', summary: 'AI prompt template publish', tags: ['Education AI'])]
     #[ResultResponse(instance: new Result())]
-    #[Permission(code: 'education:ai:prompt:save')]
+    #[Permission(code: 'education:ai:prompt:publish')]
     public function publish(string $templateCode): Result
     {
         $context = $this->context();

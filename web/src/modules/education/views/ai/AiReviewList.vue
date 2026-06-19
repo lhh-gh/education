@@ -2,16 +2,24 @@
 import type { GenerationResultRecord } from '../../api/ai/generation.ts'
 import { approveGenerationResult, pageGenerationResults } from '../../api/ai/generation.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
-import { aiErrorTitle, aiStatusLabel, aiTagType, canApproveAiResult } from './aiRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType, canApproveAiResult } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiReviewList' })
 
+const message = useMessage()
 const loading = ref(false)
 const rows = ref<GenerationResultRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
+const successText = ref('')
 const note = ref('')
 const canApprove = computed(() => hasAuth('education:ai:review:approve'))
+
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
 
 async function loadRows() {
   loading.value = true
@@ -22,7 +30,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || 'AI 审核列表加载失败'
+    handleError(error, 'AI 审核列表加载失败')
   }
   finally {
     loading.value = false
@@ -30,8 +38,15 @@ async function loadRows() {
 }
 
 async function approve(row: GenerationResultRecord) {
-  await approveGenerationResult(row.id, { review_note: note.value })
-  await loadRows()
+  try {
+    await approveGenerationResult(row.id, { review_note: note.value })
+    successText.value = '审核已通过'
+    message.success(successText.value)
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, 'AI 审核处理失败')
+  }
 }
 
 onMounted(loadRows)
@@ -46,6 +61,7 @@ onMounted(loadRows)
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
+      <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-input v-model="note" class="page-alert" placeholder="审核备注" />
       <el-table v-loading="loading" :data="rows" row-key="id">
         <el-table-column prop="generation_task_id" label="任务ID" width="100" />
