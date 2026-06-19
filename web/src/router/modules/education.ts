@@ -682,8 +682,8 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationPayroll',
         redirect: '/education/payroll/rules',
         meta: {
-          title: 'Teacher Payroll',
-          icon: 'material-symbols:account-balance-wallet-outline-rounded',
+          title: '薪酬绩效',
+          icon: 'material-symbols:price-check-outline-rounded',
           type: 'M',
           auth: ['education:payroll:rule:page', 'education:payroll:batch:page', 'education:payroll:slip:page', 'education:payroll:review:page', 'education:payroll:payment:page', 'education:payroll:dispute:page', 'education:payroll:performance:page'],
         },
@@ -693,7 +693,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryRuleList',
             component: () => import('~/education/views/payroll/SalaryRuleList.vue'),
             meta: {
-              title: 'Salary Rules',
+              title: '薪酬规则',
               icon: 'material-symbols:rule-outline-rounded',
               type: 'M',
               auth: ['education:payroll:rule:page'],
@@ -705,7 +705,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryBatchList',
             component: () => import('~/education/views/payroll/SalaryBatchList.vue'),
             meta: {
-              title: 'Salary Batches',
+              title: '薪酬批次',
               icon: 'material-symbols:calculate-outline-rounded',
               type: 'M',
               auth: ['education:payroll:batch:page'],
@@ -717,7 +717,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalarySlipList',
             component: () => import('~/education/views/payroll/SalarySlipList.vue'),
             meta: {
-              title: 'Salary Slips',
+              title: '工资条',
               icon: 'material-symbols:receipt-long-outline-rounded',
               type: 'M',
               auth: ['education:payroll:slip:page'],
@@ -729,7 +729,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryReviewList',
             component: () => import('~/education/views/payroll/SalaryReviewList.vue'),
             meta: {
-              title: 'Salary Reviews',
+              title: '薪酬复核',
               icon: 'material-symbols:approval-outline-rounded',
               type: 'M',
               auth: ['education:payroll:review:page'],
@@ -741,7 +741,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryPaymentList',
             component: () => import('~/education/views/payroll/SalaryPaymentList.vue'),
             meta: {
-              title: 'Salary Payments',
+              title: '薪酬发放',
               icon: 'material-symbols:payments-outline-rounded',
               type: 'M',
               auth: ['education:payroll:payment:page'],
@@ -753,7 +753,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollWorkloadDisputeList',
             component: () => import('~/education/views/payroll/WorkloadDisputeList.vue'),
             meta: {
-              title: 'Workload Disputes',
+              title: '工作量申诉',
               icon: 'material-symbols:gavel-outline-rounded',
               type: 'M',
               auth: ['education:payroll:dispute:page'],
@@ -765,7 +765,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollTeacherPerformanceDashboard',
             component: () => import('~/education/views/payroll/TeacherPerformanceDashboard.vue'),
             meta: {
-              title: 'Teacher Performance',
+              title: '教师绩效',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:payroll:performance:page'],

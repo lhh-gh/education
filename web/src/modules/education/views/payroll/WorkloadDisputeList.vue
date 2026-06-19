@@ -2,7 +2,7 @@
 import type { WorkloadDisputeRecord } from '../../api/payroll/dispute.ts'
 import { pageWorkloadDisputes } from '../../api/payroll/dispute.ts'
 import WorkloadDisputeReviewDrawer from './components/WorkloadDisputeReviewDrawer.vue'
-import { payrollTagType } from './payrollRules.ts'
+import { payrollStatusLabel, payrollTagType } from './payrollRules.ts'
 
 defineOptions({ name: 'EducationPayrollWorkloadDisputeList' })
 
@@ -38,38 +38,41 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Workload Disputes</span>
+          <span>工作量申诉</span>
           <el-button type="primary" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Teacher ID">
+        <el-form-item label="教师 ID">
           <el-input-number v-model="search.teacher_id" :min="1" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-input v-model="search.status" clearable />
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="teacher_name" label="Teacher" min-width="140" />
-        <el-table-column prop="salary_month" label="Month" width="120" />
-        <el-table-column prop="reason" label="Reason" min-width="220" />
-        <el-table-column label="Status" width="130">
+        <el-table-column prop="teacher_name" label="教师" min-width="140" />
+        <el-table-column prop="salary_month" label="月份" width="120" />
+        <el-table-column prop="reason" label="原因" min-width="220" />
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
             <el-tag :type="payrollTagType(row.status)">
-              {{ row.status }}
+              {{ payrollStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="120" fixed="right">
+        <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" :disabled="row.status !== 'pending'" @click="openReview(row)">
-              Review
+              复核
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无工作量申诉" />
+        </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>

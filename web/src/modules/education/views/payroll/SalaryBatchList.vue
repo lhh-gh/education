@@ -2,7 +2,7 @@
 import type { SalaryBatchRecord } from '../../api/payroll/batch.ts'
 import { pageSalaryBatches, rebuildSalaryBatch, submitSalaryBatchReview } from '../../api/payroll/batch.ts'
 import SalaryBatchCalculateForm from './components/SalaryBatchCalculateForm.vue'
-import { canRebuildBatch, centsToYuan, payrollConflictText, payrollTagType } from './payrollRules.ts'
+import { canRebuildBatch, centsToYuan, payrollConflictText, payrollStatusLabel, payrollTagType } from './payrollRules.ts'
 
 defineOptions({ name: 'EducationPayrollSalaryBatchList' })
 
@@ -48,54 +48,54 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Salary Batches</span>
+          <span>薪酬批次</span>
           <el-button type="primary" @click="calculateVisible = true">
-            Calculate
+            计算薪酬
           </el-button>
         </div>
       </template>
       <el-alert v-if="conflictText" type="warning" show-icon :closable="true" :title="conflictText" @close="conflictText = ''" />
       <el-form :inline="true" :model="search" class="search-form mt-3">
-        <el-form-item label="Month">
+        <el-form-item label="月份">
           <el-date-picker v-model="search.salary_month" type="month" value-format="YYYY-MM" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-input v-model="search.status" clearable />
         </el-form-item>
         <el-form-item>
           <el-button @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="batch_no" label="Batch No" min-width="180" />
-        <el-table-column prop="salary_month" label="Month" width="120" />
-        <el-table-column prop="teacher_count" label="Teachers" width="100" />
-        <el-table-column label="Payable" width="140">
+        <el-table-column prop="batch_no" label="批次号" min-width="180" />
+        <el-table-column prop="salary_month" label="月份" width="120" />
+        <el-table-column prop="teacher_count" label="教师数" width="100" />
+        <el-table-column label="应发金额" width="140">
           <template #default="{ row }">
             {{ centsToYuan(row.payable_amount_cents) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="130">
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
             <el-tag :type="payrollTagType(row.status)">
-              {{ row.status }}
+              {{ payrollStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="190" fixed="right">
+        <el-table-column label="操作" width="190" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" :disabled="!canRebuildBatch(row)" @click="rebuild(row)">
-              Rebuild
+              重算
             </el-button>
             <el-button link type="primary" :disabled="row.status !== 'calculated'" @click="submit(row)">
-              Submit
+              提交
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No salary batches" />
+          <el-empty description="暂无薪酬批次" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

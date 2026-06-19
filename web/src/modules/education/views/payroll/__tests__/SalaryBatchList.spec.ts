@@ -6,6 +6,6 @@ describe('salary batch list', () => {
     expect(canRebuildBatch({ status: 'draft' })).toBe(true)
     expect(canRebuildBatch({ status: 'calculated' })).toBe(true)
     expect(canRebuildBatch({ status: 'submitted' })).toBe(false)
-    expect(payrollConflictText('salary batch is not submitted')).toBe('salary batch is not submitted')
+    expect(payrollConflictText('salary batch is not submitted')).toBe('薪酬批次未提交')
   })
 })

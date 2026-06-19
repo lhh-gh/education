@@ -18,21 +18,21 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Calculate Salary Batch" width="460px">
+  <el-dialog v-model="visible" title="计算薪酬批次" width="460px">
     <el-form label-width="120px">
-      <el-form-item label="Salary Month">
+      <el-form-item label="薪酬月份">
         <el-date-picker v-model="form.salary_month" type="month" value-format="YYYY-MM" />
       </el-form-item>
-      <el-form-item label="Campus ID">
+      <el-form-item label="校区 ID">
         <el-input-number v-model="form.campus_id" :min="1" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" @click="submit">
-        Calculate
+        计算
       </el-button>
     </template>
   </el-dialog>
