@@ -27,39 +27,39 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Contract" width="640px">
+  <el-dialog v-model="visible" title="合同信息" width="640px">
     <el-alert v-if="riskWarning" class="mb-3" type="warning" :title="riskWarning" show-icon />
     <el-form :model="form" label-width="128px">
-      <el-form-item label="No.">
+      <el-form-item label="合同编号">
         <el-input v-model="form.contract_no" />
       </el-form-item>
-      <el-form-item label="Type">
+      <el-form-item label="合同类型">
         <el-input v-model="form.contract_type" />
       </el-form-item>
-      <el-form-item label="Title">
+      <el-form-item label="合同标题">
         <el-input v-model="form.title" />
       </el-form-item>
-      <el-form-item label="Counterparty">
+      <el-form-item label="相对方">
         <el-input v-model="form.counterparty_name" />
       </el-form-item>
-      <el-form-item label="Amount Cents">
+      <el-form-item label="金额(分)">
         <el-input-number v-model="form.amount_cents" :min="0" />
       </el-form-item>
-      <el-form-item label="Risk">
+      <el-form-item label="风险等级">
         <el-select v-model="form.risk_level">
-          <el-option label="Normal" value="normal" />
-          <el-option label="Warning" value="warning" />
-          <el-option label="High" value="high" />
-          <el-option label="Critical" value="critical" />
+          <el-option label="正常" value="normal" />
+          <el-option label="预警" value="warning" />
+          <el-option label="高风险" value="high" />
+          <el-option label="严重" value="critical" />
         </el-select>
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="saving" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>

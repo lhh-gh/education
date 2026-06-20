@@ -1343,7 +1343,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationGroup',
         redirect: '/education/group/dashboard',
         meta: {
-          title: 'Group Governance',
+          title: '集团管控',
           icon: 'material-symbols:account-tree-outline-rounded',
           type: 'M',
           auth: ['education:group:org:tree', 'education:group:data-permission:page', 'education:group:approval-template:page', 'education:group:approval-task:page', 'education:group:contract:page', 'education:group:contract-renewal:page', 'education:group:metric:page', 'education:group:franchise:page', 'education:group:risk-audit:page'],
@@ -1354,7 +1354,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupOperationDashboard',
             component: () => import('~/education/views/group/GroupOperationDashboard.vue'),
             meta: {
-              title: 'Group Dashboard',
+              title: '集团看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:group:metric:page'],
@@ -1366,7 +1366,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupOrgUnitTree',
             component: () => import('~/education/views/group/OrgUnitTree.vue'),
             meta: {
-              title: 'Org Units',
+              title: '组织架构',
               icon: 'material-symbols:account-tree-outline-rounded',
               type: 'M',
               auth: ['education:group:org:tree'],
@@ -1378,7 +1378,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupDataPermissionList',
             component: () => import('~/education/views/group/DataPermissionList.vue'),
             meta: {
-              title: 'Data Permissions',
+              title: '数据权限',
               icon: 'material-symbols:admin-panel-settings-outline-rounded',
               type: 'M',
               auth: ['education:group:data-permission:page'],
@@ -1390,7 +1390,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupApprovalTemplateList',
             component: () => import('~/education/views/group/ApprovalTemplateList.vue'),
             meta: {
-              title: 'Approval Templates',
+              title: '审批模板',
               icon: 'material-symbols:approval-outline-rounded',
               type: 'M',
               auth: ['education:group:approval-template:page'],
@@ -1402,7 +1402,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupApprovalTaskList',
             component: () => import('~/education/views/group/ApprovalTaskList.vue'),
             meta: {
-              title: 'Approval Tasks',
+              title: '审批任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:group:approval-task:page'],
@@ -1414,7 +1414,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupContractList',
             component: () => import('~/education/views/group/ContractList.vue'),
             meta: {
-              title: 'Contracts',
+              title: '合同管理',
               icon: 'material-symbols:contract-outline-rounded',
               type: 'M',
               auth: ['education:group:contract:page'],
@@ -1426,7 +1426,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupContractRenewalList',
             component: () => import('~/education/views/group/ContractRenewalList.vue'),
             meta: {
-              title: 'Contract Renewals',
+              title: '合同续签',
               icon: 'material-symbols:event-repeat-outline-rounded',
               type: 'M',
               auth: ['education:group:contract-renewal:page'],
@@ -1438,7 +1438,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupFranchiseRecordList',
             component: () => import('~/education/views/group/FranchiseRecordList.vue'),
             meta: {
-              title: 'Franchises',
+              title: '加盟管理',
               icon: 'material-symbols:storefront-outline-rounded',
               type: 'M',
               auth: ['education:group:franchise:page'],
@@ -1450,7 +1450,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupRiskAuditEventList',
             component: () => import('~/education/views/group/RiskAuditEventList.vue'),
             meta: {
-              title: 'Risk Audits',
+              title: '风控审计',
               icon: 'material-symbols:warning-outline-rounded',
               type: 'M',
               auth: ['education:group:risk-audit:page'],

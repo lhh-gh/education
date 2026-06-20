@@ -27,7 +27,7 @@ onMounted(loadRows)
 
 <template>
   <div class="mine-layout education-group-page pt-3">
-    <el-alert class="mb-3" type="info" title="Dashboard metrics respect current group data scope" show-icon />
+    <el-alert class="mb-3" type="info" title="看板指标按当前集团数据范围统计" show-icon />
     <div class="metric-grid mb-3">
       <el-card v-for="item in cards" :key="item.title" shadow="never">
         <div class="metric-title">
@@ -41,19 +41,19 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Operation Metrics</span>
+          <span>运营指标</span>
           <el-button :loading="loading" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="metric_date" label="Date" width="140" />
-        <el-table-column prop="campus_count" label="Campuses" width="120" />
-        <el-table-column prop="student_count" label="Students" width="120" />
-        <el-table-column prop="revenue_cents" label="Revenue Cents" width="160" />
+        <el-table-column prop="metric_date" label="日期" width="140" />
+        <el-table-column prop="campus_count" label="校区数" width="120" />
+        <el-table-column prop="student_count" label="学员数" width="120" />
+        <el-table-column prop="revenue_cents" label="营收金额(分)" width="160" />
         <template #empty>
-          <el-empty description="No metrics" />
+          <el-empty description="暂无指标" />
         </template>
       </el-table>
     </el-card>
