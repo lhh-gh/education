@@ -4,6 +4,7 @@ const educationRoutes: RouteRecordRaw[] = [
   {
     path: '/education',
     name: 'EducationRoot',
+    component: () => import('~/education/views/EducationLayout.vue'),
     redirect: '/education/foundation/tenants',
     meta: {
       title: '教务 SaaS',
