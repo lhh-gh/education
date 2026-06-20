@@ -26,30 +26,30 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>SLA Policies</span>
+          <span>SLA 策略</span>
           <el-button type="primary" @click="savePolicy">
-            Save
+            保存
           </el-button>
         </div>
       </template>
       <el-form inline>
-        <el-form-item label="Code">
+        <el-form-item label="策略编码">
           <el-input v-model="form.policy_code" />
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="策略名称">
           <el-input v-model="form.policy_name" />
         </el-form-item>
-        <el-form-item label="Task Type">
+        <el-form-item label="任务类型">
           <el-input v-model="form.task_type" />
         </el-form-item>
-        <el-form-item label="Minutes">
+        <el-form-item label="到期分钟">
           <el-input-number v-model="form.due_minutes" :min="1" />
         </el-form-item>
       </el-form>
       <el-table :data="rows" row-key="policy_code">
-        <el-table-column prop="policy_code" label="Code" />
-        <el-table-column prop="task_type" label="Task Type" />
-        <el-table-column prop="due_minutes" label="Due Minutes" />
+        <el-table-column prop="policy_code" label="策略编码" />
+        <el-table-column prop="task_type" label="任务类型" />
+        <el-table-column prop="due_minutes" label="到期分钟" />
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />
     </el-card>

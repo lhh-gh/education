@@ -26,27 +26,27 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Workflow Templates</span>
+          <span>流程模板</span>
           <el-button type="primary" @click="saveTemplate">
-            Save
+            保存
           </el-button>
         </div>
       </template>
       <el-form inline>
-        <el-form-item label="Code">
+        <el-form-item label="模板编码">
           <el-input v-model="form.template_code" />
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="模板名称">
           <el-input v-model="form.template_name" />
         </el-form-item>
-        <el-form-item label="Task Type">
+        <el-form-item label="任务类型">
           <el-input v-model="form.task_type" />
         </el-form-item>
       </el-form>
       <el-table :data="rows" row-key="template_code">
-        <el-table-column prop="template_code" label="Code" />
-        <el-table-column prop="template_name" label="Name" />
-        <el-table-column prop="task_type" label="Task Type" />
+        <el-table-column prop="template_code" label="模板编码" />
+        <el-table-column prop="template_name" label="模板名称" />
+        <el-table-column prop="task_type" label="任务类型" />
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />
     </el-card>

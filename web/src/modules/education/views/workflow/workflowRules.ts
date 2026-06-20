@@ -19,10 +19,28 @@ export function isOverdueTask(task: { status: string, due_at?: string }, now = n
   return task.status === 'overdue' || (!!task.due_at && task.status !== 'completed' && new Date(task.due_at).getTime() < new Date(now).getTime())
 }
 
+export function workflowStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    pending: '待处理',
+    processing: '处理中',
+    completed: '已完成',
+    cancelled: '已取消',
+    overdue: '已逾期',
+    open: '待处理',
+    converted: '已转任务',
+    ignored: '已忽略',
+    closed: '已关闭',
+    enabled: '启用',
+    disabled: '停用',
+  }
+
+  return labels[status] ?? status
+}
+
 export function alertConvertState(alert: { status: string, converted_task_id?: number }) {
   return alert.status === 'converted' || !!alert.converted_task_id
-    ? { disabled: true, label: 'Converted' }
-    : { disabled: false, label: 'Convert' }
+    ? { disabled: true, label: '已转任务' }
+    : { disabled: false, label: '转为任务' }
 }
 
 export function metricFilterPayload(input: { tenant_id?: number, campus_id?: number, dateRange?: [string, string], task_type?: string }) {

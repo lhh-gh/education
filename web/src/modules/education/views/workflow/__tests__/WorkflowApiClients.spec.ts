@@ -76,7 +76,7 @@ describe('education workflow api clients', () => {
       ['GET', '/admin/education/workflow/templates/page'],
       ['POST', '/admin/education/workflow/templates'],
       ['GET', '/admin/education/workflow/metrics'],
-      ['GET', '/admin/education/workflow/dashboard'],
+      ['GET', '/admin/education/workflow/metrics'],
     ])
     expect(calls[0].config.headers).toMatchObject({ 'X-Tenant-Id': '1', 'X-Campus-Id': '9' })
   })

@@ -21,24 +21,24 @@ onMounted(loadMetrics)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Workflow Metrics</span>
+          <span>工作流看板</span>
           <el-button type="primary" @click="loadMetrics">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-row :gutter="16">
         <el-col :span="6">
-          <el-statistic title="Created" :value="metrics.created_count" />
+          <el-statistic title="创建任务" :value="metrics.created_count" />
         </el-col>
         <el-col :span="6">
-          <el-statistic title="Completed" :value="metrics.completed_count" />
+          <el-statistic title="完成任务" :value="metrics.completed_count" />
         </el-col>
         <el-col :span="6">
-          <el-statistic title="Overdue" :value="metrics.overdue_count" />
+          <el-statistic title="逾期任务" :value="metrics.overdue_count" />
         </el-col>
         <el-col :span="6">
-          <el-statistic title="Alerts" :value="metrics.alert_count" />
+          <el-statistic title="运营告警" :value="metrics.alert_count" />
         </el-col>
       </el-row>
     </el-card>

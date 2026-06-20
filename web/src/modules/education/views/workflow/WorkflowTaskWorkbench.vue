@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { WorkflowTaskRecord } from '../../api/workflow/task.ts'
 import { completeWorkflowTask, pageWorkflowTasks } from '../../api/workflow/task.ts'
-import { isOverdueTask } from './workflowRules.ts'
+import { isOverdueTask, workflowStatusLabel } from './workflowRules.ts'
 
 defineOptions({ name: 'EducationWorkflowTaskWorkbench' })
 
@@ -23,7 +23,7 @@ async function loadRows() {
 }
 
 async function complete(row: WorkflowTaskRecord) {
-  await completeWorkflowTask(row.id, { result: 'done', content: 'completed' })
+  await completeWorkflowTask(row.id, { result: 'done', content: '已完成' })
   await loadRows()
 }
 
@@ -34,27 +34,27 @@ onMounted(loadRows)
   <div class="mine-layout education-workflow-page pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Task Workbench</span>
+        <span>待办任务</span>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="title" label="Title" min-width="180" />
-        <el-table-column prop="task_type" label="Type" width="150" />
-        <el-table-column label="Status" width="130">
+        <el-table-column prop="title" label="任务标题" min-width="180" />
+        <el-table-column prop="task_type" label="任务类型" width="150" />
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
             <el-tag :type="isOverdueTask(row) ? 'danger' : 'info'">
-              {{ row.status }}
+              {{ workflowStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="120">
+        <el-table-column label="操作" width="120">
           <template #default="{ row }">
             <el-button link type="primary" :disabled="row.status === 'completed'" @click="complete(row)">
-              Complete
+              完成
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No workflow tasks" />
+          <el-empty description="暂无待办任务" />
         </template>
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />

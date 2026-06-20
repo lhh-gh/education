@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { WorkflowRuleRecord } from '../../api/workflow/rule.ts'
 import { pageWorkflowRules, saveWorkflowRule } from '../../api/workflow/rule.ts'
+import { workflowStatusLabel } from './workflowRules.ts'
 
 defineOptions({ name: 'EducationWorkflowRuleList' })
 
@@ -35,30 +36,34 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Workflow Rules</span>
+          <span>自动化规则</span>
           <el-button type="primary" @click="saveRule">
-            Save
+            保存
           </el-button>
         </div>
       </template>
       <el-form inline>
-        <el-form-item label="Code">
+        <el-form-item label="规则编码">
           <el-input v-model="form.rule_code" />
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="规则名称">
           <el-input v-model="form.rule_name" />
         </el-form-item>
-        <el-form-item label="Event">
+        <el-form-item label="事件类型">
           <el-input v-model="form.event_type" />
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="rule_code" label="Code" />
-        <el-table-column prop="rule_name" label="Name" />
-        <el-table-column prop="event_type" label="Event" />
-        <el-table-column prop="status" label="Status" />
+        <el-table-column prop="rule_code" label="规则编码" />
+        <el-table-column prop="rule_name" label="规则名称" />
+        <el-table-column prop="event_type" label="事件类型" />
+        <el-table-column label="状态">
+          <template #default="{ row }">
+            {{ workflowStatusLabel(row.status) }}
+          </template>
+        </el-table-column>
         <template #empty>
-          <el-empty description="No workflow rules" />
+          <el-empty description="暂无自动化规则" />
         </template>
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />

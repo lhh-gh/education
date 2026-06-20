@@ -997,7 +997,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationWorkflow',
         redirect: '/education/workflow/rules',
         meta: {
-          title: 'Workflow',
+          title: '工作流中心',
           icon: 'material-symbols:account-tree-outline-rounded',
           type: 'M',
           auth: ['education:workflow:rule:page', 'education:workflow:task:page', 'education:workflow:alert:page', 'education:workflow:sla:page', 'education:workflow:escalation:page', 'education:workflow:template:page', 'education:workflow:metric:page'],
@@ -1008,7 +1008,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowRuleList',
             component: () => import('~/education/views/workflow/WorkflowRuleList.vue'),
             meta: {
-              title: 'Rules',
+              title: '自动化规则',
               icon: 'material-symbols:rule-folder-outline-rounded',
               type: 'M',
               auth: ['education:workflow:rule:page'],
@@ -1020,7 +1020,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowTaskWorkbench',
             component: () => import('~/education/views/workflow/WorkflowTaskWorkbench.vue'),
             meta: {
-              title: 'Tasks',
+              title: '待办任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:workflow:task:page'],
@@ -1032,7 +1032,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowOperationAlertList',
             component: () => import('~/education/views/workflow/OperationAlertList.vue'),
             meta: {
-              title: 'Alerts',
+              title: '运营告警',
               icon: 'material-symbols:notification-important-outline-rounded',
               type: 'M',
               auth: ['education:workflow:alert:page'],
@@ -1044,7 +1044,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowSlaPolicyList',
             component: () => import('~/education/views/workflow/SlaPolicyList.vue'),
             meta: {
-              title: 'SLA Policies',
+              title: 'SLA 策略',
               icon: 'material-symbols:timer-outline-rounded',
               type: 'M',
               auth: ['education:workflow:sla:page'],
@@ -1056,7 +1056,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowEscalationPolicyList',
             component: () => import('~/education/views/workflow/EscalationPolicyList.vue'),
             meta: {
-              title: 'Escalation',
+              title: '升级策略',
               icon: 'material-symbols:upgrade-outline-rounded',
               type: 'M',
               auth: ['education:workflow:escalation:page'],
@@ -1068,7 +1068,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowTemplateList',
             component: () => import('~/education/views/workflow/WorkflowTemplateList.vue'),
             meta: {
-              title: 'Templates',
+              title: '流程模板',
               icon: 'material-symbols:article-outline-rounded',
               type: 'M',
               auth: ['education:workflow:template:page'],
@@ -1080,7 +1080,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowMetricDashboard',
             component: () => import('~/education/views/workflow/WorkflowMetricDashboard.vue'),
             meta: {
-              title: 'Metrics',
+              title: '工作流看板',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:workflow:metric:page'],

@@ -46,4 +46,12 @@ final class WorkflowMetricController extends AbstractController
 
         return $this->success($this->service->dashboard($this->tenantId($context)));
     }
+
+    #[Get(path: '/admin/education/workflow/dashboard', operationId: 'educationWorkflowDashboard', summary: 'Workflow dashboard', tags: ['Education Workflow'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:workflow:metric:page')]
+    public function dashboard(WorkflowMetricRequest $request): Result
+    {
+        return $this->metrics($request);
+    }
 }
