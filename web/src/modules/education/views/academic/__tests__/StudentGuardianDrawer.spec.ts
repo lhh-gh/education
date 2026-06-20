@@ -24,8 +24,8 @@ describe('student guardian drawer', () => {
   })
 
   it('renders_relation_labels_for_supported_values', () => {
-    expect(relationLabel('father')).toBe('Father')
-    expect(relationLabel('grandmother')).toBe('Grandmother')
-    expect(relationLabel('other')).toBe('Other')
+    expect(relationLabel('father')).toBe('父亲')
+    expect(relationLabel('grandmother')).toBe('祖母/外祖母')
+    expect(relationLabel('other')).toBe('其他')
   })
 })

@@ -1,4 +1,5 @@
 import type { MinePage, PageParams } from '../foundation/types.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type ContentPublishStatus = 'draft' | 'reviewing' | 'published' | 'withdrawn' | 'archived'
 export type ContentReviewStatus = 'pending' | 'approved' | 'rejected'
@@ -97,17 +98,9 @@ export interface StudentWorkMetricRow {
 }
 
 export function contentRequestOptions(input: { tenant_id?: number, campus_id?: number } = {}): { headers?: Record<string, string> } {
-  const headers: Record<string, string> = {}
-  if (input.tenant_id && input.tenant_id > 0) {
-    headers['X-Tenant-Id'] = String(input.tenant_id)
-  }
-  if (input.campus_id && input.campus_id > 0) {
-    headers['X-Campus-Id'] = String(input.campus_id)
-  }
-
-  return Object.keys(headers).length > 0 ? { headers } : {}
+  return educationScopeRequestOptions(input)
 }
 
 export function contentGetOptions<T extends ContentScopedParams>(params: T): { params: T, headers?: Record<string, string> } {
-  return { params, ...contentRequestOptions(params) }
+  return educationScopeGetOptions(params)
 }
