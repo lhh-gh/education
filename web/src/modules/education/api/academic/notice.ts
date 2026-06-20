@@ -1,4 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeRequestOptions } from '../scope.ts'
 
 export type NoticeTargetType = 'all' | 'campus' | 'class' | 'student'
 export type NoticeType = 'academic' | 'activity' | 'fee' | 'system'
@@ -94,38 +95,34 @@ export interface NoticeReceiptRecord {
   read_by_profile_id?: number | null
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(typeof input === 'number' ? { tenant_id: input } : input)
 }
 
 export function pageNotices(params: NoticePageParams): Promise<MineResult<MinePage<NoticeRecord>>> {
-  return useHttp().get('/admin/education/academic/notices/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/notices/page', { params, ...scopeOptions(params) })
 }
 
 export function getNotice(id: number, tenantId?: number): Promise<MineResult<NoticeRecord>> {
-  return useHttp().get(`/admin/education/academic/notices/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/notices/${id}`, scopeOptions(tenantId))
 }
 
 export function createNotice(payload: NoticeSavePayload): Promise<MineResult<NoticeRecord>> {
-  return useHttp().post('/admin/education/academic/notices', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/notices', payload, scopeOptions(payload))
 }
 
 export function updateNotice(id: number, payload: NoticeSavePayload): Promise<MineResult<NoticeRecord>> {
-  return useHttp().put(`/admin/education/academic/notices/${id}`, payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().put(`/admin/education/academic/notices/${id}`, payload, scopeOptions(payload))
 }
 
 export function publishNotice(id: number, payload: NoticePublishPayload & { tenant_id?: number } = {}): Promise<MineResult<NoticePublishResult>> {
-  return useHttp().put(`/admin/education/academic/notices/${id}/publish`, payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().put(`/admin/education/academic/notices/${id}/publish`, payload, scopeOptions(payload))
 }
 
 export function withdrawNotice(id: number, payload: NoticeWithdrawPayload & { tenant_id?: number }): Promise<MineResult<NoticeRecord>> {
-  return useHttp().put(`/admin/education/academic/notices/${id}/withdraw`, payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().put(`/admin/education/academic/notices/${id}/withdraw`, payload, scopeOptions(payload))
 }
 
 export function pageNoticeReceipts(id: number, params: NoticeReceiptPageParams): Promise<MineResult<MinePage<NoticeReceiptRecord>>> {
-  return useHttp().get(`/admin/education/academic/notices/${id}/receipts/page`, { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get(`/admin/education/academic/notices/${id}/receipts/page`, { params, ...scopeOptions(params) })
 }

@@ -1,4 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeRequestOptions } from '../scope.ts'
 
 export type LeaveRequestSource = 'staff' | 'guardian' | 'teacher'
 export type LeaveType = 'sick' | 'personal' | 'school' | 'other'
@@ -141,50 +142,46 @@ export interface RescheduleLessonResult {
   change_record: LessonChangeRecord
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(typeof input === 'number' ? { tenant_id: input } : input)
 }
 
 export function pageLeaveRequests(params: LeaveRequestPageParams): Promise<MineResult<MinePage<LeaveRequestRecord>>> {
-  return useHttp().get('/admin/education/academic/leave-requests/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/leave-requests/page', { params, ...scopeOptions(params) })
 }
 
 export function getLeaveRequest(id: number, tenantId?: number): Promise<MineResult<LeaveRequestRecord>> {
-  return useHttp().get(`/admin/education/academic/leave-requests/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/leave-requests/${id}`, scopeOptions(tenantId))
 }
 
 export function createLeaveRequest(payload: LeaveRequestCreatePayload): Promise<MineResult<LeaveRequestRecord>> {
-  return useHttp().post('/admin/education/academic/leave-requests', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/leave-requests', payload, scopeOptions(payload))
 }
 
 export function approveLeaveRequest(id: number, reviewRemark: string, tenantId?: number): Promise<MineResult<LeaveRequestRecord>> {
-  return useHttp().put(`/admin/education/academic/leave-requests/${id}/approve`, { review_remark: reviewRemark }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/leave-requests/${id}/approve`, { review_remark: reviewRemark }, scopeOptions(tenantId))
 }
 
 export function rejectLeaveRequest(id: number, reviewRemark: string, tenantId?: number): Promise<MineResult<LeaveRequestRecord>> {
-  return useHttp().put(`/admin/education/academic/leave-requests/${id}/reject`, { review_remark: reviewRemark }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/leave-requests/${id}/reject`, { review_remark: reviewRemark }, scopeOptions(tenantId))
 }
 
 export function cancelLeaveRequest(id: number, cancelReason: string, tenantId?: number): Promise<MineResult<LeaveRequestRecord>> {
-  return useHttp().put(`/admin/education/academic/leave-requests/${id}/cancel`, { cancel_reason: cancelReason }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/leave-requests/${id}/cancel`, { cancel_reason: cancelReason }, scopeOptions(tenantId))
 }
 
 export function pageLessonChanges(params: LessonChangePageParams): Promise<MineResult<MinePage<LessonChangeRecord>>> {
-  return useHttp().get('/admin/education/academic/lesson-changes/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/lesson-changes/page', { params, ...scopeOptions(params) })
 }
 
 export function getLessonChange(id: number, tenantId?: number): Promise<MineResult<LessonChangeRecord>> {
-  return useHttp().get(`/admin/education/academic/lesson-changes/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/lesson-changes/${id}`, scopeOptions(tenantId))
 }
 
 export function createMakeupLesson(payload: MakeupLessonPayload): Promise<MineResult<MakeupLessonResult>> {
-  return useHttp().post('/admin/education/academic/lesson-changes/makeup', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/lesson-changes/makeup', payload, scopeOptions(payload))
 }
 
 export function rescheduleLesson(payload: RescheduleLessonPayload): Promise<MineResult<RescheduleLessonResult>> {
-  return useHttp().post('/admin/education/academic/lesson-changes/reschedule', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/lesson-changes/reschedule', payload, scopeOptions(payload))
 }

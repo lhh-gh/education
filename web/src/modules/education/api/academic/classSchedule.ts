@@ -1,4 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeRequestOptions } from '../scope.ts'
 
 export type AcademicRecordStatus = 'enabled' | 'disabled'
 export type ClassType = 'group' | 'one_to_one'
@@ -183,74 +184,70 @@ export interface BatchLessonScheduleResult {
   lesson_ids: number[]
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(typeof input === 'number' ? { tenant_id: input } : input)
 }
 
 export function pageClasses(params: ClassPageParams): Promise<MineResult<MinePage<ClassRecord>>> {
-  return useHttp().get('/admin/education/academic/classes/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/classes/page', { params, ...scopeOptions(params) })
 }
 
 export function createClass(data: ClassSavePayload): Promise<MineResult<ClassRecord>> {
-  return useHttp().post('/admin/education/academic/classes', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/classes', data, scopeOptions(data))
 }
 
 export function updateClass(id: number, data: ClassSavePayload): Promise<MineResult<ClassRecord>> {
-  return useHttp().put(`/admin/education/academic/classes/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/classes/${id}`, data, scopeOptions(data))
 }
 
 export function changeClassStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<ClassRecord>> {
-  return useHttp().put(`/admin/education/academic/classes/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/classes/${id}/status`, { status }, scopeOptions(tenantId))
 }
 
 export function deleteClass(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/classes/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/classes/${id}`, scopeOptions(tenantId))
 }
 
 export function getClassStudents(id: number, tenantId?: number): Promise<MineResult<{ list: ClassStudentRecord[] }>> {
-  return useHttp().get(`/admin/education/academic/classes/${id}/students`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/classes/${id}/students`, scopeOptions(tenantId))
 }
 
 export function saveClassStudents(id: number, payload: { students: Array<Record<string, unknown>> }, tenantId?: number): Promise<MineResult<Record<string, unknown>>> {
-  return useHttp().put(`/admin/education/academic/classes/${id}/students`, payload, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/classes/${id}/students`, payload, scopeOptions(tenantId))
 }
 
 export function pageLessons(params: LessonPageParams): Promise<MineResult<MinePage<LessonRecord>>> {
-  return useHttp().get('/admin/education/academic/lessons/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/lessons/page', { params, ...scopeOptions(params) })
 }
 
 export function getLesson(id: number, tenantId?: number): Promise<MineResult<LessonRecord & { students?: LessonStudentRecord[] }>> {
-  return useHttp().get(`/admin/education/academic/lessons/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/lessons/${id}`, scopeOptions(tenantId))
 }
 
 export function updateLesson(id: number, data: SingleLessonSchedulePayload): Promise<MineResult<LessonRecord>> {
-  return useHttp().put(`/admin/education/academic/lessons/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/lessons/${id}`, data, scopeOptions(data))
 }
 
 export function cancelLesson(id: number, cancel_reason: string, tenantId?: number): Promise<MineResult<LessonRecord>> {
-  return useHttp().put(`/admin/education/academic/lessons/${id}/cancel`, { cancel_reason }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/lessons/${id}/cancel`, { cancel_reason }, scopeOptions(tenantId))
 }
 
 export function deleteLesson(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/lessons/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/lessons/${id}`, scopeOptions(tenantId))
 }
 
 export function calendarLessons(params: CalendarLessonParams): Promise<MineResult<{ list: LessonRecord[] }>> {
-  return useHttp().get('/admin/education/academic/lesson-schedule/calendar', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/lesson-schedule/calendar', { params, ...scopeOptions(params) })
 }
 
 export function checkScheduleConflict(payload: Record<string, unknown> & { tenant_id?: number }): Promise<MineResult<ScheduleConflictResult>> {
-  return useHttp().post('/admin/education/academic/lesson-schedule/conflict-check', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/lesson-schedule/conflict-check', payload, scopeOptions(payload))
 }
 
 export function scheduleSingleLesson(data: SingleLessonSchedulePayload): Promise<MineResult<SingleLessonScheduleResult>> {
-  return useHttp().post('/admin/education/academic/lesson-schedule/single', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/lesson-schedule/single', data, scopeOptions(data))
 }
 
 export function scheduleBatchLessons(data: BatchLessonSchedulePayload): Promise<MineResult<BatchLessonScheduleResult>> {
-  return useHttp().post('/admin/education/academic/lesson-schedule/batch', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/lesson-schedule/batch', data, scopeOptions(data))
 }
