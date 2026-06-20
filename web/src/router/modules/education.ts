@@ -779,7 +779,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationFamily',
         redirect: '/education/family/homework',
         meta: {
-          title: 'Family Service',
+          title: '家校服务',
           icon: 'material-symbols:family-restroom-rounded',
           type: 'M',
           auth: ['education:family:comment-template:page', 'education:family:performance-tag:page', 'education:family:homework:page', 'education:family:report:page', 'education:family:growth:page', 'education:family:message:page', 'education:family:quality:page'],
@@ -790,7 +790,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyCommentTemplateList',
             component: () => import('~/education/views/family/CommentTemplateList.vue'),
             meta: {
-              title: 'Comment Templates',
+              title: '评语模板',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:family:comment-template:page'],
@@ -802,7 +802,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyPerformanceTagList',
             component: () => import('~/education/views/family/PerformanceTagList.vue'),
             meta: {
-              title: 'Performance Tags',
+              title: '表现标签',
               icon: 'material-symbols:label-outline-rounded',
               type: 'M',
               auth: ['education:family:performance-tag:page'],
@@ -814,7 +814,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyHomeworkAssignmentList',
             component: () => import('~/education/views/family/HomeworkAssignmentList.vue'),
             meta: {
-              title: 'Homework',
+              title: '课后作业',
               icon: 'material-symbols:assignment-outline-rounded',
               type: 'M',
               auth: ['education:family:homework:page'],
@@ -826,7 +826,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyLearningReportList',
             component: () => import('~/education/views/family/LearningReportList.vue'),
             meta: {
-              title: 'Learning Reports',
+              title: '学习报告',
               icon: 'material-symbols:summarize-outline-rounded',
               type: 'M',
               auth: ['education:family:report:page'],
@@ -838,7 +838,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyGrowthRecordList',
             component: () => import('~/education/views/family/GrowthRecordList.vue'),
             meta: {
-              title: 'Growth Records',
+              title: '成长记录',
               icon: 'material-symbols:trending-up-rounded',
               type: 'M',
               auth: ['education:family:growth:page'],
@@ -850,7 +850,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyMessageMonitor',
             component: () => import('~/education/views/family/FamilyMessageMonitor.vue'),
             meta: {
-              title: 'Family Messages',
+              title: '家校消息',
               icon: 'material-symbols:forum-outline-rounded',
               type: 'M',
               auth: ['education:family:message:page'],
@@ -862,7 +862,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyServiceQualityDashboard',
             component: () => import('~/education/views/family/ServiceQualityDashboard.vue'),
             meta: {
-              title: 'Service Quality',
+              title: '服务质量',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:family:quality:page'],

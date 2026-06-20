@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PerformanceTagRecord } from '../../api/family/comment.ts'
 import { pagePerformanceTags, savePerformanceTag } from '../../api/family/comment.ts'
-import { familyTagType } from './familyRules.ts'
+import { familyRecordTypeLabel, familyStatusLabel, familyTagType } from './familyRules.ts'
 
 defineOptions({ name: 'EducationFamilyPerformanceTagList' })
 
@@ -36,36 +36,40 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Performance Tags</span>
+          <span>表现标签</span>
           <el-button type="primary" @click="createTag">
-            Save
+            保存
           </el-button>
         </div>
       </template>
       <el-form inline>
-        <el-form-item label="Code">
+        <el-form-item label="编码">
           <el-input v-model="form.tag_code" />
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="名称">
           <el-input v-model="form.tag_name" />
         </el-form-item>
-        <el-form-item label="Type">
+        <el-form-item label="类型">
           <el-input v-model="form.tag_type" />
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="tag_code" label="Code" width="160" />
-        <el-table-column prop="tag_name" label="Name" min-width="180" />
-        <el-table-column prop="tag_type" label="Type" width="140" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="tag_code" label="编码" width="160" />
+        <el-table-column prop="tag_name" label="名称" min-width="180" />
+        <el-table-column label="类型" width="140">
+          <template #default="{ row }">
+            {{ familyRecordTypeLabel(row.tag_type) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No tags" />
+          <el-empty description="暂无表现标签" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

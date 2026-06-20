@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HomeworkAssignmentRecord } from '../../api/family/homework.ts'
 import { pageHomeworkAssignments } from '../../api/family/homework.ts'
-import { familyTagType, targetCountLabel } from './familyRules.ts'
+import { familyStatusLabel, familyTagType, targetCountLabel } from './familyRules.ts'
 import HomeworkAssignmentForm from './components/HomeworkAssignmentForm.vue'
 
 defineOptions({ name: 'EducationFamilyHomeworkAssignmentList' })
@@ -32,28 +32,28 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Homework Assignments</span>
+          <span>课后作业</span>
           <el-button type="primary" @click="formVisible = true">
-            New Homework
+            新增作业
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="title" label="Title" min-width="220" />
-        <el-table-column label="Targets" width="130">
+        <el-table-column prop="title" label="标题" min-width="220" />
+        <el-table-column label="对象" width="130">
           <template #default="{ row }">
             {{ targetCountLabel(row) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="120">
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No homework" />
+          <el-empty description="暂无课后作业" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

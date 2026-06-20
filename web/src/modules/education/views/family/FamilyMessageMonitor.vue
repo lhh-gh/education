@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FamilyMessageRecord } from '../../api/family/message.ts'
 import { pageFamilyMessages } from '../../api/family/message.ts'
-import { familyTagType } from './familyRules.ts'
+import { familySenderLabel, familyStatusLabel, familyTagType } from './familyRules.ts'
 import FamilyMessageThreadDrawer from './components/FamilyMessageThreadDrawer.vue'
 
 defineOptions({ name: 'EducationFamilyMessageMonitor' })
@@ -38,33 +38,37 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Family Messages</span>
+          <span>家校消息</span>
           <el-button :loading="loading" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="thread_id" label="Thread" width="180" />
-        <el-table-column prop="student_id" label="Student" width="120" />
-        <el-table-column prop="sender_type" label="Sender" width="120" />
-        <el-table-column prop="content" label="Content" min-width="240" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="thread_id" label="会话" width="180" />
+        <el-table-column prop="student_id" label="学员" width="120" />
+        <el-table-column label="发送方" width="120">
+          <template #default="{ row }">
+            {{ familySenderLabel(row.sender_type) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="content" label="内容" min-width="240" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Action" width="100">
+        <el-table-column label="操作" width="100">
           <template #default="{ row }">
             <el-button link type="primary" @click="openThread(row)">
-              Open
+              打开
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No messages" />
+          <el-empty description="暂无消息" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

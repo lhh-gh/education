@@ -31,27 +31,27 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Homework Assignment" width="560px">
+  <el-dialog v-model="visible" title="课后作业" width="560px">
     <el-form label-width="110px">
-      <el-form-item label="Title">
+      <el-form-item label="标题">
         <el-input v-model="form.title" />
       </el-form-item>
-      <el-form-item label="Content">
+      <el-form-item label="内容">
         <el-input v-model="form.content" type="textarea" :rows="4" />
       </el-form-item>
-      <el-form-item label="Due At">
+      <el-form-item label="截止时间">
         <el-input v-model="form.due_at" placeholder="2026-06-15 20:00:00" />
       </el-form-item>
-      <el-form-item label="Student IDs">
+      <el-form-item label="学员ID">
         <el-input v-model="form.student_ids_text" placeholder="1201,1202" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="saving" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>
