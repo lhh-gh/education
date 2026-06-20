@@ -15,7 +15,9 @@ namespace HyperfTests\Unit\Education\Academic;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Academic\AcademicAcceptanceService;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -23,6 +25,30 @@ use App\Service\Education\Academic\AcademicAcceptanceService;
  */
 final class AcademicAcceptanceServiceTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersLedgerWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('acceptance_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $courseA = EducationCourse::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campusA->id, 'code' => 'ART-A', 'name' => 'Art A', 'status' => 'enabled']);
+        $courseB = EducationCourse::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campusB->id, 'code' => 'ART-B', 'name' => 'Art B', 'status' => 'enabled']);
+        $studentA = EducationStudent::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campusA->id, 'student_no' => 'S001', 'name' => 'Student A', 'status' => 'enabled']);
+        $studentB = EducationStudent::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campusB->id, 'student_no' => 'S002', 'name' => 'Student B', 'status' => 'enabled']);
+        $this->account((int) $tenant->id, (int) $campusA->id, (int) $studentA->id, (int) $courseA->id);
+        $this->account((int) $tenant->id, (int) $campusB->id, (int) $studentB->id, (int) $courseB->id);
+
+        $summary = make(AcademicAcceptanceService::class)->summary([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $summary['ledger']['account_count']);
+    }
+
     public function testGateCatalogContainsRequiredV1Gates(): void
     {
         $catalog = make(AcademicAcceptanceService::class)->requiredGateCatalog();
@@ -60,5 +86,23 @@ final class AcademicAcceptanceServiceTest extends AcademicTestCase
         self::assertSame('fail', $summary['overall_status']);
         self::assertSame(1, $summary['ledger']['mismatch_count']);
         self::assertSame('ledger_consistent', array_values(array_filter($summary['gates'], static fn (array $gate): bool => $gate['key'] === 'ledger_consistent'))[0]['key']);
+    }
+
+    private function account(int $tenantId, int $campusId, int $studentId, int $courseId): EducationStudentCourseAccount
+    {
+        return EducationStudentCourseAccount::query()->create([
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'student_id' => $studentId,
+            'course_id' => $courseId,
+            'purchased_units' => '10.00',
+            'bonus_units' => '0.00',
+            'consumed_units' => '0.00',
+            'adjusted_units' => '0.00',
+            'refunded_units' => '0.00',
+            'frozen_units' => '0.00',
+            'available_units' => '10.00',
+            'status' => 'active',
+        ]);
     }
 }

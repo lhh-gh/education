@@ -21,12 +21,29 @@ final class EducationScopeQuery
      */
     public function applyTenantCampus(mixed $query, array $filters, EducationUserContext $context): mixed
     {
+        return $this->applyTenantCampusColumns($query, $filters, $context);
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function applyTenantCampusColumns(
+        mixed $query,
+        array $filters,
+        EducationUserContext $context,
+        string $tenantColumn = 'tenant_id',
+        string $campusColumn = 'campus_id',
+        bool $campusScoped = true
+    ): mixed {
         $tenantId = $this->tenantId($filters, $context);
         if ($tenantId === null && ! $context->platformAccess) {
             return $query->whereRaw('1 = 0');
         }
         if ($tenantId !== null) {
-            $query->where('tenant_id', $tenantId);
+            $query->where($tenantColumn, $tenantId);
+        }
+        if (! $campusScoped) {
+            return $query;
         }
 
         $campusId = $this->campusId($filters, $context);
@@ -35,14 +52,14 @@ final class EducationScopeQuery
                 return $query->whereRaw('1 = 0');
             }
 
-            return $query->where('campus_id', $campusId);
+            return $query->where($campusColumn, $campusId);
         }
 
         if ($context->platformAccess || $context->roleCode === EducationRoleCode::TenantAdmin) {
             return $query;
         }
 
-        return $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        return $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn($campusColumn, $context->campusIds);
     }
 
     /**

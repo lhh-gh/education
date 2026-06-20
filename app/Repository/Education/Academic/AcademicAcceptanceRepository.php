@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Education\Academic;
 
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Database\Schema\Schema;
 use Hyperf\DbConnection\Db;
@@ -153,28 +153,12 @@ final class AcademicAcceptanceRepository
 
     private function applyTenantAndCampus(mixed $query, EducationUserContext $context, ?int $campusId, bool $campusScoped = true): void
     {
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return;
-        }
-        $query->where('tenant_id', $context->tenantId);
-        if (! $campusScoped) {
-            return;
-        }
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            if ($campusId !== null) {
-                $query->where('campus_id', $campusId);
-            }
-
-            return;
-        }
-        if ($campusId !== null) {
-            $context->canAccessCampus($campusId) ? $query->where('campus_id', $campusId) : $query->whereRaw('1 = 0');
-
-            return;
-        }
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        (new EducationScopeQuery())->applyTenantCampusColumns(
+            $query,
+            ['campus_id' => $campusId],
+            $context,
+            campusScoped: $campusScoped
+        );
     }
 
     private function decimal(mixed $value): string

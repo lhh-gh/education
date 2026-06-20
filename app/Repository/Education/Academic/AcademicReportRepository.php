@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Education\Academic;
 
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 use Hyperf\DbConnection\Db;
@@ -537,29 +537,14 @@ final class AcademicReportRepository
     {
         $tenantColumn = $alias === null ? 'tenant_id' : $alias . '.tenant_id';
         $campusColumn = $alias === null ? 'campus_id' : $alias . '.campus_id';
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return;
-        }
-        $query->where($tenantColumn, $context->tenantId);
-        if (! $campusScoped) {
-            return;
-        }
-        $campusId = isset($params['campus_id']) && $params['campus_id'] !== '' ? (int) $params['campus_id'] : null;
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            if ($campusId !== null) {
-                $query->where($campusColumn, $campusId);
-            }
-
-            return;
-        }
-        if ($campusId !== null) {
-            $context->canAccessCampus($campusId) ? $query->where($campusColumn, $campusId) : $query->whereRaw('1 = 0');
-
-            return;
-        }
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn($campusColumn, $context->campusIds);
+        (new EducationScopeQuery())->applyTenantCampusColumns(
+            $query,
+            $params,
+            $context,
+            $tenantColumn,
+            $campusColumn,
+            $campusScoped
+        );
     }
 
     private function whereDateRange(mixed $query, string $column, array $params): void
