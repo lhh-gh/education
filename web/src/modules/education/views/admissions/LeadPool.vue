@@ -3,15 +3,18 @@ import type { LeadPageParams, LeadRecord } from '../../api/admissions/lead.ts'
 import { assignLead, createLead, pageLeads } from '../../api/admissions/lead.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import { admissionErrorText, admissionPermissions, admissionStageLabel, admissionTagType } from './admissionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAdmissionLeadPool' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const rows = ref<LeadRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
 const successText = ref('')
-const search = reactive<LeadPageParams>({ page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, keyword: '', stage: undefined })
+const search = reactive<LeadPageParams>({ page: 1, pageSize: 20, keyword: '', stage: undefined })
 const form = reactive({ contact_name: '', contact_mobile: '', student_name: '' })
 const permissions = computed(() => admissionPermissions(hasAuth))
 
@@ -33,7 +36,7 @@ async function loadRows() {
 
 async function submitLead() {
   try {
-    await createLead({ tenant_id: search.tenant_id, campus_id: search.campus_id, contact_name: form.contact_name, contact_mobile: form.contact_mobile, lead_students: [{ name: form.student_name || form.contact_name }] })
+    await createLead({ tenant_id: scope.tenant_id, campus_id: scope.campus_id, contact_name: form.contact_name, contact_mobile: form.contact_mobile, lead_students: [{ name: form.student_name || form.contact_name }] })
     successText.value = '线索已保存'
     await loadRows()
   }
@@ -43,7 +46,7 @@ async function submitLead() {
 }
 
 async function assign(row: LeadRecord) {
-  await assignLead(row.id, { tenant_id: search.tenant_id, campus_id: search.campus_id, to_user_id: row.owner_user_id || 1, reason: 'manual assign' })
+  await assignLead(row.id, { tenant_id: scope.tenant_id, campus_id: scope.campus_id, to_user_id: row.owner_user_id || 1, reason: 'manual assign' })
   successText.value = '线索已分配'
   await loadRows()
 }

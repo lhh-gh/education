@@ -58,12 +58,16 @@ describe('education api scope options', () => {
     })
   })
 
-  it('keeps get params immutable while adding context scope headers', () => {
+  it('keeps get params immutable while adding context scope params and headers', () => {
     setEducationScope({ tenant_id: 11, campus_id: 22 })
     const params = { keyword: 'math' }
 
     expect(educationScopeGetOptions(params)).toEqual({
-      params,
+      params: {
+        keyword: 'math',
+        tenant_id: 11,
+        campus_id: 22,
+      },
       headers: {
         'X-Tenant-Id': '11',
         'X-Campus-Id': '22',

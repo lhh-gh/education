@@ -40,8 +40,6 @@ onMounted(loadSummary)
         </div>
       </template>
       <el-form :inline="true" :model="search">
-        <el-form-item label="机构ID"><el-input-number v-model="search.tenant_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="校区ID"><el-input-number v-model="search.campus_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item><el-checkbox v-model="search.include_detail">包含详情</el-checkbox></el-form-item>
       </el-form>
       <ReportStateBlock v-if="state" :state="state" :message="errorText" @retry="loadSummary" />

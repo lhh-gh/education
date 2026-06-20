@@ -5,7 +5,7 @@ import { consultantConversionRate, consultantMetricFilterPayload, growthText } f
 
 defineOptions({ name: 'EducationGrowthConsultantMetricDashboard' })
 
-const filters = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, consultant_user_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
+const filters = reactive({ consultant_user_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
 const rows = ref<ConsultantMetricRecord[]>([])
 
 async function loadRows() {

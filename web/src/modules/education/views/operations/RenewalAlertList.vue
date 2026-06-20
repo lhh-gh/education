@@ -13,7 +13,7 @@ const current = ref<RenewalAlertRecord | null>(null)
 const rows = ref<RenewalAlertRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
-const search = reactive<RenewalAlertPageParams>({ page: 1, pageSize: 20, campus_id: undefined, alert_type: undefined, alert_level: undefined, status: 'open', assignee_id: undefined })
+const search = reactive<RenewalAlertPageParams>({ page: 1, pageSize: 20, alert_type: undefined, alert_level: undefined, status: 'open', assignee_id: undefined })
 const permissions = computed(() => operationPermissions(hasAuth))
 const sortedRows = computed(() => sortRenewalAlerts(rows.value))
 
@@ -61,9 +61,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="级别">
           <el-select v-model="search.alert_level" clearable style="width: 140px;">
             <el-option label="紧急" value="urgent" />

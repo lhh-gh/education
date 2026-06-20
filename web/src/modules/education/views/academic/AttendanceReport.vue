@@ -44,7 +44,7 @@ function handleFilter(value: AttendanceReportParams) {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, campus_id: undefined, class_id: undefined, teacher_id: undefined, course_id: undefined, attendance_status: undefined, group_by: undefined, ...quickReportRange('this_month') })
+  Object.assign(search, { page: 1, pageSize: 20, class_id: undefined, teacher_id: undefined, course_id: undefined, attendance_status: undefined, group_by: undefined, ...quickReportRange('this_month') })
   loadRows()
 }
 

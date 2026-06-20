@@ -1,5 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type LeaveRequestSource = 'staff' | 'guardian' | 'teacher'
 export type LeaveType = 'sick' | 'personal' | 'school' | 'other'
@@ -147,7 +147,7 @@ function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number
 }
 
 export function pageLeaveRequests(params: LeaveRequestPageParams): Promise<MineResult<MinePage<LeaveRequestRecord>>> {
-  return useHttp().get('/admin/education/academic/leave-requests/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/leave-requests/page', educationScopeGetOptions(params))
 }
 
 export function getLeaveRequest(id: number, tenantId?: number): Promise<MineResult<LeaveRequestRecord>> {
@@ -171,7 +171,7 @@ export function cancelLeaveRequest(id: number, cancelReason: string, tenantId?: 
 }
 
 export function pageLessonChanges(params: LessonChangePageParams): Promise<MineResult<MinePage<LessonChangeRecord>>> {
-  return useHttp().get('/admin/education/academic/lesson-changes/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/lesson-changes/page', educationScopeGetOptions(params))
 }
 
 export function getLessonChange(id: number, tenantId?: number): Promise<MineResult<LessonChangeRecord>> {

@@ -4,8 +4,11 @@ import { pageConsumptions } from '../../api/academic/attendanceConsumption.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import ConsumptionRollbackDialog from './components/ConsumptionRollbackDialog.vue'
 import { canRollbackConsumption, consumptionSourceLabel, ledgerDirectionLabel, ledgerStatusLabel, markConsumptionRollbackSuccess } from './attendanceConsumptionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicConsumptionLedgerList' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const rollbackVisible = ref(false)
@@ -18,7 +21,7 @@ const search = reactive<ConsumptionPageParams>(defaultSearch())
 const canRollback = computed(() => hasAuth('education:academic:consumption:rollback'))
 
 function defaultSearch(): ConsumptionPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, account_id: undefined, student_id: undefined, course_id: undefined, lesson_id: undefined, source_type: undefined, status: undefined, keyword: '' }
+  return { page: 1, page_size: 20, account_id: undefined, student_id: undefined, course_id: undefined, lesson_id: undefined, source_type: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -70,8 +73,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID"><el-input-number v-model="search.tenant_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="校区ID"><el-input-number v-model="search.campus_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="账户ID"><el-input-number v-model="search.account_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="学员ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="课程ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
@@ -109,7 +110,7 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <ConsumptionRollbackDialog v-model="rollbackVisible" :row="current" :tenant-id="search.tenant_id" @success="onRollback" />
+    <ConsumptionRollbackDialog v-model="rollbackVisible" :row="current" :tenant-id="scope.tenant_id" @success="onRollback" />
   </div>
 </template>
 

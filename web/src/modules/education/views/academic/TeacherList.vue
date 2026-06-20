@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import TeacherForm from './components/TeacherForm.vue'
 import { academicActionText, academicStatusLabel, academicStatusTagType } from './actionRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicTeacherList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -24,7 +27,7 @@ const canStatus = computed(() => hasAuth('education:academic:teacher:status'))
 const canDelete = computed(() => hasAuth('education:academic:teacher:delete'))
 
 function defaultSearch(): TeacherPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, keyword: '', gender: undefined, status: undefined }
+  return { page: 1, page_size: 20, keyword: '', gender: undefined, status: undefined }
 }
 
 async function loadRows() {
@@ -66,13 +69,13 @@ function openEdit(row: TeacherRecord) {
 }
 
 async function changeStatus(row: TeacherRecord) {
-  await updateTeacherStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', search.tenant_id)
+  await updateTeacherStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', scope.tenant_id)
   await loadRows()
 }
 
 async function removeRow(row: TeacherRecord) {
   await message.confirm('确认删除该教师？')
-  await deleteTeacher(row.id, search.tenant_id)
+  await deleteTeacher(row.id, scope.tenant_id)
   await loadRows()
 }
 
@@ -97,12 +100,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
@@ -163,7 +160,7 @@ onMounted(loadRows)
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
     <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新增教师' : '编辑教师'" width="600px">
-      <TeacherForm :mode="dialogMode" :tenant-id="search.tenant_id" :data="current" @success="onFormSuccess" />
+      <TeacherForm :mode="dialogMode" :tenant-id="scope.tenant_id" :data="current" @success="onFormSuccess" />
     </el-dialog>
   </div>
 </template>

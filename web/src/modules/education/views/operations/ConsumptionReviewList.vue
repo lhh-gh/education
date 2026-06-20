@@ -14,7 +14,7 @@ const current = ref<ConsumptionReviewRecord | null>(null)
 const rows = ref<ConsumptionReviewRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
-const search = reactive<ConsumptionReviewPageParams>({ page: 1, pageSize: 20, campus_id: undefined, teacher_id: undefined, lesson_id: undefined, status: undefined, start_at: undefined, end_at: undefined })
+const search = reactive<ConsumptionReviewPageParams>({ page: 1, pageSize: 20, teacher_id: undefined, lesson_id: undefined, status: undefined, start_at: undefined, end_at: undefined })
 const permissions = computed(() => operationPermissions(hasAuth))
 
 async function loadRows() {
@@ -67,9 +67,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="教师">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>

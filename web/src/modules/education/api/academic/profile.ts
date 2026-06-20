@@ -1,6 +1,6 @@
 import type { EducationRoleCode } from '../foundation/userProfile.ts'
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AcademicRecordStatus = 'enabled' | 'disabled'
 export type Gender = 'male' | 'female' | 'unknown'
@@ -119,7 +119,7 @@ function tenantScope(tenantId?: number): { tenant_id?: number } {
 }
 
 export function pageClassrooms(params: ClassroomPageParams): Promise<MineResult<MinePage<ClassroomRecord>>> {
-  return useHttp().get('/admin/education/academic/classrooms/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/classrooms/page', educationScopeGetOptions(params))
 }
 
 export function createClassroom(data: ClassroomSavePayload): Promise<MineResult<ClassroomRecord>> {
@@ -139,7 +139,7 @@ export function deleteClassroom(id: number, tenantId?: number): Promise<MineResu
 }
 
 export function pageStudents(params: StudentPageParams): Promise<MineResult<MinePage<StudentRecord>>> {
-  return useHttp().get('/admin/education/academic/students/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/students/page', educationScopeGetOptions(params))
 }
 
 export function createStudent(data: StudentSavePayload): Promise<MineResult<StudentRecord>> {
@@ -167,7 +167,7 @@ export function saveStudentGuardians(id: number, relations: StudentGuardianPaylo
 }
 
 export function pageGuardians(params: GuardianPageParams): Promise<MineResult<MinePage<GuardianRecord>>> {
-  return useHttp().get('/admin/education/academic/guardians/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/guardians/page', educationScopeGetOptions(params))
 }
 
 export function createGuardian(data: GuardianSavePayload): Promise<MineResult<GuardianRecord>> {
@@ -187,7 +187,7 @@ export function deleteGuardian(id: number, tenantId?: number): Promise<MineResul
 }
 
 export function pageTeachers(params: TeacherPageParams): Promise<MineResult<MinePage<TeacherRecord>>> {
-  return useHttp().get('/admin/education/academic/teachers/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/teachers/page', educationScopeGetOptions(params))
 }
 
 export function createTeacher(data: TeacherSavePayload): Promise<MineResult<TeacherRecord>> {

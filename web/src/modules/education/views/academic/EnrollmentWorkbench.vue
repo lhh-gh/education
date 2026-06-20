@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import EnrollmentCreateDrawer from './components/EnrollmentCreateDrawer.vue'
 import { enrollmentStatusLabel, enrollmentSuccessSummary } from './courseAccountRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicEnrollmentWorkbench' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -21,7 +24,7 @@ const canCreate = computed(() => hasAuth('education:academic:enrollment:create')
 const canCancel = computed(() => hasAuth('education:academic:enrollment:cancel'))
 
 function defaultSearch(): EnrollmentPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, student_id: undefined, course_id: undefined, status: undefined, keyword: '', enrolled_at_start: '', enrolled_at_end: '' }
+  return { page: 1, page_size: 20, student_id: undefined, course_id: undefined, status: undefined, keyword: '', enrolled_at_start: '', enrolled_at_end: '' }
 }
 
 async function loadRows() {
@@ -62,7 +65,7 @@ function onEnrollmentCreated(result: EnrollmentCreateResult) {
 async function cancelRow(row: EnrollmentRecord) {
   const result = await message.prompt('取消原因', '', '取消报名', value => Boolean(value?.trim()) || '请输入取消原因') as { value: string }
   try {
-    await cancelEnrollment(row.id, result.value.trim(), search.tenant_id)
+    await cancelEnrollment(row.id, result.value.trim(), scope.tenant_id)
     message.success('报名已取消')
     await loadRows()
   }
@@ -89,12 +92,6 @@ onMounted(loadRows)
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="false" :title="successText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="学员ID">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
@@ -153,7 +150,7 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <EnrollmentCreateDrawer v-model="drawerVisible" :tenant-id="search.tenant_id" :campus-id="search.campus_id" @success="onEnrollmentCreated" />
+    <EnrollmentCreateDrawer v-model="drawerVisible" :tenant-id="scope.tenant_id" :campus-id="scope.campus_id" @success="onEnrollmentCreated" />
   </div>
 </template>
 

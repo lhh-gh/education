@@ -10,7 +10,7 @@ defineOptions({ name: 'EducationFinanceReconciliationBatchList' })
 const rows = ref<ReconciliationBatchRecord[]>([])
 const total = ref(0)
 const drawerVisible = ref(false)
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '' })
+const search = reactive({ page: 1, pageSize: 20, status: '' })
 const permissions = computed(() => financePermissions(hasAuth))
 
 async function loadRows() {

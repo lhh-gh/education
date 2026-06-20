@@ -1,5 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type NoticeTargetType = 'all' | 'campus' | 'class' | 'student'
 export type NoticeType = 'academic' | 'activity' | 'fee' | 'system'
@@ -100,7 +100,7 @@ function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number
 }
 
 export function pageNotices(params: NoticePageParams): Promise<MineResult<MinePage<NoticeRecord>>> {
-  return useHttp().get('/admin/education/academic/notices/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/notices/page', educationScopeGetOptions(params))
 }
 
 export function getNotice(id: number, tenantId?: number): Promise<MineResult<NoticeRecord>> {
@@ -124,5 +124,5 @@ export function withdrawNotice(id: number, payload: NoticeWithdrawPayload & { te
 }
 
 export function pageNoticeReceipts(id: number, params: NoticeReceiptPageParams): Promise<MineResult<MinePage<NoticeReceiptRecord>>> {
-  return useHttp().get(`/admin/education/academic/notices/${id}/receipts/page`, { params, ...scopeOptions(params) })
+  return useHttp().get(`/admin/education/academic/notices/${id}/receipts/page`, educationScopeGetOptions(params))
 }

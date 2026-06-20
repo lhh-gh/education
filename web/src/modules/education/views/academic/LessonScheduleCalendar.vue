@@ -6,8 +6,11 @@ import BatchLessonScheduleDrawer from './components/BatchLessonScheduleDrawer.vu
 import ScheduleConflictDrawer from './components/ScheduleConflictDrawer.vue'
 import SingleLessonScheduleDrawer from './components/SingleLessonScheduleDrawer.vue'
 import { calendarEventSummary, lessonStatusLabel, lessonStatusTagType } from './classScheduleRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLessonScheduleCalendar' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const errorText = ref('')
@@ -23,8 +26,6 @@ const canBatch = computed(() => hasAuth('education:academic:lesson-schedule:batc
 
 function defaultSearch(): CalendarLessonParams {
   return {
-    tenant_id: undefined,
-    campus_id: undefined,
     class_id: undefined,
     teacher_id: undefined,
     classroom_id: undefined,
@@ -80,12 +81,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="班级ID">
           <el-input-number v-model="search.class_id" :min="1" :controls="false" />
         </el-form-item>
@@ -132,8 +127,8 @@ onMounted(loadRows)
         </div>
       </div>
     </el-card>
-    <SingleLessonScheduleDrawer v-model="singleVisible" :tenant-id="search.tenant_id" :campus-id="search.campus_id" :class-id="search.class_id" @success="loadRows" @conflict="openConflict" />
-    <BatchLessonScheduleDrawer v-model="batchVisible" :tenant-id="search.tenant_id" :campus-id="search.campus_id" :class-id="search.class_id" @success="loadRows" @conflict="openConflict" />
+    <SingleLessonScheduleDrawer v-model="singleVisible" :tenant-id="scope.tenant_id" :campus-id="scope.campus_id" :class-id="search.class_id" @success="loadRows" @conflict="openConflict" />
+    <BatchLessonScheduleDrawer v-model="batchVisible" :tenant-id="scope.tenant_id" :campus-id="scope.campus_id" :class-id="search.class_id" @success="loadRows" @conflict="openConflict" />
     <ScheduleConflictDrawer v-model="conflictVisible" :result="conflictResult" />
   </div>
 </template>

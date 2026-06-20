@@ -8,7 +8,6 @@ defineOptions({ name: 'EducationFamilyServiceQualityDashboard' })
 const loading = ref(false)
 const rows = ref<ServiceQualityMetric[]>([])
 const filters = reactive({
-  campus_id: undefined as number | undefined,
   teacher_id: undefined as number | undefined,
   student_id: undefined as number | undefined,
   start_date: '',

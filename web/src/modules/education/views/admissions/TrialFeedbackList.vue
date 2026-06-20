@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { saveTrialFeedback } from '../../api/admissions/trial.ts'
 import { admissionErrorText } from './admissionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAdmissionTrialFeedbackList' })
 
+const { scope } = useEducationScope()
 const errorText = ref('')
 const successText = ref('')
-const form = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, trial_lesson_id: undefined as number | undefined, feedback_type: 'teacher', score: 4, content: '' })
+const form = reactive({ trial_lesson_id: undefined as number | undefined, feedback_type: 'teacher', score: 4, content: '' })
 
 async function submitFeedback() {
   try {
-    await saveTrialFeedback(form as any)
+    await saveTrialFeedback({ ...form, tenant_id: scope.tenant_id, campus_id: scope.campus_id } as any)
     successText.value = '反馈已保存'
   }
   catch (error: any) {

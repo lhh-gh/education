@@ -2,15 +2,18 @@
 import type { LeadSourceRecord } from '../../api/admissions/lead-source.ts'
 import { createLeadSource, pageLeadSources } from '../../api/admissions/lead-source.ts'
 import { admissionErrorText, admissionStatusLabel } from './admissionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAdmissionLeadSourceList' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const rows = ref<LeadSourceRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
 const successText = ref('')
-const search = reactive({ page: 1, pageSize: 20, tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, keyword: '' })
+const search = reactive({ page: 1, pageSize: 20, keyword: '' })
 const form = reactive({ code: '', name: '', channel_type: 'offline' })
 
 async function loadRows() {
@@ -31,7 +34,7 @@ async function loadRows() {
 
 async function createSource() {
   try {
-    await createLeadSource({ ...form, tenant_id: search.tenant_id, campus_id: search.campus_id })
+    await createLeadSource({ ...form, tenant_id: scope.tenant_id, campus_id: scope.campus_id })
     successText.value = '线索来源已保存'
     await loadRows()
   }

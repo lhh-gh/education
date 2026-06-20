@@ -44,7 +44,7 @@ function handleFilter(value: ConsumptionReportParams) {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, campus_id: undefined, course_id: undefined, class_id: undefined, student_id: undefined, account_id: undefined, source_type: undefined, status: undefined, group_by: undefined, ...quickReportRange('this_month') })
+  Object.assign(search, { page: 1, pageSize: 20, course_id: undefined, class_id: undefined, student_id: undefined, account_id: undefined, source_type: undefined, status: undefined, group_by: undefined, ...quickReportRange('this_month') })
   loadRows()
 }
 

@@ -17,7 +17,7 @@ const errorText = ref('')
 const current = ref<FinanceOrderRecord | null>(null)
 const offlineVisible = ref(false)
 const receiptVisible = ref(false)
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '', keyword: '' })
+const search = reactive({ page: 1, pageSize: 20, status: '', keyword: '' })
 const permissions = computed(() => financePermissions(hasAuth))
 
 async function loadRows() {
@@ -43,7 +43,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, campus_id: undefined, status: '', keyword: '' })
+  Object.assign(search, { page: 1, pageSize: 20, status: '', keyword: '' })
   loadRows()
 }
 
@@ -73,9 +73,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item :label="financePageText.orders.fields.campus">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item :label="financePageText.orders.fields.status">
           <el-select v-model="search.status" clearable style="width: 150px;">
             <el-option :label="financeStatusLabel('pending')" value="pending" />

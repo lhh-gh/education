@@ -6,8 +6,11 @@ import LessonDetailDrawer from './components/LessonDetailDrawer.vue'
 import LessonForm from './components/LessonForm.vue'
 import { lessonStatusLabel, lessonStatusTagType } from './classScheduleRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLessonList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -28,8 +31,6 @@ function defaultSearch(): LessonPageParams {
   return {
     page: 1,
     page_size: 20,
-    tenant_id: undefined,
-    campus_id: undefined,
     class_id: undefined,
     course_id: undefined,
     teacher_id: undefined,
@@ -80,14 +81,14 @@ function openEdit(row: LessonRecord) {
 async function cancelRow(row: LessonRecord) {
   const cancelReason = await message.prompt('取消原因', '取消课次')
   const reason = typeof cancelReason === 'string' ? cancelReason : (cancelReason as any)?.value
-  const response = await cancelLesson(row.id, reason || '后台取消', search.tenant_id)
+  const response = await cancelLesson(row.id, reason || '后台取消', scope.tenant_id)
   rows.value = rows.value.map(item => item.id === row.id ? { ...item, ...response.data } : item)
 }
 
 async function removeRow(row: LessonRecord) {
   try {
     await message.confirm('确认删除该课次？')
-    await deleteLesson(row.id, search.tenant_id)
+    await deleteLesson(row.id, scope.tenant_id)
     rows.value = rows.value.filter(item => item.id !== row.id)
   }
   catch (error: any) {
@@ -116,12 +117,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="班级ID">
           <el-input-number v-model="search.class_id" :min="1" :controls="false" />
         </el-form-item>
@@ -199,9 +194,9 @@ onMounted(loadRows)
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
     <el-dialog v-model="dialogVisible" title="编辑课次" width="680px">
-      <LessonForm :tenant-id="search.tenant_id" :data="current" @success="onLessonUpdated" />
+      <LessonForm :tenant-id="scope.tenant_id" :data="current" @success="onLessonUpdated" />
     </el-dialog>
-    <LessonDetailDrawer v-model="detailVisible" :lesson-id="current?.id" :tenant-id="search.tenant_id" />
+    <LessonDetailDrawer v-model="detailVisible" :lesson-id="current?.id" :tenant-id="scope.tenant_id" />
   </div>
 </template>
 

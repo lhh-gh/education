@@ -6,8 +6,11 @@ import { academicActionText, academicStatusLabel, academicStatusTagType } from '
 import ClassForm from './components/ClassForm.vue'
 import ClassStudentDrawer from './components/ClassStudentDrawer.vue'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicClassList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -28,7 +31,7 @@ const canStudentPage = computed(() => hasAuth('education:academic:class-student:
 const canStudentSave = computed(() => hasAuth('education:academic:class-student:save'))
 
 function defaultSearch(): ClassPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, course_id: undefined, main_teacher_id: undefined, keyword: '', status: undefined }
+  return { page: 1, page_size: 20, course_id: undefined, main_teacher_id: undefined, keyword: '', status: undefined }
 }
 
 async function loadRows() {
@@ -75,13 +78,13 @@ function openStudents(row: ClassRecord) {
 }
 
 async function changeStatus(row: ClassRecord) {
-  await changeClassStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', search.tenant_id)
+  await changeClassStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', scope.tenant_id)
   await loadRows()
 }
 
 async function removeRow(row: ClassRecord) {
   await message.confirm('确认删除该班级？')
-  await deleteClass(row.id, search.tenant_id)
+  await deleteClass(row.id, scope.tenant_id)
   await loadRows()
 }
 
@@ -112,12 +115,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="课程ID">
           <el-input-number v-model="search.course_id" :min="1" :controls="false" />
         </el-form-item>
@@ -183,9 +180,9 @@ onMounted(loadRows)
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
     <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新增班级' : '编辑班级'" width="700px">
-      <ClassForm :mode="dialogMode" :tenant-id="search.tenant_id" :campus-id="search.campus_id" :data="current" @success="onFormSuccess" />
+      <ClassForm :mode="dialogMode" :tenant-id="scope.tenant_id" :campus-id="scope.campus_id" :data="current" @success="onFormSuccess" />
     </el-dialog>
-    <ClassStudentDrawer v-model="drawerVisible" :class-id="current?.id" :tenant-id="search.tenant_id" :campus-id="current?.campus_id ?? search.campus_id" :readonly="!canStudentSave" @success="onStudentsSuccess" />
+    <ClassStudentDrawer v-model="drawerVisible" :class-id="current?.id" :tenant-id="scope.tenant_id" :campus-id="current?.campus_id ?? scope.campus_id" :readonly="!canStudentSave" @success="onStudentsSuccess" />
   </div>
 </template>
 

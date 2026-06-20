@@ -10,7 +10,7 @@ const loading = ref(false)
 const detail = ref<any>(null)
 const errorText = ref('')
 const content = ref('')
-const params = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined })
+const params = reactive({})
 
 async function loadDetail() {
   loading.value = true

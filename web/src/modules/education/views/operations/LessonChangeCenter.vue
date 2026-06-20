@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import LessonChangeForm from './components/LessonChangeForm.vue'
 import LessonChangeReviewDrawer from './components/LessonChangeReviewDrawer.vue'
 import { conflictErrorText, operationPermissions, operationStatusLabel, operationTagType, operationTypeLabel } from './operationRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationOperationLessonChangeCenter' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const formVisible = ref(false)
@@ -19,7 +22,7 @@ const errorText = ref('')
 const successText = ref('')
 const conflictText = ref('')
 const selectedIds = ref<number[]>([])
-const search = reactive<LessonChangePageParams>({ page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, teacher_id: undefined, status: undefined, change_type: undefined, keyword: '' })
+const search = reactive<LessonChangePageParams>({ page: 1, pageSize: 20, teacher_id: undefined, status: undefined, change_type: undefined, keyword: '' })
 const permissions = computed(() => operationPermissions(hasAuth))
 
 async function loadRows() {
@@ -49,7 +52,7 @@ async function batchCancel() {
     return
   }
   try {
-    await batchChangeLessons({ tenant_id: search.tenant_id, campus_id: search.campus_id, lesson_ids: selectedIds.value, change_type: 'cancel', reason: 'batch cancel' })
+    await batchChangeLessons({ tenant_id: scope.tenant_id, campus_id: scope.campus_id, lesson_ids: selectedIds.value, change_type: 'cancel', reason: 'batch cancel' })
     successText.value = '批量调课已提交'
     loadRows()
   }
@@ -85,9 +88,6 @@ onMounted(loadRows)
       <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-alert v-if="conflictText" class="page-alert" type="error" show-icon :closable="true" :title="conflictText" @close="conflictText = ''" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="教师">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>
@@ -145,7 +145,7 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <LessonChangeForm v-model="formVisible" :tenant-id="search.tenant_id" :campus-id="search.campus_id" @success="loadRows" @conflict="conflictText = $event" />
+    <LessonChangeForm v-model="formVisible" :tenant-id="scope.tenant_id" :campus-id="scope.campus_id" @success="loadRows" @conflict="conflictText = $event" />
     <LessonChangeReviewDrawer v-model="reviewVisible" :row="current" :action="reviewAction" :error="conflictText" @success="loadRows" />
   </div>
 </template>

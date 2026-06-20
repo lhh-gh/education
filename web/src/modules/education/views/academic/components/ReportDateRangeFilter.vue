@@ -54,12 +54,6 @@ function handleReset() {
   <div class="report-date-range-filter">
     <el-alert v-if="errorText" class="mb-3" type="warning" show-icon :closable="false" :title="errorText" />
     <el-form :inline="true" :model="localValue" class="report-filter-form">
-      <el-form-item label="租户 ID">
-        <el-input-number :model-value="localValue.tenant_id" :min="1" :controls="false" @update:model-value="updateField('tenant_id', $event || undefined)" />
-      </el-form-item>
-      <el-form-item label="校区 ID">
-        <el-input-number :model-value="localValue.campus_id" :min="1" :controls="false" @update:model-value="updateField('campus_id', $event || undefined)" />
-      </el-form-item>
       <el-form-item label="开始时间">
         <el-date-picker :model-value="localValue.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" @update:model-value="updateField('start_at', $event || undefined)" />
       </el-form-item>

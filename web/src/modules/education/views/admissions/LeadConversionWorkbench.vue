@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { convertLead } from '../../api/admissions/lead.ts'
 import { admissionErrorText } from './admissionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAdmissionConversionWorkbench' })
 
+const { scope } = useEducationScope()
 const errorText = ref('')
 const result = ref<Record<string, number> | null>(null)
-const form = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, lead_id: undefined as number | undefined, student_name: '', guardian_name: '', lesson_package_id: undefined as number | undefined, paid_amount: '0.00' })
+const form = reactive({ lead_id: undefined as number | undefined, student_name: '', guardian_name: '', lesson_package_id: undefined as number | undefined, paid_amount: '0.00' })
 
 async function submitConversion() {
   if (!form.lead_id || !form.lesson_package_id) {
@@ -14,7 +16,7 @@ async function submitConversion() {
     return
   }
   try {
-    const response = await convertLead(form.lead_id, form as any)
+    const response = await convertLead(form.lead_id, { ...form, tenant_id: scope.tenant_id, campus_id: scope.campus_id } as any)
     result.value = response.data
     errorText.value = ''
   }

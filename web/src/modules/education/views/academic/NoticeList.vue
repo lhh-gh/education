@@ -7,8 +7,11 @@ import NoticeForm from './components/NoticeForm.vue'
 import NoticeReceiptDrawer from './components/NoticeReceiptDrawer.vue'
 import { canEditNotice, canPublishNotice, canWithdrawNotice, noticePriorityLabel, noticePriorityType, noticeStatusLabel, noticeStatusType, noticeTargetTypeLabel, noticeTypeLabel } from './noticeRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicNoticeList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -29,7 +32,7 @@ const canReceipt = computed(() => hasAuth('education:academic:notice:receipt'))
 const canDetail = computed(() => hasAuth('education:academic:notice:detail'))
 
 function defaultSearch(): NoticePageParams {
-  return { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, notice_type: undefined, target_type: undefined, status: undefined, keyword: '' }
+  return { page: 1, pageSize: 20, notice_type: undefined, target_type: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -80,7 +83,7 @@ function openDetail(row: NoticeRecord) {
 
 async function handlePublish(row: NoticeRecord) {
   try {
-    await publishNotice(row.id, { tenant_id: search.tenant_id })
+    await publishNotice(row.id, { tenant_id: scope.tenant_id })
     message.success('通知已发布')
     loadRows()
   }
@@ -91,7 +94,7 @@ async function handlePublish(row: NoticeRecord) {
 
 async function handleWithdraw(row: NoticeRecord) {
   try {
-    const response = await withdrawNotice(row.id, { tenant_id: search.tenant_id, withdraw_reason: '后台撤回' })
+    const response = await withdrawNotice(row.id, { tenant_id: scope.tenant_id, withdraw_reason: '后台撤回' })
     rows.value = rows.value.map(item => item.id === row.id ? response.data : item)
     message.success('通知已撤回')
   }
@@ -120,12 +123,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="类型">
           <el-select v-model="search.notice_type" clearable style="width: 150px;">
             <el-option label="教务" value="academic" />
@@ -209,8 +206,8 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <NoticeForm v-model="formVisible" :row="current" :tenant-id="search.tenant_id" @saved="onSaved" />
-    <NoticeReceiptDrawer v-model="receiptVisible" :notice="current" :tenant-id="search.tenant_id" />
+    <NoticeForm v-model="formVisible" :row="current" :tenant-id="scope.tenant_id" @saved="onSaved" />
+    <NoticeReceiptDrawer v-model="receiptVisible" :notice="current" :tenant-id="scope.tenant_id" />
     <NoticeDetailDrawer v-model="detailVisible" :row="current" />
   </div>
 </template>

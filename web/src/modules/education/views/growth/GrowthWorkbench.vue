@@ -7,7 +7,7 @@ import { growthStatusLabel, growthText, growthWorkbenchFilterPayload } from './g
 defineOptions({ name: 'EducationGrowthWorkbench' })
 
 const loading = ref(false)
-const filters = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, owner_user_id: undefined as number | undefined, score_level: '' })
+const filters = reactive({ owner_user_id: undefined as number | undefined, score_level: '' })
 const hotLeads = ref<GrowthHotLead[]>([])
 const suggestions = ref<GrowthSuggestion[]>([])
 

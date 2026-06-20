@@ -8,7 +8,7 @@ defineOptions({ name: 'EducationFinancePaymentRecordList' })
 const loading = ref(false)
 const rows = ref<PaymentRecord[]>([])
 const total = ref(0)
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '', channel_code: '' } as any)
+const search = reactive({ page: 1, pageSize: 20, status: '', channel_code: '' } as any)
 
 async function loadRows() {
   loading.value = true
@@ -28,7 +28,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, campus_id: undefined, status: '', channel_code: '' })
+  Object.assign(search, { page: 1, pageSize: 20, status: '', channel_code: '' })
   loadRows()
 }
 

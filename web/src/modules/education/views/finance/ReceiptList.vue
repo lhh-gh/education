@@ -7,7 +7,7 @@ defineOptions({ name: 'EducationFinanceReceiptList' })
 
 const rows = ref<ReceiptRecord[]>([])
 const total = ref(0)
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '' })
+const search = reactive({ page: 1, pageSize: 20, status: '' })
 
 async function loadRows() {
   const response = await pageReceipts(search)

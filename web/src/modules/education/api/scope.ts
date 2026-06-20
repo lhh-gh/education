@@ -24,6 +24,21 @@ function resolveEducationScope(input: EducationScopeInput = {}): EducationScopeI
   }
 }
 
+export function educationScopeParams<T extends EducationScopeInput>(params: T): T & EducationScopeInput {
+  const scope = resolveEducationScope(params)
+  const scopedParams = { ...params } as T & EducationScopeInput
+
+  if (isPositiveNumber(scope.tenant_id)) {
+    scopedParams.tenant_id = scope.tenant_id
+  }
+
+  if (isPositiveNumber(scope.campus_id)) {
+    scopedParams.campus_id = scope.campus_id
+  }
+
+  return scopedParams
+}
+
 export function educationScopeHeaders(input: EducationScopeInput = {}): Record<string, string> {
   const scope = resolveEducationScope(input)
   const headers: Record<string, string> = {}
@@ -46,5 +61,5 @@ export function educationScopeRequestOptions(input: EducationScopeInput = {}): E
 }
 
 export function educationScopeGetOptions<T extends EducationScopeInput>(params: T): EducationScopeGetOptions<T> {
-  return { params, ...educationScopeRequestOptions(params) }
+  return { params: educationScopeParams(params), ...educationScopeRequestOptions(params) }
 }

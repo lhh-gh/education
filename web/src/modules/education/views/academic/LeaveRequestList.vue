@@ -6,8 +6,11 @@ import LeaveRequestForm from './components/LeaveRequestForm.vue'
 import LeaveReviewDialog from './components/LeaveReviewDialog.vue'
 import { applyLeaveReviewSuccess, canApproveLeave, canCancelLeave, canRejectLeave, leaveSourceLabel, leaveStatusLabel, leaveStatusType, leaveTypeLabel } from './leaveMakeupRescheduleRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLeaveRequestList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -26,7 +29,7 @@ const canReject = computed(() => hasAuth('education:academic:leave-request:rejec
 const canCancel = computed(() => hasAuth('education:academic:leave-request:cancel'))
 
 function defaultSearch(): LeaveRequestPageParams {
-  return { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, student_id: undefined, class_id: undefined, lesson_id: undefined, source: undefined, status: undefined, keyword: '' }
+  return { page: 1, pageSize: 20, student_id: undefined, class_id: undefined, lesson_id: undefined, source: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -68,7 +71,7 @@ function onReviewSuccess(row: LeaveRequestRecord) {
 
 async function handleCancel(row: LeaveRequestRecord) {
   try {
-    const response = await cancelLeaveRequest(row.id, '后台取消', search.tenant_id)
+    const response = await cancelLeaveRequest(row.id, '后台取消', scope.tenant_id)
     rows.value = rows.value.map(item => item.id === row.id ? response.data : item)
     message.success('已取消')
   }
@@ -93,12 +96,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="学员ID">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
@@ -159,8 +156,8 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <LeaveRequestForm v-model="formVisible" :tenant-id="search.tenant_id" @created="loadRows" />
-    <LeaveReviewDialog v-model="reviewVisible" :action="reviewAction" :row="current" :tenant-id="search.tenant_id" @success="onReviewSuccess" />
+    <LeaveRequestForm v-model="formVisible" :tenant-id="scope.tenant_id" @created="loadRows" />
+    <LeaveReviewDialog v-model="reviewVisible" :action="reviewAction" :row="current" :tenant-id="scope.tenant_id" @success="onReviewSuccess" />
   </div>
 </template>
 

@@ -38,7 +38,7 @@ function handleFilter(value: DashboardReportParams) {
 }
 
 function handleReset() {
-  Object.assign(filter, quickReportRange('this_month'), { tenant_id: undefined, campus_id: undefined })
+  Object.assign(filter, quickReportRange('this_month'))
   loadDashboard()
 }
 

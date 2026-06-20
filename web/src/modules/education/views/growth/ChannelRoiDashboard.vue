@@ -5,7 +5,7 @@ import { channelRoiFilterPayload, growthText, roiTagType } from './growthRules.t
 
 defineOptions({ name: 'EducationGrowthChannelRoiDashboard' })
 
-const filters = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, source_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
+const filters = reactive({ source_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
 const rows = ref<ChannelRoiRecord[]>([])
 
 async function loadRows() {

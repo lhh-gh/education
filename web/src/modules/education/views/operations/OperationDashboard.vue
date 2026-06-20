@@ -11,7 +11,7 @@ const overview = ref<OperationOverview | null>(null)
 const trend = ref<OperationTrendRow[]>([])
 const renewal = ref<RenewalAlertSummary | null>(null)
 const daily = ref<DailyOperationMetric[]>([])
-const filter = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, start_at: '', end_at: '' })
+const filter = reactive({ start_at: '', end_at: '' })
 const metrics = computed(() => operationDashboardMetricItems(overview.value?.metrics))
 
 async function loadDashboard() {
@@ -54,9 +54,6 @@ onMounted(loadDashboard)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="filter" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="filter.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="日期范围">
           <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="开始时间" />
           <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="结束时间" />

@@ -8,7 +8,7 @@ defineOptions({ name: 'EducationAdmissionTaskList' })
 const loading = ref(false)
 const rows = ref<AdmissionTaskRecord[]>([])
 const total = ref(0)
-const search = reactive({ page: 1, pageSize: 20, tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, status: undefined as string | undefined })
+const search = reactive({ page: 1, pageSize: 20, status: undefined as string | undefined })
 
 async function loadRows() {
   loading.value = true

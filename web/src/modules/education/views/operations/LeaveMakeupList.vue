@@ -13,7 +13,7 @@ const current = ref<MakeupEntitlementRecord | null>(null)
 const rows = ref<MakeupEntitlementRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
-const search = reactive<MakeupEntitlementPageParams>({ page: 1, pageSize: 20, campus_id: undefined, student_id: undefined, course_id: undefined, status: undefined, keyword: '' })
+const search = reactive<MakeupEntitlementPageParams>({ page: 1, pageSize: 20, student_id: undefined, course_id: undefined, status: undefined, keyword: '' })
 const permissions = computed(() => operationPermissions(hasAuth))
 
 async function loadRows() {
@@ -60,9 +60,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="学员">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>

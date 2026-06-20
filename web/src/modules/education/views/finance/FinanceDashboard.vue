@@ -7,7 +7,7 @@ defineOptions({ name: 'EducationFinanceDashboard' })
 
 const loading = ref(false)
 const overview = ref<FinanceOverview | null>(null)
-const filter = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, start_at: '', end_at: '' })
+const filter = reactive({ start_at: '', end_at: '' })
 const cards = computed(() => [
   { title: financePageText.dashboard.cards.orders, value: overview.value?.order_count ?? 0 },
   { title: financePageText.dashboard.cards.payments, value: overview.value?.payment_count ?? 0 },
@@ -41,9 +41,6 @@ onMounted(loadDashboard)
         </div>
       </template>
       <el-form :inline="true" :model="filter" class="search-form">
-        <el-form-item :label="financePageText.dashboard.fields.campus">
-          <el-input-number v-model="filter.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item :label="financePageText.dashboard.fields.dateRange">
           <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="financePageText.dashboard.fields.start" />
           <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="financePageText.dashboard.fields.end" />

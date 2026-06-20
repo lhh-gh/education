@@ -10,7 +10,7 @@ const loading = ref(false)
 const rows = ref<SalaryRuleRecord[]>([])
 const total = ref(0)
 const formVisible = ref(false)
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, status: '', rule_type: '' } as any)
+const search = reactive({ page: 1, pageSize: 20, status: '', rule_type: '' } as any)
 
 async function loadRows() {
   loading.value = true

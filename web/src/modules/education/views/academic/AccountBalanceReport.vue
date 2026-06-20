@@ -43,7 +43,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, course_id: undefined, student_id: undefined, status: undefined, balance_level: undefined })
+  Object.assign(search, { page: 1, pageSize: 20, course_id: undefined, student_id: undefined, status: undefined, balance_level: undefined })
   loadRows()
 }
 
@@ -55,8 +55,6 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>课时账户报表</template>
       <el-form :inline="true" :model="search" class="report-extra-filters">
-        <el-form-item label="机构ID"><el-input-number v-model="search.tenant_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="校区ID"><el-input-number v-model="search.campus_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="课程ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="学员ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="状态">

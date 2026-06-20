@@ -1,5 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'leave'
 export type ConsumptionPolicy = 'consume' | 'no_consume'
@@ -162,7 +162,7 @@ function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number
 }
 
 export function pageAttendanceLessons(params: AttendanceLessonPageParams): Promise<MineResult<MinePage<AttendanceLessonRecord>>> {
-  return useHttp().get('/admin/education/academic/attendance/lessons/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/attendance/lessons/page', educationScopeGetOptions(params))
 }
 
 export function getAttendanceLesson(lessonId: number, tenantId?: number): Promise<MineResult<AttendanceLessonDetail>> {
@@ -174,7 +174,7 @@ export function submitAttendance(lessonId: number, payload: { tenant_id?: number
 }
 
 export function pageConsumptions(params: ConsumptionPageParams): Promise<MineResult<MinePage<ConsumptionRecord>>> {
-  return useHttp().get('/admin/education/academic/consumptions/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/consumptions/page', educationScopeGetOptions(params))
 }
 
 export function getConsumption(id: number, tenantId?: number): Promise<MineResult<ConsumptionRecord>> {
@@ -186,7 +186,7 @@ export function rollbackConsumption(id: number, reason: string, tenantId?: numbe
 }
 
 export function pageAccountAdjustments(params: AccountAdjustmentPageParams): Promise<MineResult<MinePage<AccountAdjustmentRecord>>> {
-  return useHttp().get('/admin/education/academic/account-adjustments/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/account-adjustments/page', educationScopeGetOptions(params))
 }
 
 export function getAccountAdjustment(id: number, tenantId?: number): Promise<MineResult<AccountAdjustmentRecord>> {

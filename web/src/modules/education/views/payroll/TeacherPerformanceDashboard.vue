@@ -9,7 +9,7 @@ const loading = ref(false)
 const rows = ref<TeacherPerformanceRecord[]>([])
 const total = ref(0)
 const summary = ref<TeacherPerformanceSummary>({ teacher_count: 0, lesson_count: 0, salary_amount_cents: 0 })
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, teacher_id: undefined as number | undefined, metric_month: '' } as any)
+const search = reactive({ page: 1, pageSize: 20, teacher_id: undefined as number | undefined, metric_month: '' } as any)
 
 async function loadRows() {
   loading.value = true
@@ -45,9 +45,6 @@ onMounted(loadRows)
       <el-form :inline="true" :model="search" class="search-form">
         <el-form-item label="月份">
           <el-date-picker v-model="search.metric_month" type="month" value-format="YYYY-MM" />
-        </el-form-item>
-        <el-form-item label="校区 ID">
-          <el-input-number v-model="search.campus_id" :min="1" />
         </el-form-item>
         <el-form-item label="教师 ID">
           <el-input-number v-model="search.teacher_id" :min="1" />

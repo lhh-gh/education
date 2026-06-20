@@ -6,7 +6,7 @@ defineOptions({ name: 'EducationAdmissionDashboard' })
 
 const loading = ref(false)
 const overview = ref<AdmissionOverview | null>(null)
-const search = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, start_date: '', end_date: '' })
+const search = reactive({ start_date: '', end_date: '' })
 
 async function loadOverview() {
   loading.value = true

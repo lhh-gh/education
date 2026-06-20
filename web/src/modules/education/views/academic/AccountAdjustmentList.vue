@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import AccountAdjustmentForm from './components/AccountAdjustmentForm.vue'
 import AccountAdjustmentRollbackDialog from './components/AccountAdjustmentRollbackDialog.vue'
 import { adjustmentTypeLabel, canRollbackAdjustment, ledgerDirectionLabel, ledgerStatusLabel, markAdjustmentRollbackSuccess } from './attendanceConsumptionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicAccountAdjustmentList' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const formVisible = ref(false)
@@ -21,7 +24,7 @@ const canCreate = computed(() => hasAuth('education:academic:account-adjustment:
 const canRollback = computed(() => hasAuth('education:academic:account-adjustment:rollback'))
 
 function defaultSearch(): AccountAdjustmentPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, account_id: undefined, student_id: undefined, course_id: undefined, adjustment_type: undefined, status: undefined, keyword: '' }
+  return { page: 1, page_size: 20, account_id: undefined, student_id: undefined, course_id: undefined, adjustment_type: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -79,8 +82,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID"><el-input-number v-model="search.tenant_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="校区ID"><el-input-number v-model="search.campus_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="账户ID"><el-input-number v-model="search.account_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="学员ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
         <el-form-item label="课程ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
@@ -117,8 +118,8 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <AccountAdjustmentForm v-model="formVisible" :tenant-id="search.tenant_id" @success="onCreated" />
-    <AccountAdjustmentRollbackDialog v-model="rollbackVisible" :row="current" :tenant-id="search.tenant_id" @success="onRollback" />
+    <AccountAdjustmentForm v-model="formVisible" :tenant-id="scope.tenant_id" @success="onCreated" />
+    <AccountAdjustmentRollbackDialog v-model="rollbackVisible" :row="current" :tenant-id="scope.tenant_id" @success="onRollback" />
   </div>
 </template>
 

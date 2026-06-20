@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import AccountLedgerDrawer from './components/AccountLedgerDrawer.vue'
 import { accountStatusAction, accountStatusActionLabel, accountStatusLabel } from './courseAccountRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicAccountLedgerList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -21,7 +24,7 @@ const canLedger = computed(() => hasAuth('education:academic:student-course-acco
 const canStatus = computed(() => hasAuth('education:academic:student-course-account:status'))
 
 function defaultSearch(): StudentCourseAccountPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, student_id: undefined, course_id: undefined, status: undefined, keyword: '' }
+  return { page: 1, page_size: 20, student_id: undefined, course_id: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -56,7 +59,7 @@ function openLedger(row: StudentCourseAccountRecord) {
 }
 
 async function changeStatus(row: StudentCourseAccountRecord, status: StudentCourseAccountStatus) {
-  await changeStudentCourseAccountStatus(row.id, status, search.tenant_id)
+  await changeStudentCourseAccountStatus(row.id, status, scope.tenant_id)
   await loadRows()
 }
 
@@ -86,12 +89,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="学员ID">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
@@ -152,7 +149,7 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <AccountLedgerDrawer v-model="drawerVisible" :account-id="current?.id" :tenant-id="search.tenant_id" />
+    <AccountLedgerDrawer v-model="drawerVisible" :account-id="current?.id" :tenant-id="scope.tenant_id" />
   </div>
 </template>
 

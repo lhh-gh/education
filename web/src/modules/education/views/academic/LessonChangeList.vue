@@ -6,8 +6,11 @@ import LessonChangeDetailDrawer from './components/LessonChangeDetailDrawer.vue'
 import MakeupLessonForm from './components/MakeupLessonForm.vue'
 import RescheduleLessonForm from './components/RescheduleLessonForm.vue'
 import { canRescheduleLesson, lessonChangeStatusLabel, lessonChangeStatusType, lessonChangeTypeLabel } from './leaveMakeupRescheduleRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLessonChangeList' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const makeupVisible = ref(false)
@@ -25,7 +28,7 @@ const canReschedule = computed(() => canRescheduleLesson(hasAuth('education:acad
 const canDetail = computed(() => hasAuth('education:academic:lesson-change:detail'))
 
 function defaultSearch(): LessonChangePageParams {
-  return { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, change_type: undefined, status: undefined, source_lesson_id: undefined, target_lesson_id: undefined, student_id: undefined, keyword: '' }
+  return { page: 1, pageSize: 20, change_type: undefined, status: undefined, source_lesson_id: undefined, target_lesson_id: undefined, student_id: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -91,12 +94,6 @@ onMounted(loadRows)
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="类型">
           <el-select v-model="search.change_type" clearable style="width: 150px;">
             <el-option label="补课" value="makeup" />
@@ -158,8 +155,8 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <MakeupLessonForm v-model="makeupVisible" :tenant-id="search.tenant_id" @success="onMakeupSuccess" />
-    <RescheduleLessonForm v-model="rescheduleVisible" :tenant-id="search.tenant_id" @success="onRescheduleSuccess" />
+    <MakeupLessonForm v-model="makeupVisible" :tenant-id="scope.tenant_id" @success="onMakeupSuccess" />
+    <RescheduleLessonForm v-model="rescheduleVisible" :tenant-id="scope.tenant_id" @success="onRescheduleSuccess" />
     <LessonChangeDetailDrawer v-model="detailVisible" :row="current" />
   </div>
 </template>

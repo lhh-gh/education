@@ -6,8 +6,11 @@ import AttendanceResultDrawer from './components/AttendanceResultDrawer.vue'
 import AttendanceSubmitDrawer from './components/AttendanceSubmitDrawer.vue'
 import { canSubmitAttendance } from './attendanceConsumptionRules.ts'
 import { lessonStatusLabel, lessonStatusTagType } from './classScheduleRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicAttendanceReview' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const submitVisible = ref(false)
@@ -23,7 +26,7 @@ const canDetail = computed(() => hasAuth('education:academic:attendance:detail')
 const canSubmit = computed(() => hasAuth('education:academic:attendance:submit'))
 
 function defaultSearch(): AttendanceLessonPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, class_id: undefined, teacher_id: undefined, status: undefined, start_at: '', end_at: '', keyword: '' }
+  return { page: 1, page_size: 20, class_id: undefined, teacher_id: undefined, status: undefined, start_at: '', end_at: '', keyword: '' }
 }
 
 async function loadRows() {
@@ -77,12 +80,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="校区ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="班级ID">
           <el-input-number v-model="search.class_id" :min="1" :controls="false" />
         </el-form-item>
@@ -140,7 +137,7 @@ onMounted(loadRows)
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <AttendanceSubmitDrawer v-model="submitVisible" :lesson-id="current?.id" :tenant-id="search.tenant_id" @submitted="onSubmitted" />
+    <AttendanceSubmitDrawer v-model="submitVisible" :lesson-id="current?.id" :tenant-id="scope.tenant_id" @submitted="onSubmitted" />
     <AttendanceResultDrawer v-model="resultVisible" :result="result" />
   </div>
 </template>

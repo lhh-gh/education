@@ -1,5 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AcademicRecordStatus = 'enabled' | 'disabled'
 export type ClassType = 'group' | 'one_to_one'
@@ -189,7 +189,7 @@ function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number
 }
 
 export function pageClasses(params: ClassPageParams): Promise<MineResult<MinePage<ClassRecord>>> {
-  return useHttp().get('/admin/education/academic/classes/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/classes/page', educationScopeGetOptions(params))
 }
 
 export function createClass(data: ClassSavePayload): Promise<MineResult<ClassRecord>> {
@@ -217,7 +217,7 @@ export function saveClassStudents(id: number, payload: { students: Array<Record<
 }
 
 export function pageLessons(params: LessonPageParams): Promise<MineResult<MinePage<LessonRecord>>> {
-  return useHttp().get('/admin/education/academic/lessons/page', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/lessons/page', educationScopeGetOptions(params))
 }
 
 export function getLesson(id: number, tenantId?: number): Promise<MineResult<LessonRecord & { students?: LessonStudentRecord[] }>> {
@@ -237,7 +237,7 @@ export function deleteLesson(id: number, tenantId?: number): Promise<MineResult<
 }
 
 export function calendarLessons(params: CalendarLessonParams): Promise<MineResult<{ list: LessonRecord[] }>> {
-  return useHttp().get('/admin/education/academic/lesson-schedule/calendar', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/lesson-schedule/calendar', educationScopeGetOptions(params))
 }
 
 export function checkScheduleConflict(payload: Record<string, unknown> & { tenant_id?: number }): Promise<MineResult<ScheduleConflictResult>> {

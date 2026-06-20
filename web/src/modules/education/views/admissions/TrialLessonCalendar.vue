@@ -2,15 +2,18 @@
 import type { TrialLessonRecord } from '../../api/admissions/trial.ts'
 import { createTrialLesson, pageTrialLessons, saveTrialAttendance } from '../../api/admissions/trial.ts'
 import { admissionErrorText, admissionStatusLabel, admissionTagType } from './admissionRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAdmissionTrialCalendar' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const rows = ref<TrialLessonRecord[]>([])
 const total = ref(0)
 const errorText = ref('')
 const conflictText = ref('')
-const search = reactive({ page: 1, pageSize: 20, tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, date: '' })
+const search = reactive({ page: 1, pageSize: 20, date: '' })
 const form = reactive({ lead_id: undefined as number | undefined, lead_student_id: undefined as number | undefined, course_id: undefined as number | undefined, teacher_id: undefined as number | undefined, start_time: '', end_time: '' })
 
 async function loadRows() {
@@ -31,7 +34,7 @@ async function loadRows() {
 
 async function submitTrial() {
   try {
-    await createTrialLesson({ ...form, tenant_id: search.tenant_id, campus_id: search.campus_id })
+    await createTrialLesson({ ...form, tenant_id: scope.tenant_id, campus_id: scope.campus_id })
     await loadRows()
   }
   catch (error: any) {
@@ -40,7 +43,7 @@ async function submitTrial() {
 }
 
 async function markAttended(row: TrialLessonRecord) {
-  await saveTrialAttendance(row.id, { tenant_id: search.tenant_id, campus_id: search.campus_id, lead_student_id: row.lead_student_id, attendance_status: 'attended' })
+  await saveTrialAttendance(row.id, { tenant_id: scope.tenant_id, campus_id: scope.campus_id, lead_student_id: row.lead_student_id, attendance_status: 'attended' })
 }
 
 onMounted(loadRows)

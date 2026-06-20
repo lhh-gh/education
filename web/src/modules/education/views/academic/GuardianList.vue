@@ -5,8 +5,11 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import GuardianForm from './components/GuardianForm.vue'
 import { academicActionText, academicGenderLabel, academicStatusLabel, academicStatusTagType } from './actionRules.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicGuardianList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -24,7 +27,7 @@ const canStatus = computed(() => hasAuth('education:academic:guardian:status'))
 const canDelete = computed(() => hasAuth('education:academic:guardian:delete'))
 
 function defaultSearch(): GuardianPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, keyword: '', gender: undefined, status: undefined }
+  return { page: 1, page_size: 20, keyword: '', gender: undefined, status: undefined }
 }
 
 async function loadRows() {
@@ -66,13 +69,13 @@ function openEdit(row: GuardianRecord) {
 }
 
 async function changeStatus(row: GuardianRecord) {
-  await updateGuardianStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', search.tenant_id)
+  await updateGuardianStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', scope.tenant_id)
   await loadRows()
 }
 
 async function removeRow(row: GuardianRecord) {
   await message.confirm('确认删除该监护人？')
-  await deleteGuardian(row.id, search.tenant_id)
+  await deleteGuardian(row.id, scope.tenant_id)
   await loadRows()
 }
 
@@ -97,9 +100,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="机构ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
@@ -164,7 +164,7 @@ onMounted(loadRows)
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
     <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新增监护人' : '编辑监护人'" width="560px">
-      <GuardianForm :mode="dialogMode" :tenant-id="search.tenant_id" :data="current" @success="onFormSuccess" />
+      <GuardianForm :mode="dialogMode" :tenant-id="scope.tenant_id" :data="current" @success="onFormSuccess" />
     </el-dialog>
   </div>
 </template>

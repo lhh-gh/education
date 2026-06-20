@@ -10,7 +10,7 @@ const rows = ref<TeacherWorkloadRecord[]>([])
 const total = ref(0)
 const summary = ref<TeacherWorkloadSummary | null>(null)
 const errorText = ref('')
-const search = reactive<TeacherWorkloadPageParams>({ page: 1, pageSize: 20, campus_id: undefined, teacher_id: undefined, workload_type: undefined, start_at: undefined, end_at: undefined })
+const search = reactive<TeacherWorkloadPageParams>({ page: 1, pageSize: 20, teacher_id: undefined, workload_type: undefined, start_at: undefined, end_at: undefined })
 
 async function loadRows() {
   loading.value = true
@@ -48,9 +48,6 @@ onMounted(loadRows)
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="校区">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
         <el-form-item label="教师">
           <el-input-number v-model="search.teacher_id" :min="1" :controls="false" />
         </el-form-item>

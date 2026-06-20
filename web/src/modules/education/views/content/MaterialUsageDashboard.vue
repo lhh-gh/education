@@ -36,9 +36,6 @@ onMounted(loadMetrics)
         <span>使用看板</span>
       </template>
       <el-form inline>
-        <el-form-item label="校区">
-          <el-input-number v-model="filters.campus_id" :min="1" controls-position="right" />
-        </el-form-item>
         <el-form-item label="课程">
           <el-input-number v-model="filters.course_id" :min="1" controls-position="right" />
         </el-form-item>

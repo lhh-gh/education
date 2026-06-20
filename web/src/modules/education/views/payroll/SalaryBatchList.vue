@@ -11,7 +11,7 @@ const rows = ref<SalaryBatchRecord[]>([])
 const total = ref(0)
 const calculateVisible = ref(false)
 const conflictText = ref('')
-const search = reactive({ page: 1, pageSize: 20, campus_id: undefined as number | undefined, salary_month: '', status: '' } as any)
+const search = reactive({ page: 1, pageSize: 20, salary_month: '', status: '' } as any)
 
 async function loadRows() {
   loading.value = true

@@ -1,5 +1,5 @@
 import type { MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type ReportGroupBy = 'date' | 'campus' | 'class' | 'teacher' | 'course' | 'status' | 'source_type'
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'leave'
@@ -291,25 +291,25 @@ function scopeOptions(input: { tenant_id?: number, campus_id?: number } = {}): {
 }
 
 export function getAcademicDashboard(params: DashboardReportParams): Promise<MineResult<AcademicDashboardResult>> {
-  return useHttp().get('/admin/education/academic/reports/dashboard', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/dashboard', educationScopeGetOptions(params))
 }
 
 export function pageAttendanceReport(params: AttendanceReportParams): Promise<MineResult<ReportPageResult<AttendanceReportRow, AttendanceReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/attendance', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/attendance', educationScopeGetOptions(params))
 }
 
 export function pageConsumptionReport(params: ConsumptionReportParams): Promise<MineResult<ReportPageResult<ConsumptionReportRow, ConsumptionReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/consumption', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/consumption', educationScopeGetOptions(params))
 }
 
 export function pageAccountBalanceReport(params: AccountBalanceReportParams): Promise<MineResult<ReportPageResult<AccountBalanceReportRow, AccountBalanceReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/account-balances', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/account-balances', educationScopeGetOptions(params))
 }
 
 export function pageLeaveReport(params: LeaveReportParams): Promise<MineResult<ReportPageResult<LeaveReportRow, LeaveReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/leaves', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/leaves', educationScopeGetOptions(params))
 }
 
 export function getV1AcceptanceSummary(params: V1AcceptanceParams): Promise<MineResult<V1AcceptanceSummary>> {
-  return useHttp().get('/admin/education/academic/reports/v1-acceptance-summary', { params, ...scopeOptions(params) })
+  return useHttp().get('/admin/education/academic/reports/v1-acceptance-summary', educationScopeGetOptions(params))
 }
