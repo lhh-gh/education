@@ -15,7 +15,9 @@ namespace HyperfTests\Unit\Education\Academic;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationTeacher;
 use App\Model\Education\Academic\EducationTeacherCourse;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\TeacherCourseRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -23,6 +25,36 @@ use App\Repository\Education\Academic\TeacherCourseRepository;
  */
 final class TeacherCourseRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersListByCourseWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('teacher_course_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $course = EducationCourse::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusA->id,
+            'code' => 'ART-001',
+            'name' => 'Art Basics',
+            'status' => 'enabled',
+        ]);
+        $teacherA = $this->teacher((int) $tenant->id, (int) $campusA->id, 'T001', 'Teacher A');
+        $teacherB = $this->teacher((int) $tenant->id, (int) $campusB->id, 'T002', 'Teacher B');
+        $visible = EducationTeacherCourse::query()->create($this->teacherCourseRow((int) $tenant->id, (int) $campusA->id, (int) $course->id, (int) $teacherA->id));
+        EducationTeacherCourse::query()->create($this->teacherCourseRow((int) $tenant->id, (int) $campusB->id, (int) $course->id, (int) $teacherB->id));
+
+        $rows = make(TeacherCourseRepository::class)->listByCourse((int) $course->id, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertCount(1, $rows);
+        self::assertSame((int) $visible->id, (int) $rows[0]['id']);
+    }
+
     public function testReplaceEnabledTeachersSoftDeletesRemovedAuthorizations(): void
     {
         $tenant = $this->tenant('tenant');
@@ -60,5 +92,17 @@ final class TeacherCourseRepositoryTest extends AcademicTestCase
             'name' => $name,
             'status' => 'enabled',
         ]);
+    }
+
+    private function teacherCourseRow(int $tenantId, int $campusId, int $courseId, int $teacherId): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'course_id' => $courseId,
+            'teacher_id' => $teacherId,
+            'status' => 'enabled',
+            'authorized_at' => '2026-06-15 09:00:00',
+        ];
     }
 }
