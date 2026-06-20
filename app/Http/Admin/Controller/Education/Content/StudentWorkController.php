@@ -13,19 +13,69 @@ declare(strict_types=1);
 namespace App\Http\Admin\Controller\Education\Content;
 
 use App\Http\Admin\Controller\AbstractController;
+use App\Http\Admin\Middleware\Education\Foundation\ResolveEducationContextMiddleware;
+use App\Http\Admin\Middleware\PermissionMiddleware;
+use App\Http\Common\Middleware\AccessTokenMiddleware;
+use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
+use App\Model\Education\Content\EducationStudentWork;
 use App\Service\Education\Content\StudentWorkService;
+use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
+use Hyperf\Swagger\Annotation\Post;
+use Mine\Access\Attribute\Permission;
 use Mine\Swagger\Attributes\ResultResponse;
 
 #[HyperfServer(name: 'http')]
+#[Middleware(middleware: AccessTokenMiddleware::class, priority: 100)]
+#[Middleware(middleware: PermissionMiddleware::class, priority: 99)]
+#[Middleware(middleware: ResolveEducationContextMiddleware::class, priority: 98)]
+#[Middleware(middleware: OperationMiddleware::class, priority: 97)]
 final class StudentWorkController extends AbstractController
 {
+    use ContentControllerTrait;
+
     public function __construct(private readonly StudentWorkService $service) {}
 
+    #[Get(path: '/admin/education/content/student-works', operationId: 'educationContentStudentWorkPage', summary: 'Content student work page', tags: ['Education Content'])]
     #[ResultResponse(instance: new Result())]
-    public function placeholder(): Result
+    #[Permission(code: 'education:content:student-work:page')]
+    public function page(RequestInterface $request): Result
     {
-        return $this->success(['service' => $this->service::class]);
+        $context = $this->context();
+        $query = EducationStudentWork::query()->where('tenant_id', $this->tenantId($context));
+        foreach (['student_id', 'teacher_id', 'status'] as $field) {
+            if ($request->input($field) !== null && $request->input($field) !== '') {
+                $query->where($field, $request->input($field));
+            }
+        }
+        $total = (int) (clone $query)->count();
+
+        return $this->success([
+            'list' => $query->orderByDesc('id')->forPage($this->pageNumber($request), $this->pageSize($request))->get()->toArray(),
+            'total' => $total,
+        ]);
+    }
+
+    #[Post(path: '/admin/education/content/student-works/{id}/publish', operationId: 'educationContentStudentWorkPublish', summary: 'Content student work publish', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:student-work:publish')]
+    public function publish(int $id): Result
+    {
+        $context = $this->context();
+
+        return $this->success($this->service->publish($this->tenantId($context), $id));
+    }
+
+    #[Post(path: '/admin/education/content/student-works/{id}/withdraw', operationId: 'educationContentStudentWorkWithdraw', summary: 'Content student work withdraw', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:student-work:withdraw')]
+    public function withdraw(int $id): Result
+    {
+        $context = $this->context();
+
+        return $this->success($this->service->withdraw($this->tenantId($context), $id));
     }
 }

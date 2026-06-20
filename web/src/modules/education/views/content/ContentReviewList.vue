@@ -10,6 +10,7 @@ const rows = ref<ContentReviewRow[]>([])
 const total = ref(0)
 const search = reactive({ page: 1, pageSize: 20, status: 'pending' })
 const reviewForm = reactive<{ status?: ContentReviewStatus, review_note?: string }>({ status: undefined, review_note: '' })
+const canReview = computed(() => hasAuth('education:content:review:handle'))
 
 async function loadRows() {
   loading.value = true
@@ -39,26 +40,26 @@ onMounted(loadRows)
   <div class="mine-layout pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Content Reviews</span>
+        <span>内容审核</span>
       </template>
       <el-alert v-if="reviewSubmitState(reviewForm).disabled" class="mb-3" :title="reviewSubmitState(reviewForm).message" type="warning" :closable="false" />
-      <el-input v-model="reviewForm.review_note" class="mb-3" type="textarea" :rows="2" placeholder="Review note" />
+      <el-input v-model="reviewForm.review_note" class="mb-3" type="textarea" :rows="2" placeholder="审核意见" />
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="business_type" label="Business" width="160" />
-        <el-table-column prop="business_id" label="Business ID" width="130" />
-        <el-table-column prop="status" label="Status" width="130" />
-        <el-table-column label="Actions" width="180">
+        <el-table-column prop="business_type" label="业务类型" width="160" />
+        <el-table-column prop="business_id" label="业务 ID" width="130" />
+        <el-table-column prop="status" label="审核状态" width="130" />
+        <el-table-column label="操作" width="180">
           <template #default="{ row }">
-            <el-button link type="success" @click="handle(row, 'approved')">
-              Approve
+            <el-button v-if="canReview" link type="success" @click="handle(row, 'approved')">
+              通过
             </el-button>
-            <el-button link type="danger" @click="handle(row, 'rejected')">
-              Reject
+            <el-button v-if="canReview" link type="danger" @click="handle(row, 'rejected')">
+              驳回
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No review records" />
+          <el-empty description="暂无审核记录" />
         </template>
       </el-table>
       <el-pagination class="mt-4 justify-end" layout="total" :total="total" />

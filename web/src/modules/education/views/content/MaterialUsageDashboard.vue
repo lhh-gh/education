@@ -33,42 +33,42 @@ onMounted(loadMetrics)
   <div class="mine-layout education-content-dashboard pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Material Usage Dashboard</span>
+        <span>使用看板</span>
       </template>
       <el-form inline>
-        <el-form-item label="Campus">
+        <el-form-item label="校区">
           <el-input-number v-model="filters.campus_id" :min="1" controls-position="right" />
         </el-form-item>
-        <el-form-item label="Course">
+        <el-form-item label="课程">
           <el-input-number v-model="filters.course_id" :min="1" controls-position="right" />
         </el-form-item>
-        <el-form-item label="Material">
+        <el-form-item label="资料">
           <el-input-number v-model="filters.material_id" :min="1" controls-position="right" />
         </el-form-item>
         <el-button type="primary" @click="loadMetrics">
-          Refresh
+          刷新
         </el-button>
       </el-form>
       <el-row :gutter="16">
         <el-col :span="12">
           <el-table v-loading="loading" :data="materialRows" row-key="metric_date">
-            <el-table-column prop="metric_date" label="Date" width="120" />
-            <el-table-column prop="teacher_use_count" label="Teacher Uses" width="130" />
-            <el-table-column prop="guardian_read_count" label="Guardian Reads" width="140" />
-            <el-table-column prop="favorite_count" label="Favorites" width="110" />
+            <el-table-column prop="metric_date" label="日期" width="120" />
+            <el-table-column prop="teacher_use_count" label="教师使用" width="130" />
+            <el-table-column prop="guardian_read_count" label="家长阅读" width="140" />
+            <el-table-column prop="favorite_count" label="收藏数" width="110" />
             <template #empty>
-              <el-empty description="No material metrics" />
+              <el-empty description="暂无资料指标" />
             </template>
           </el-table>
         </el-col>
         <el-col :span="12">
           <el-table v-loading="loading" :data="workRows" row-key="metric_date">
-            <el-table-column prop="metric_date" label="Date" width="120" />
-            <el-table-column prop="created_count" label="Created" width="100" />
-            <el-table-column prop="published_count" label="Published" width="110" />
-            <el-table-column prop="guardian_read_count" label="Reads" width="100" />
+            <el-table-column prop="metric_date" label="日期" width="120" />
+            <el-table-column prop="created_count" label="创建数" width="100" />
+            <el-table-column prop="published_count" label="发布数" width="110" />
+            <el-table-column prop="guardian_read_count" label="阅读数" width="100" />
             <template #empty>
-              <el-empty description="No work metrics" />
+              <el-empty description="暂无作品指标" />
             </template>
           </el-table>
         </el-col>

@@ -12,6 +12,7 @@ const total = ref(0)
 const search = reactive({ page: 1, pageSize: 20, material_id: undefined as number | undefined })
 const drawerVisible = ref(false)
 const form = reactive<MaterialVersionPayload>({ title: '', content: '' })
+const canCreate = computed(() => hasAuth('education:content:version:create'))
 
 async function loadRows() {
   loading.value = true
@@ -41,33 +42,33 @@ onMounted(loadRows)
   <div class="mine-layout pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Material Versions</span>
+        <span>资料版本</span>
       </template>
       <el-form inline>
-        <el-form-item label="Material ID">
+        <el-form-item label="资料 ID">
           <el-input-number v-model="search.material_id" :min="1" controls-position="right" />
         </el-form-item>
         <el-button type="primary" @click="loadRows">
-          Search
+          查询
         </el-button>
-        <el-button @click="drawerVisible = true">
-          New Version
+        <el-button v-if="canCreate" @click="drawerVisible = true">
+          新建版本
         </el-button>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="version_no" label="Version" width="120" />
-        <el-table-column prop="title" label="Title" min-width="180" />
-        <el-table-column prop="status" label="Status" width="130" />
+        <el-table-column prop="version_no" label="版本号" width="120" />
+        <el-table-column prop="title" label="标题" min-width="180" />
+        <el-table-column prop="status" label="状态" width="130" />
         <template #empty>
-          <el-empty description="No versions" />
+          <el-empty description="暂无资料版本" />
         </template>
       </el-table>
       <el-pagination class="mt-4 justify-end" layout="total" :total="total" />
     </el-card>
     <MaterialVersionDrawer v-model:visible="drawerVisible" v-model:model="form" :material-id="search.material_id">
       <template #footer>
-        <el-button type="primary" @click="createVersion">
-          Save Draft Version
+        <el-button v-if="canCreate" type="primary" @click="createVersion">
+          保存草稿版本
         </el-button>
       </template>
     </MaterialVersionDrawer>

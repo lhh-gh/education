@@ -12,6 +12,9 @@ const rows = ref<ShowcaseRow[]>([])
 const total = ref(0)
 const search = reactive({ page: 1, pageSize: 20, student_id: undefined as number | undefined })
 const form = reactive<ShowcasePayload>({ student_id: 0, title: '', items: [] })
+const canSave = computed(() => hasAuth('education:content:showcase:save'))
+const canPublish = computed(() => hasAuth('education:content:showcase:publish'))
+const canWithdraw = computed(() => hasAuth('education:content:showcase:withdraw'))
 
 async function loadRows() {
   loading.value = true
@@ -47,35 +50,35 @@ onMounted(loadRows)
   <div class="mine-layout pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Stage Achievement Showcases</span>
+        <span>成果展陈</span>
       </template>
       <ShowcaseEditor v-model="form" />
-      <el-button type="primary" @click="save">
-        Save Showcase
+      <el-button v-if="canSave" type="primary" @click="save">
+        保存展陈
       </el-button>
       <el-table v-loading="loading" class="mt-4" :data="rows" row-key="id">
-        <el-table-column prop="title" label="Title" min-width="180" />
-        <el-table-column prop="student_id" label="Student" width="120" />
-        <el-table-column prop="status" label="Status" width="130" />
-        <el-table-column label="Edit State" width="190">
+        <el-table-column prop="title" label="展陈标题" min-width="180" />
+        <el-table-column prop="student_id" label="学生" width="120" />
+        <el-table-column prop="status" label="状态" width="130" />
+        <el-table-column label="编辑状态" width="190">
           <template #default="{ row }">
             <el-tag :type="showcaseEditState(row).canEdit ? 'success' : 'info'">
               {{ showcaseEditState(row).badge }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="190">
+        <el-table-column label="操作" width="190">
           <template #default="{ row }">
-            <el-button link type="primary" :disabled="!showcaseEditState(row).canEdit" @click="publish(row)">
-              Publish
+            <el-button v-if="canPublish" link type="primary" :disabled="!showcaseEditState(row).canEdit" @click="publish(row)">
+              发布
             </el-button>
-            <el-button link type="warning" @click="withdraw(row)">
-              Withdraw
+            <el-button v-if="canWithdraw" link type="warning" @click="withdraw(row)">
+              撤回
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No showcases" />
+          <el-empty description="暂无成果展陈" />
         </template>
       </el-table>
       <el-pagination class="mt-4 justify-end" layout="total" :total="total" />

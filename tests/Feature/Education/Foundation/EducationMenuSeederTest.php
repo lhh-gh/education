@@ -375,6 +375,55 @@ final class EducationMenuSeederTest extends TestCase
             self::assertDoesNotMatchRegularExpression('/Packages|Stage Goals|Ability Points|Trial Standards|Delivery Standards|Templates|Materials|Feedback|Quality|Versions|Reviews/u', $title);
         }
 
+        $expectedContentButtons = [
+            'education:content:material:save',
+            'education:content:material:publish',
+            'education:content:material:withdraw',
+            'education:content:version:create',
+            'education:content:attachment:upload',
+            'education:content:relation:save',
+            'education:content:student-work:publish',
+            'education:content:student-work:withdraw',
+            'education:content:showcase:save',
+            'education:content:showcase:publish',
+            'education:content:showcase:withdraw',
+            'education:content:review:handle',
+        ];
+
+        foreach ($expectedContentButtons as $buttonName) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing content button permission [%s].', $buttonName));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('Content button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
+
+        $contentPageTitles = Db::table('menu')
+            ->where('parent_id', $contentGroup->id)
+            ->orderBy('sort')
+            ->get()
+            ->map(fn (object $menu): string => $this->menuTitle($menu))
+            ->all();
+
+        self::assertSame([
+            '学习资料',
+            '资料版本',
+            '资料附件',
+            '资料关联',
+            '学生作品',
+            '成果展陈',
+            '内容审核',
+            '使用看板',
+        ], $contentPageTitles);
+
+        foreach ($contentPageTitles as $title) {
+            self::assertDoesNotMatchRegularExpression('/Materials|Versions|Attachments|Relations|Student Works|Showcases|Reviews|Usage Metrics/u', $title);
+        }
+
         $expectedFinanceButtons = [
             'education:finance:order:create' => '新增',
             'education:finance:payment:offline' => '线下收款',

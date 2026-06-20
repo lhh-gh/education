@@ -19,8 +19,11 @@ use App\Http\Admin\Request\Education\Content\ContentReviewRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
+use App\Model\Education\Content\EducationContentReviewRecord;
 use App\Service\Education\Content\ContentReviewService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -37,6 +40,26 @@ final class ContentReviewController extends AbstractController
     use ContentControllerTrait;
 
     public function __construct(private readonly ContentReviewService $service, private readonly EventDispatcherInterface $events) {}
+
+    #[Get(path: '/admin/education/content/reviews', operationId: 'educationContentReviewPage', summary: 'Content review page', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:review:page')]
+    public function page(RequestInterface $request): Result
+    {
+        $context = $this->context();
+        $query = EducationContentReviewRecord::query()->where('tenant_id', $this->tenantId($context));
+        foreach (['business_type', 'business_id', 'status'] as $field) {
+            if ($request->input($field) !== null && $request->input($field) !== '') {
+                $query->where($field, $request->input($field));
+            }
+        }
+        $total = (int) (clone $query)->count();
+
+        return $this->success([
+            'list' => $query->orderByDesc('id')->forPage($this->pageNumber($request), $this->pageSize($request))->get()->toArray(),
+            'total' => $total,
+        ]);
+    }
 
     #[Post(path: '/admin/education/content/reviews/{id}/review', operationId: 'educationContentReviewHandle', summary: 'Content review handle', tags: ['Education Content'])]
     #[ResultResponse(instance: new Result())]
