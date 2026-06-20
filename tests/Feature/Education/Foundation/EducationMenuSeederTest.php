@@ -117,6 +117,7 @@ final class EducationMenuSeederTest extends TestCase
         $admissionTrialCreateButton = Db::table('menu')->where('name', 'education:admissions:trial:create')->first();
         $admissionTrialAttendanceButton = Db::table('menu')->where('name', 'education:admissions:trial:attendance')->first();
         $growthGroup = Db::table('menu')->where('name', 'education:growth')->first();
+        $standardsGroup = Db::table('menu')->where('name', 'education:standards')->first();
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
@@ -136,6 +137,7 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($admissionTrialCreateButton);
         self::assertNotNull($admissionTrialAttendanceButton);
         self::assertNotNull($growthGroup);
+        self::assertNotNull($standardsGroup);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $contentGroup->redirect);
@@ -319,6 +321,58 @@ final class EducationMenuSeederTest extends TestCase
 
         foreach ($growthPageTitles as $title) {
             self::assertDoesNotMatchRegularExpression('/Workbench|Lead Scores|AI Scripts|Strategies|Trial Conversion|Channel ROI|Consultant Metrics|Loss Reasons/u', $title);
+        }
+
+        $expectedStandardsButtons = [
+            'education:standards:package:save',
+            'education:standards:package:publish',
+            'education:standards:stage-goal:save',
+            'education:standards:ability:save',
+            'education:standards:trial:save',
+            'education:standards:delivery:save',
+            'education:standards:template:save',
+            'education:standards:material:save',
+            'education:standards:feedback:save',
+            'education:standards:version:publish',
+            'education:standards:version:localization',
+            'education:standards:review:handle',
+        ];
+
+        foreach ($expectedStandardsButtons as $buttonName) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing standards button permission [%s].', $buttonName));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('Standards button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
+
+        $standardsPageTitles = Db::table('menu')
+            ->where('parent_id', $standardsGroup->id)
+            ->orderBy('sort')
+            ->get()
+            ->map(fn (object $menu): string => $this->menuTitle($menu))
+            ->all();
+
+        self::assertSame([
+            '服务包',
+            '阶段目标',
+            '能力点',
+            '试听标准',
+            '交付标准',
+            '服务模板',
+            '课程资料',
+            '课程反馈',
+            '质量看板',
+            '标准版本',
+            '标准评审',
+        ], $standardsPageTitles);
+
+        foreach ($standardsPageTitles as $title) {
+            self::assertDoesNotMatchRegularExpression('/Packages|Stage Goals|Ability Points|Trial Standards|Delivery Standards|Templates|Materials|Feedback|Quality|Versions|Reviews/u', $title);
         }
 
         $expectedFinanceButtons = [

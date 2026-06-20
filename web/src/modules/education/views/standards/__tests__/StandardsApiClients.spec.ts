@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { saveDeliveryStandard } from '../../../api/standards/delivery-standard.ts'
 import { saveCourseMaterial } from '../../../api/standards/material.ts'
 import { createPackageVersion, pageServicePackages, saveServicePackage } from '../../../api/standards/package.ts'
-import { getCourseQualityMetrics, pageCourseFeedbackRecords } from '../../../api/standards/quality.ts'
+import { getCourseQualityMetrics, pageCourseFeedbackRecords, saveCourseFeedbackRecord } from '../../../api/standards/quality.ts'
 import { saveStageGoal, syncGoalAbilityPoints } from '../../../api/standards/stage-goal.ts'
 import { saveServiceTemplateSet } from '../../../api/standards/template.ts'
 import { saveTrialStandard } from '../../../api/standards/trial-standard.ts'
@@ -48,6 +48,7 @@ describe('education standards api clients', () => {
     saveServiceTemplateSet({ tenant_id: 1, campus_id: 9, template_set_code: 'TPL', template_set_name: 'Template' })
     saveCourseMaterial({ tenant_id: 1, campus_id: 9, material_code: 'MAT', material_name: 'Material', material_type: 'file' })
     pageCourseFeedbackRecords({ tenant_id: 1, campus_id: 9 })
+    saveCourseFeedbackRecord({ tenant_id: 1, campus_id: 9, course_id: 3, feedback_type: 'teacher', content: '稳定', score: 90 })
     getCourseQualityMetrics({ tenant_id: 1, campus_id: 9, course_id: 3 })
     publishStandardVersion(5, { tenant_id: 1, campus_id: 9, publish_note: 'ok' })
     withdrawStandardVersion(5, { tenant_id: 1, campus_id: 9 })
@@ -65,6 +66,7 @@ describe('education standards api clients', () => {
       ['POST', '/admin/education/standards/service-templates'],
       ['POST', '/admin/education/standards/materials'],
       ['GET', '/admin/education/standards/feedback-records'],
+      ['POST', '/admin/education/standards/feedback-records'],
       ['GET', '/admin/education/standards/quality-metrics'],
       ['POST', '/admin/education/standards/versions/5/publish'],
       ['POST', '/admin/education/standards/versions/5/withdraw'],
