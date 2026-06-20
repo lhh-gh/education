@@ -13,14 +13,14 @@ declare(strict_types=1);
 namespace App\Repository\Education\Admissions;
 
 use App\Model\Education\Admissions\EducationLeadSource;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class LeadSourceRepository
 {
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationLeadSource::query()->where('tenant_id', $context->tenantId);
-        $this->applyCampus($query, $filters, $context);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLeadSource::query(), $filters, $context);
         foreach (['status', 'channel_type'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
@@ -48,17 +48,6 @@ final class LeadSourceRepository
     public function create(array $data): EducationLeadSource
     {
         return EducationLeadSource::query()->create($data);
-    }
-
-    private function applyCampus(mixed $query, array $filters, EducationUserContext $context): void
-    {
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-            return;
-        }
-        if ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
     }
 
     private function paginate(mixed $query, array $filters): array
