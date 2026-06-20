@@ -17,6 +17,7 @@ use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonAttendance;
 use App\Model\Education\Academic\EducationLessonStudent;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Database\Model\Builder;
 
@@ -124,27 +125,7 @@ final class TeacherMobileLessonRepository extends IRepository
         $query = $this->getQuery()
             ->where('teacher_id', $teacherId);
 
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-
-        $query->where('tenant_id', $context->tenantId);
-
-        $campusId = \array_key_exists('campus_id', $params) && $params['campus_id'] !== null && $params['campus_id'] !== ''
-            ? (int) $params['campus_id']
-            : null;
-
-        if ($campusId !== null) {
-            $context->canAccessCampus($campusId) ? $query->where('campus_id', $campusId) : $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
-
-        return $query;
+        return (new EducationScopeQuery())->applyTenantCampus($query, $params, $context);
     }
 
     private function applyCampusIds(Builder $query, array $campusIds): void
