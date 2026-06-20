@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationLessonConsumption;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\ConsumptionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,27 @@ use App\Repository\Education\Academic\ConsumptionRepository;
  */
 final class ConsumptionRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('consumption_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = $this->consumption((int) $tenant->id, (int) $campusA->id, 'CON-101', 101, 'attendance', 'active');
+        $this->consumption((int) $tenant->id, (int) $campusB->id, 'CON-102', 102, 'attendance', 'active');
+
+        $result = make(ConsumptionRepository::class)->page([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByAccountSourceStatusAndKeyword(): void
     {
         $tenant = $this->tenant('tenant');

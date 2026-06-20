@@ -14,7 +14,9 @@ namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonAttendance;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\AttendanceRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -22,6 +24,27 @@ use App\Repository\Education\Academic\AttendanceRepository;
  */
 final class AttendanceRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersLessonPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('attendance_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = $this->lesson((int) $tenant->id, (int) $campusA->id, 501, 'scheduled', '2026-06-16 09:00:00');
+        $this->lesson((int) $tenant->id, (int) $campusB->id, 502, 'scheduled', '2026-06-16 09:00:00');
+
+        $result = make(AttendanceRepository::class)->lessonPage([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testLessonPageFiltersByTenantCampusTeacherStatusAndRange(): void
     {
         $tenantA = $this->tenant('tenant_a');

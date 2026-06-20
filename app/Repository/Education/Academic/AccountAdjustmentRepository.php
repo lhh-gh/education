@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Academic;
 
 use App\Model\Education\Academic\EducationAccountAdjustment;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Database\Model\Builder;
 
@@ -87,37 +87,7 @@ final class AccountAdjustmentRepository extends IRepository
 
     private function applyContext(Builder $query, EducationUserContext $context, array $filters): Builder
     {
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
-            }
-            if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-                $query->where('campus_id', (int) $filters['campus_id']);
-            }
-
-            return $query;
-        }
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-        $query->where('tenant_id', $context->tenantId);
-        $campusId = isset($filters['campus_id']) && $filters['campus_id'] !== '' ? (int) $filters['campus_id'] : null;
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            if ($campusId !== null) {
-                $query->where('campus_id', $campusId);
-            }
-
-            return $query;
-        }
-        if ($campusId !== null) {
-            $context->canAccessCampus($campusId) ? $query->where('campus_id', $campusId) : $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        (new EducationScopeQuery())->applyTenantCampus($query, $filters, $context);
 
         return $query;
     }
