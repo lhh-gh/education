@@ -14,6 +14,7 @@ namespace App\Service\Education\Finance;
 
 use App\Model\Education\Finance\EducationFinanceOrder;
 use App\Model\Education\Finance\EducationPaymentRecord;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class FinanceDashboardService
@@ -24,17 +25,7 @@ final class FinanceDashboardService
      */
     public function summary(array $filters, EducationUserContext $context): array
     {
-        $orderQuery = EducationFinanceOrder::query();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $orderQuery->whereRaw('1 = 0') : $orderQuery->where('tenant_id', $context->tenantId);
-        } elseif (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-            $orderQuery->where('tenant_id', (int) $filters['tenant_id']);
-        }
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $orderQuery->where('campus_id', (int) $filters['campus_id']);
-        } elseif (! $context->platformAccess && $context->campusIds !== []) {
-            $orderQuery->whereIn('campus_id', $context->campusIds);
-        }
+        $orderQuery = (new EducationScopeQuery())->applyTenantCampus(EducationFinanceOrder::query(), $filters, $context);
 
         $orderIds = (clone $orderQuery)->pluck('id')->all();
 

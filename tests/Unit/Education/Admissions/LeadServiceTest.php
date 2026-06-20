@@ -14,7 +14,9 @@ namespace HyperfTests\Unit\Education\Admissions;
 
 use App\Exception\BusinessException;
 use App\Http\Common\ResultCode;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Admissions\LeadService;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -22,6 +24,28 @@ use App\Service\Education\Admissions\LeadService;
  */
 final class LeadServiceTest extends AdmissionsTestCase
 {
+    public function testPlatformContextCampusFiltersLeadPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('adm_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $service = make(LeadService::class);
+        $leadA = $this->leadFixture($tenant, $campusA, ['contact_name' => 'Campus A']);
+        $this->leadFixture($tenant, $campusB, ['contact_name' => 'Campus B']);
+
+        $page = $service->page([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $page['total']);
+        self::assertSame((int) $leadA->id, (int) $page['list'][0]['id']);
+    }
+
     public function testDuplicateMobileIsTenantScoped(): void
     {
         $tenantA = $this->tenant('adm_tenant_a');

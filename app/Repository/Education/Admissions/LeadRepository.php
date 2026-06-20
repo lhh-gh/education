@@ -14,6 +14,7 @@ namespace App\Repository\Education\Admissions;
 
 use App\Model\Education\Admissions\EducationLead;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -83,12 +84,7 @@ final class LeadRepository
 
     private function scopedQuery(array $filters, EducationUserContext $context): mixed
     {
-        $query = EducationLead::query()->where('tenant_id', $context->tenantId);
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-        } elseif ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLead::query(), $filters, $context);
         if ($context->roleCode !== EducationRoleCode::TenantAdmin && ! $context->platformAccess && $context->userId > 0) {
             $query->where(static fn ($query) => $query->where('owner_user_id', $context->userId)->orWhereNull('owner_user_id'));
         }

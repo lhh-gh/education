@@ -15,7 +15,7 @@ namespace App\Repository\Education\Payroll;
 use App\Model\Education\Operations\EducationTeacherWorkloadRecord;
 use App\Model\Education\Payroll\EducationTeacherSalaryRule;
 use App\Model\Education\Payroll\EducationTeacherSalaryRuleItem;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class SalaryRuleRepository
@@ -106,30 +106,7 @@ final class SalaryRuleRepository
      */
     public function scopedQuery(array $filters, EducationUserContext $context): mixed
     {
-        $query = EducationTeacherSalaryRule::query();
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
-            }
-            if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-                $query->where('campus_id', (int) $filters['campus_id']);
-            }
-
-            return $query;
-        }
-        if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-        $query->where('tenant_id', $context->tenantId);
-        $campusId = isset($filters['campus_id']) && $filters['campus_id'] !== '' ? (int) $filters['campus_id'] : null;
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            return $campusId === null ? $query : $query->where('campus_id', $campusId);
-        }
-        if ($campusId !== null) {
-            return $context->canAccessCampus($campusId) ? $query->where('campus_id', $campusId) : $query->whereRaw('1 = 0');
-        }
-
-        return $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        return (new EducationScopeQuery())->applyTenantCampus(EducationTeacherSalaryRule::query(), $filters, $context);
     }
 
     /**

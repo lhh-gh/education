@@ -14,7 +14,7 @@ namespace App\Repository\Education\Finance;
 
 use App\Model\Education\Finance\EducationFinanceOrder;
 use App\Model\Education\Finance\EducationFinanceOrderItem;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -100,32 +100,7 @@ final class FinanceOrderRepository
      */
     public function scopedQuery(array $filters, EducationUserContext $context): mixed
     {
-        $query = EducationFinanceOrder::query();
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
-            }
-            if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-                $query->where('campus_id', (int) $filters['campus_id']);
-            }
-
-            return $query;
-        }
-
-        if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        $query->where('tenant_id', $context->tenantId);
-        $campusId = isset($filters['campus_id']) && $filters['campus_id'] !== '' ? (int) $filters['campus_id'] : null;
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            return $campusId === null ? $query : $query->where('campus_id', $campusId);
-        }
-        if ($campusId !== null) {
-            return $context->canAccessCampus($campusId) ? $query->where('campus_id', $campusId) : $query->whereRaw('1 = 0');
-        }
-
-        return $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        return (new EducationScopeQuery())->applyTenantCampus(EducationFinanceOrder::query(), $filters, $context);
     }
 
     /**
