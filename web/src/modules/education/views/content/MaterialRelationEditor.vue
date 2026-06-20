@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MaterialRelationRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageMaterialRelations, saveMaterialRelations } from '../../api/content/relation.ts'
 
 defineOptions({ name: 'EducationContentMaterialRelationEditor' })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LearningMaterialPayload } from '../../api/content/material.ts'
 import type { LearningMaterialRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageLearningMaterials, publishLearningMaterial, saveLearningMaterial, withdrawLearningMaterial } from '../../api/content/material.ts'
 import { guardianVisibleLabel, materialPublishState, publishFailureNotice } from './contentRules.ts'
 import LearningMaterialForm from './components/LearningMaterialForm.vue'

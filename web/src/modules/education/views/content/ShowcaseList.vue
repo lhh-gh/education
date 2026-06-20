@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ShowcasePayload } from '../../api/content/showcase.ts'
 import type { ShowcaseRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageShowcases, publishShowcase, saveShowcase, withdrawShowcase } from '../../api/content/showcase.ts'
 import { showcaseEditState } from './contentRules.ts'
 import ShowcaseEditor from './components/ShowcaseEditor.vue'

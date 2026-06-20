@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContentReviewRow, ContentReviewStatus } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageContentReviews, reviewContent } from '../../api/content/review.ts'
 import { reviewSubmitState } from './contentRules.ts'
 

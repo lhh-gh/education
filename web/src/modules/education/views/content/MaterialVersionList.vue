@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { MaterialVersionPayload } from '../../api/content/version.ts'
 import type { MaterialVersionRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { createMaterialVersion, pageMaterialVersions } from '../../api/content/version.ts'
 import MaterialVersionDrawer from './components/MaterialVersionDrawer.vue'
 

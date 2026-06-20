@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { StudentWorkRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageStudentWorks, publishStudentWork, withdrawStudentWork } from '../../api/content/student-work.ts'
 
 defineOptions({ name: 'EducationContentStudentWorkList' })
