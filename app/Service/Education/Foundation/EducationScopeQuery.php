@@ -50,6 +50,10 @@ final class EducationScopeQuery
      */
     public function tenantId(array $filters, EducationUserContext $context): ?int
     {
+        if (! $context->platformAccess) {
+            return $context->tenantId;
+        }
+
         if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
             return (int) $filters['tenant_id'];
         }

@@ -15,7 +15,9 @@ namespace HyperfTests\Unit\Education\Academic;
 use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationLesson;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LessonRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -23,6 +25,61 @@ use App\Repository\Education\Academic\LessonRepository;
  */
 final class LessonRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('lesson_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $courseA = EducationCourse::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusA->id,
+            'code' => 'COURSE-A',
+            'name' => 'Course A',
+            'status' => 'enabled',
+        ]);
+        $courseB = EducationCourse::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusB->id,
+            'code' => 'COURSE-B',
+            'name' => 'Course B',
+            'status' => 'enabled',
+        ]);
+        $classA = EducationClass::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusA->id,
+            'course_id' => $courseA->id,
+            'code' => 'CLASS-A',
+            'name' => 'Class A',
+            'class_type' => 'group',
+            'lesson_units' => '1.00',
+            'status' => 'enabled',
+        ]);
+        $classB = EducationClass::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusB->id,
+            'course_id' => $courseB->id,
+            'code' => 'CLASS-B',
+            'name' => 'Class B',
+            'class_type' => 'group',
+            'lesson_units' => '1.00',
+            'status' => 'enabled',
+        ]);
+        $visible = $this->lesson((int) $tenant->id, (int) $campusA->id, (int) $classA->id, (int) $courseA->id, 11, 22, '2026-06-15 09:00:00', '2026-06-15 10:00:00');
+        $this->lesson((int) $tenant->id, (int) $campusB->id, (int) $classB->id, (int) $courseB->id, 12, 23, '2026-06-16 09:00:00', '2026-06-16 10:00:00');
+
+        $result = make(LessonRepository::class)->pageByContext([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testCalendarFiltersByRangeTeacherClassroomAndStatus(): void
     {
         [$tenantId, $campusId, $class, $courseId] = $this->fixture();
