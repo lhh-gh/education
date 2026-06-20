@@ -18,6 +18,7 @@ use App\Model\Education\Academic\EducationNotice;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\NoticeRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -63,6 +64,37 @@ final class NoticeRepositoryTest extends AcademicTestCase
         ]);
 
         $result = make(NoticeRepository::class)->pageAdmin([], 1, 20, $this->context($fixture['tenant_id'], EducationRoleCode::AcademicStaff, [$fixture['campus_id']]));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
+    public function testPlatformContextCampusFiltersAdminPageWithoutLocalFilters(): void
+    {
+        $fixture = $this->fixture();
+        $visible = $this->notice($fixture, 'Visible notice');
+        $otherCampus = $this->campus($fixture['tenant'], 'platform_branch');
+        EducationNotice::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $otherCampus->id,
+            'notice_no' => uniqid('NOT', false),
+            'notice_type' => 'academic',
+            'target_type' => 'campus',
+            'target_id' => $otherCampus->id,
+            'title' => 'Hidden notice',
+            'content' => 'Hidden.',
+            'priority' => 'normal',
+            'status' => 'draft',
+        ]);
+
+        $result = make(NoticeRepository::class)->pageAdmin([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: $fixture['tenant_id'],
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $fixture['campus_id']
+        ));
 
         self::assertSame(1, $result['total']);
         self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);

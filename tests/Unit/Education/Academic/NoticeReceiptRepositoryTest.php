@@ -21,7 +21,9 @@ use App\Model\Education\Academic\EducationNoticeReceipt;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Education\Academic\EducationStudentGuardian;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\NoticeReceiptRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -74,6 +76,57 @@ final class NoticeReceiptRepositoryTest extends AcademicTestCase
         self::assertSame('read', $receipt->refresh()->status);
     }
 
+    public function testPlatformContextCampusFiltersAdminReceiptsWithoutLocalFilters(): void
+    {
+        $fixture = $this->fixture();
+        $notice = $this->notice($fixture, 'campus', $fixture['campus_id']);
+        $student = $this->student($fixture, 'S003');
+        $guardian = $this->guardian($fixture, 'Guardian D', '13800000004');
+        $visible = EducationNoticeReceipt::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $fixture['campus_id'],
+            'notice_id' => $notice->id,
+            'guardian_id' => $guardian->id,
+            'student_id' => $student->id,
+            'relation' => 'father',
+            'guardian_name_snapshot' => 'Guardian D',
+            'student_name_snapshot' => 'Student S003',
+            'status' => 'unread',
+        ]);
+        $otherCampus = $this->campus($fixture['tenant'], 'platform_receipt_branch');
+        $hiddenStudent = EducationStudent::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $otherCampus->id,
+            'student_no' => 'S004',
+            'name' => 'Student S004',
+            'status' => 'enabled',
+        ]);
+        $hiddenGuardian = $this->guardian($fixture, 'Guardian E', '13800000005');
+        EducationNoticeReceipt::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $otherCampus->id,
+            'notice_id' => $notice->id,
+            'guardian_id' => $hiddenGuardian->id,
+            'student_id' => $hiddenStudent->id,
+            'relation' => 'father',
+            'guardian_name_snapshot' => 'Guardian E',
+            'student_name_snapshot' => 'Student S004',
+            'status' => 'unread',
+        ]);
+
+        $result = make(NoticeReceiptRepository::class)->pageAdminReceipts((int) $notice->id, [], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: $fixture['tenant_id'],
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $fixture['campus_id']
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     private function fixture(): array
     {
         $tenant = $this->tenant('notice_receipt_repository');
@@ -81,7 +134,7 @@ final class NoticeReceiptRepositoryTest extends AcademicTestCase
         $course = EducationCourse::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campus->id, 'code' => 'ART-NRR', 'name' => 'Art', 'status' => 'enabled']);
         $class = EducationClass::query()->create(['tenant_id' => $tenant->id, 'campus_id' => $campus->id, 'course_id' => $course->id, 'code' => 'CLS-NRR', 'name' => 'Class', 'class_type' => 'group', 'lesson_units' => '1.00', 'status' => 'enabled']);
 
-        return ['tenant_id' => (int) $tenant->id, 'campus_id' => (int) $campus->id, 'course_id' => (int) $course->id, 'class_id' => (int) $class->id];
+        return ['tenant' => $tenant, 'tenant_id' => (int) $tenant->id, 'campus_id' => (int) $campus->id, 'course_id' => (int) $course->id, 'class_id' => (int) $class->id];
     }
 
     private function notice(array $fixture, string $targetType, int $targetId): EducationNotice
