@@ -116,6 +116,7 @@ final class EducationMenuSeederTest extends TestCase
         $admissionLeadSourceCreateButton = Db::table('menu')->where('name', 'education:admissions:lead-source:create')->first();
         $admissionTrialCreateButton = Db::table('menu')->where('name', 'education:admissions:trial:create')->first();
         $admissionTrialAttendanceButton = Db::table('menu')->where('name', 'education:admissions:trial:attendance')->first();
+        $growthGroup = Db::table('menu')->where('name', 'education:growth')->first();
 
         self::assertNotNull($root);
         self::assertNotNull($academicGroup);
@@ -134,6 +135,7 @@ final class EducationMenuSeederTest extends TestCase
         self::assertNotNull($admissionLeadSourceCreateButton);
         self::assertNotNull($admissionTrialCreateButton);
         self::assertNotNull($admissionTrialAttendanceButton);
+        self::assertNotNull($growthGroup);
         self::assertSame('/education', $root->path);
         self::assertSame('/education/foundation/tenants', $tenantPage->path);
         self::assertSame('/education/content/materials', $contentGroup->redirect);
@@ -266,6 +268,57 @@ final class EducationMenuSeederTest extends TestCase
                 Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
                 \sprintf('Admission button permission [%s] is not bound to education tenant admin.', $buttonName)
             );
+        }
+
+        $expectedGrowthPermissions = [
+            'education:growth:score:recalculate',
+            'education:growth:ai-script:generate',
+            'education:growth:strategy:save',
+            'education:growth:trial-conversion:view',
+            'education:growth:channel-roi:page',
+            'education:growth:consultant-metric:page',
+            'education:growth:loss:create',
+        ];
+
+        foreach ($expectedGrowthPermissions as $permissionName) {
+            $permission = Db::table('menu')->where('name', $permissionName)->first();
+
+            self::assertNotNull($permission, \sprintf('Missing growth permission [%s].', $permissionName));
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $permission->id)->count(),
+                \sprintf('Growth permission [%s] is not bound to education tenant admin.', $permissionName)
+            );
+        }
+
+        $expectedGrowthButtons = [
+            'education:growth:ai-script:confirm',
+            'education:growth:channel-cost:save',
+            'education:growth:loss-reason:save',
+            'education:growth:campaign:save',
+        ];
+
+        foreach ($expectedGrowthButtons as $buttonName) {
+            $button = Db::table('menu')->where('name', $buttonName)->first();
+
+            self::assertNotNull($button, \sprintf('Missing growth button permission [%s].', $buttonName));
+            self::assertSame('B', json_decode((string) $button->meta, true)['type']);
+            self::assertSame(
+                1,
+                Db::table('role_belongs_menu')->where('role_id', $adminRoleId)->where('menu_id', $button->id)->count(),
+                \sprintf('Growth button permission [%s] is not bound to education tenant admin.', $buttonName)
+            );
+        }
+
+        $growthPageTitles = Db::table('menu')
+            ->where('parent_id', $growthGroup->id)
+            ->orderBy('sort')
+            ->get()
+            ->map(fn (object $menu): string => $this->menuTitle($menu))
+            ->all();
+
+        foreach ($growthPageTitles as $title) {
+            self::assertDoesNotMatchRegularExpression('/Workbench|Lead Scores|AI Scripts|Strategies|Trial Conversion|Channel ROI|Consultant Metrics|Loss Reasons/u', $title);
         }
 
         $expectedFinanceButtons = [

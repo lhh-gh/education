@@ -1094,7 +1094,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationGrowth',
         redirect: '/education/growth/workbench',
         meta: {
-          title: 'Growth',
+          title: '增长转化',
           icon: 'material-symbols:trending-up-rounded',
           type: 'M',
           auth: ['education:growth:workbench:view', 'education:growth:score:recalculate', 'education:growth:ai-script:generate', 'education:growth:strategy:save', 'education:growth:trial-conversion:view', 'education:growth:channel-roi:page', 'education:growth:consultant-metric:page', 'education:growth:loss:create'],
@@ -1105,7 +1105,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthWorkbench',
             component: () => import('~/education/views/growth/GrowthWorkbench.vue'),
             meta: {
-              title: 'Workbench',
+                title: '增长工作台',
               icon: 'material-symbols:dashboard-customize-outline-rounded',
               type: 'M',
               auth: ['education:growth:workbench:view'],
@@ -1117,7 +1117,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthLeadScoreList',
             component: () => import('~/education/views/growth/LeadScoreList.vue'),
             meta: {
-              title: 'Lead Scores',
+                title: '线索评分',
               icon: 'material-symbols:scoreboard-outline-rounded',
               type: 'M',
               auth: ['education:growth:score:recalculate'],
@@ -1129,7 +1129,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthAiTalkScriptWorkbench',
             component: () => import('~/education/views/growth/AiTalkScriptWorkbench.vue'),
             meta: {
-              title: 'AI Scripts',
+                title: 'AI 话术',
               icon: 'material-symbols:smart-toy-outline-rounded',
               type: 'M',
               auth: ['education:growth:ai-script:generate'],
@@ -1141,7 +1141,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthFollowupStrategyList',
             component: () => import('~/education/views/growth/FollowupStrategyList.vue'),
             meta: {
-              title: 'Strategies',
+                title: '跟进策略',
               icon: 'material-symbols:low-priority-outline-rounded',
               type: 'M',
               auth: ['education:growth:strategy:save'],
@@ -1153,7 +1153,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthTrialConversionList',
             component: () => import('~/education/views/growth/TrialConversionList.vue'),
             meta: {
-              title: 'Trial Conversion',
+                title: '试听转化',
               icon: 'material-symbols:published-with-changes-rounded',
               type: 'M',
               auth: ['education:growth:trial-conversion:view'],
@@ -1165,7 +1165,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthChannelRoiDashboard',
             component: () => import('~/education/views/growth/ChannelRoiDashboard.vue'),
             meta: {
-              title: 'Channel ROI',
+                title: '渠道 ROI',
               icon: 'material-symbols:query-stats-rounded',
               type: 'M',
               auth: ['education:growth:channel-roi:page'],
@@ -1177,7 +1177,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthConsultantMetricDashboard',
             component: () => import('~/education/views/growth/ConsultantMetricDashboard.vue'),
             meta: {
-              title: 'Consultant Metrics',
+                title: '顾问指标',
               icon: 'material-symbols:groups-2-outline-rounded',
               type: 'M',
               auth: ['education:growth:consultant-metric:page'],
@@ -1189,7 +1189,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthLossReasonReport',
             component: () => import('~/education/views/growth/LossReasonReport.vue'),
             meta: {
-              title: 'Loss Reasons',
+                title: '流失原因',
               icon: 'material-symbols:playlist-remove-rounded',
               type: 'M',
               auth: ['education:growth:loss:create'],
