@@ -14,17 +14,14 @@ namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationLessonChangeLog;
 use App\Model\Education\Operations\EducationLessonChangeRequest;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class LessonChangeRepository
 {
     public function pageByCampusScope(array $params, EducationUserContext $context): array
     {
-        $query = EducationLessonChangeRequest::query()->where('tenant_id', $context->tenantId);
-        if ($context->roleCode !== EducationRoleCode::TenantAdmin && ! $context->platformAccess) {
-            $query->whereIn('campus_id', $context->campusIds ?: [0]);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLessonChangeRequest::query(), $params, $context);
         foreach (['campus_id', 'status', 'change_type'] as $field) {
             if (isset($params[$field]) && $params[$field] !== '') {
                 $query->where($field, $params[$field]);

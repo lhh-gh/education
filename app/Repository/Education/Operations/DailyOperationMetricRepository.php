@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationDailyOperationMetric;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class DailyOperationMetricRepository
@@ -78,20 +78,9 @@ final class DailyOperationMetricRepository
     private function scopedQuery(EducationUserContext $context, ?int $campusId = null): mixed
     {
         $query = EducationDailyOperationMetric::query();
-        if (! $context->platformAccess) {
-            if ($context->tenantId === null) {
-                return $query->whereRaw('1 = 0');
-            }
-            $query->where('tenant_id', $context->tenantId);
-        }
-        if ($campusId !== null) {
-            return $query->where('campus_id', $campusId);
-        }
-        if (! $context->platformAccess && $context->roleCode !== EducationRoleCode::TenantAdmin) {
-            $query->whereIn('campus_id', $context->campusIds ?: [0]);
-        }
+        $filters = $campusId === null ? [] : ['campus_id' => $campusId];
 
-        return $query;
+        return (new EducationScopeQuery())->applyTenantCampus($query, $filters, $context);
     }
 
     private function applyDateFilters(mixed $query, array $params): void

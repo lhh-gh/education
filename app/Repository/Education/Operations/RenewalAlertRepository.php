@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationRenewalAlert;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class RenewalAlertRepository
@@ -98,23 +98,7 @@ final class RenewalAlertRepository
     private function scopedQuery(array $params, EducationUserContext $context): mixed
     {
         $query = EducationRenewalAlert::query();
-        if ($context->platformAccess) {
-            if (isset($params['tenant_id']) && $params['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $params['tenant_id']);
-            }
 
-            return $query;
-        }
-
-        if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        $query->where('tenant_id', $context->tenantId);
-        if ($context->roleCode !== EducationRoleCode::TenantAdmin) {
-            $query->whereIn('campus_id', $context->campusIds ?: [0]);
-        }
-
-        return $query;
+        return (new EducationScopeQuery())->applyTenantCampus($query, $params, $context);
     }
 }
