@@ -145,14 +145,14 @@ final class UserProfileService
         });
     }
 
-    public function resolveForUser(int $userId, ?int $requestedTenantId): EducationUserContext
+    public function resolveForUser(int $userId, ?int $requestedTenantId, ?int $requestedCampusId = null): EducationUserContext
     {
         $profiles = $this->repository->getQuery()
             ->where('user_id', $userId)
             ->get();
         if ($profiles->isEmpty()) {
             if ($this->userIsSuperAdmin($userId)) {
-                return $this->platformSuperAdminContext($userId, $requestedTenantId);
+                return $this->platformSuperAdminContext($userId, $requestedTenantId, $requestedCampusId);
             }
 
             throw new BusinessException(ResultCode::FORBIDDEN, 'education user profile is missing', ['user_id' => $userId]);
@@ -179,7 +179,17 @@ final class UserProfileService
 
         $roleCode = $profile->role_code;
         $tenantId = $profile->tenant_id === null ? $requestedTenantId : (int) $profile->tenant_id;
+        if ($tenantId === null && $requestedCampusId !== null && $roleCode->isPlatform()) {
+            $tenantId = $this->tenantIdForCampus($requestedCampusId);
+        }
         $campusIds = $tenantId === null ? [] : $this->scopeRepository->campusIdsForProfile($tenantId, (int) $profile->id);
+        $currentCampusId = $this->resolveCurrentCampusId(
+            tenantId: $tenantId,
+            roleCode: $roleCode,
+            campusIds: $campusIds,
+            profileCampusId: $profile->current_campus_id,
+            requestedCampusId: $requestedCampusId
+        );
 
         return new EducationUserContext(
             userId: $userId,
@@ -187,7 +197,7 @@ final class UserProfileService
             roleCode: $roleCode,
             platformAccess: $roleCode->isPlatform(),
             campusIds: $campusIds,
-            currentCampusId: $profile->current_campus_id
+            currentCampusId: $currentCampusId
         );
     }
 
@@ -282,16 +292,75 @@ final class UserProfileService
         return $user instanceof User && $user->isSuperAdmin();
     }
 
-    private function platformSuperAdminContext(int $userId, ?int $tenantId): EducationUserContext
+    private function platformSuperAdminContext(int $userId, ?int $tenantId, ?int $campusId): EducationUserContext
     {
+        $currentCampusId = null;
+        if ($campusId !== null) {
+            $campusTenantId = $this->tenantIdForCampus($campusId);
+            if ($tenantId !== null && $campusTenantId !== $tenantId) {
+                throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current tenant', ['campus_id' => $campusId]);
+            }
+
+            $tenantId ??= $campusTenantId;
+            $currentCampusId = $campusId;
+        }
+
         return new EducationUserContext(
             userId: $userId,
             tenantId: $tenantId,
             roleCode: EducationRoleCode::PlatformSuperAdmin,
             platformAccess: true,
             campusIds: [],
-            currentCampusId: null
+            currentCampusId: $currentCampusId
         );
+    }
+
+    /**
+     * @param int[] $campusIds
+     */
+    private function resolveCurrentCampusId(
+        ?int $tenantId,
+        EducationRoleCode $roleCode,
+        array $campusIds,
+        mixed $profileCampusId,
+        ?int $requestedCampusId
+    ): ?int {
+        if ($requestedCampusId === null) {
+            return $profileCampusId === null ? null : (int) $profileCampusId;
+        }
+
+        if ($tenantId === null) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'tenant context is required for campus scope', ['campus_id' => $requestedCampusId]);
+        }
+
+        $this->assertCampusBelongsTenant($tenantId, $requestedCampusId);
+
+        if ($roleCode->requiresCampusScope() && ! \in_array($requestedCampusId, $campusIds, true)) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current user scope', ['campus_id' => $requestedCampusId]);
+        }
+
+        return $requestedCampusId;
+    }
+
+    private function tenantIdForCampus(int $campusId): int
+    {
+        $campus = EducationCampus::query()->whereKey($campusId)->first();
+        if (! $campus instanceof EducationCampus) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current tenant', ['campus_id' => $campusId]);
+        }
+
+        return (int) $campus->tenant_id;
+    }
+
+    private function assertCampusBelongsTenant(int $tenantId, int $campusId): void
+    {
+        $exists = EducationCampus::query()
+            ->where('tenant_id', $tenantId)
+            ->whereKey($campusId)
+            ->exists();
+        if (! $exists) {
+            throw new BusinessException(ResultCode::FORBIDDEN, 'campus is outside current tenant', ['campus_id' => $campusId]);
+        }
     }
 
     private function assertUniqueProfileKey(string $profileKey, ?int $ignoreId = null): void
