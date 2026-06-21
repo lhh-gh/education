@@ -21,6 +21,8 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
 use App\Service\Education\Standards\CourseMaterialService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -37,6 +39,19 @@ final class CourseMaterialController extends AbstractController
     use StandardsControllerTrait;
 
     public function __construct(private readonly CourseMaterialService $service, private readonly EventDispatcherInterface $events) {}
+
+    #[Get(path: '/admin/education/standards/materials', operationId: 'educationStandardsMaterialPage', summary: 'Standards material page', tags: ['Education Standards'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:standards:material:page')]
+    public function page(RequestInterface $request): Result
+    {
+        return $this->success($this->service->page(
+            $request->all(),
+            $this->context(),
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
+    }
 
     #[Post(path: '/admin/education/standards/materials', operationId: 'educationStandardsMaterialSave', summary: 'Standards material save', tags: ['Education Standards'])]
     #[ResultResponse(instance: new Result())]
