@@ -14,6 +14,7 @@ namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationApprovalNode;
 use App\Model\Education\Group\EducationApprovalTemplate;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class ApprovalTemplateRepository
@@ -59,7 +60,12 @@ final class ApprovalTemplateRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationApprovalTemplate::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampusColumns(
+            EducationApprovalTemplate::query(),
+            $filters,
+            $context,
+            campusScoped: false
+        );
         $total = (clone $query)->count();
         $page = max(1, (int) ($filters['page'] ?? 1));
         $pageSize = max(1, min(100, (int) ($filters['pageSize'] ?? 20)));

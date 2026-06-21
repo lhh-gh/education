@@ -14,17 +14,24 @@ namespace HyperfTests\Unit\Education\Group;
 
 use App\Model\Education\Group\EducationApprovalInstance;
 use App\Model\Education\Group\EducationApprovalTask;
+use App\Model\Education\Group\EducationApprovalTemplate;
 use App\Model\Education\Group\EducationContract;
 use App\Model\Education\Group\EducationContractRenewal;
+use App\Model\Education\Group\EducationDataPermissionScope;
 use App\Model\Education\Group\EducationFranchiseRecord;
 use App\Model\Education\Group\EducationGroupOperationMetric;
+use App\Model\Education\Group\EducationOrgUnit;
 use App\Model\Education\Group\EducationRiskAuditEvent;
+use App\Model\Education\Group\EducationUserDataPermission;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Group\ApprovalInstanceRepository;
+use App\Repository\Education\Group\ApprovalTemplateRepository;
 use App\Repository\Education\Group\ContractRenewalRepository;
 use App\Repository\Education\Group\ContractRepository;
+use App\Repository\Education\Group\DataPermissionRepository;
 use App\Repository\Education\Group\FranchiseRepository;
 use App\Repository\Education\Group\GroupMetricRepository;
+use App\Repository\Education\Group\OrgUnitRepository;
 use App\Repository\Education\Group\RiskAuditRepository;
 use App\Service\Education\Foundation\EducationUserContext;
 
@@ -113,6 +120,40 @@ final class GroupScopeRepositoryTest extends GroupTestCase
         self::assertNull($repository->lockTask((int) $hiddenTask->id, $context));
         self::assertSame((int) $visibleInstance->id, (int) $repository->findInstance((int) $visibleInstance->id, $context)?->id);
         self::assertNull($repository->findInstance((int) $hiddenInstance->id, $context));
+    }
+
+    public function testConfigurationRepositoriesUseTenantFilterForPlatformContext(): void
+    {
+        $hiddenTenant = $this->tenant('group_scope_config_hidden');
+        $visibleTenant = $this->tenant('group_scope_config_visible');
+        $context = new EducationUserContext(
+            userId: 9302,
+            tenantId: null,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: null
+        );
+
+        EducationApprovalTemplate::query()->create($this->approvalTemplateData((int) $hiddenTenant->id, 'TPL-HIDDEN'));
+        $visibleTemplate = EducationApprovalTemplate::query()->create($this->approvalTemplateData((int) $visibleTenant->id, 'TPL-VISIBLE'));
+        $hiddenScope = EducationDataPermissionScope::query()->create($this->dataPermissionScopeData((int) $hiddenTenant->id, 'SCOPE-HIDDEN'));
+        $visibleScope = EducationDataPermissionScope::query()->create($this->dataPermissionScopeData((int) $visibleTenant->id, 'SCOPE-VISIBLE'));
+        EducationUserDataPermission::query()->create($this->userDataPermissionData((int) $hiddenTenant->id, (int) $hiddenScope->id, 9401));
+        $visiblePermission = EducationUserDataPermission::query()->create($this->userDataPermissionData((int) $visibleTenant->id, (int) $visibleScope->id, 9402));
+        EducationOrgUnit::query()->create($this->orgUnitData((int) $hiddenTenant->id, 'ORG-HIDDEN'));
+        $visibleOrg = EducationOrgUnit::query()->create($this->orgUnitData((int) $visibleTenant->id, 'ORG-VISIBLE'));
+
+        $templatePage = make(ApprovalTemplateRepository::class)->page(['tenant_id' => (int) $visibleTenant->id], $context);
+        $permissionPage = make(DataPermissionRepository::class)->page(['tenant_id' => (int) $visibleTenant->id], $context);
+        $orgTree = make(OrgUnitRepository::class)->tree($context, ['tenant_id' => (int) $visibleTenant->id]);
+
+        self::assertSame(1, $templatePage['total']);
+        self::assertSame((int) $visibleTemplate->id, (int) $templatePage['list'][0]['id']);
+        self::assertSame(1, $permissionPage['total']);
+        self::assertSame((int) $visiblePermission->id, (int) $permissionPage['list'][0]['id']);
+        self::assertCount(1, $orgTree);
+        self::assertSame((int) $visibleOrg->id, (int) $orgTree[0]['id']);
     }
 
     private function platformContext(int $tenantId, int $currentCampusId, int $userId = 9300): EducationUserContext
@@ -237,6 +278,68 @@ final class GroupScopeRepositoryTest extends GroupTestCase
             'node_id' => 1,
             'assignee_user_id' => 9300,
             'status' => 'pending',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function approvalTemplateData(int $tenantId, string $code): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'template_code' => $code,
+            'template_name' => $code,
+            'business_type' => 'contract',
+            'status' => 'enabled',
+            'version' => 1,
+            'config_json' => [],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function dataPermissionScopeData(int $tenantId, string $code): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'scope_code' => $code,
+            'scope_name' => $code,
+            'scope_type' => 'campus_set',
+            'scope_value_json' => ['campus_ids' => [1]],
+            'status' => 'enabled',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function userDataPermissionData(int $tenantId, int $scopeId, int $userId): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'user_id' => $userId,
+            'scope_id' => $scopeId,
+            'scope_type' => 'campus_set',
+            'status' => 'enabled',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function orgUnitData(int $tenantId, string $code): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'code' => $code,
+            'name' => $code,
+            'unit_type' => 'group',
+            'path' => $code,
+            'level' => 1,
+            'status' => 'enabled',
+            'sort_order' => 0,
         ];
     }
 }

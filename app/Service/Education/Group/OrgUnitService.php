@@ -68,11 +68,12 @@ final class OrgUnitService
     }
 
     /**
+     * @param array<string, mixed> $filters
      * @return array<int, array<string, mixed>>
      */
-    public function tree(EducationUserContext $context): array
+    public function tree(EducationUserContext $context, array $filters = []): array
     {
-        return $this->repository->tree($context);
+        return $this->repository->tree($context, $filters);
     }
 
     /**
