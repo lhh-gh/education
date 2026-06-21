@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Content;
 
 use App\Repository\Education\Content\MaterialRelationRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialRelationService
 {
@@ -27,10 +28,19 @@ final class MaterialRelationService
     }
 
     /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->relations->page($filters, $context, $page, $pageSize);
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
-    public function pageByTarget(int $tenantId, string $targetType, int $targetId): array
+    public function pageByTarget(EducationUserContext $context, string $targetType, int $targetId): array
     {
-        return $this->relations->pageByTarget($tenantId, $targetType, $targetId);
+        return $this->relations->pageByTarget($context, $targetType, $targetId);
     }
 }
