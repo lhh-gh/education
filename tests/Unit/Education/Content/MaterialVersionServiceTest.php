@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterialVersion;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\LearningMaterialService;
 use App\Service\Education\Content\MaterialVersionService;
 
@@ -22,6 +23,39 @@ use App\Service\Education\Content\MaterialVersionService;
  */
 final class MaterialVersionServiceTest extends ContentTestCase
 {
+    public function testPageUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_version_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-version');
+        $visible = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'material_code' => 'MAT-VERSION-VISIBLE',
+            'material_name' => 'Visible Version Material',
+            'course_id' => 301,
+            'material_type' => 'worksheet',
+            'guardian_visible' => true,
+        ]);
+        $hidden = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-VERSION-HIDDEN',
+            'material_name' => 'Hidden Version Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9905);
+        $service = make(MaterialVersionService::class);
+
+        $page = $service->page($visible['material_id'], $context, 1, 20);
+        $hiddenPage = $service->page($hidden['material_id'], $context, 1, 20);
+
+        self::assertSame(1, $page['total']);
+        self::assertSame($visible['current_version_id'], (int) $page['list'][0]['id']);
+        self::assertSame(0, $hiddenPage['total']);
+    }
+
     public function testPublishedVersionIsImmutable(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_version_immutable');

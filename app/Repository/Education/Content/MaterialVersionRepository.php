@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterialVersion;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialVersionRepository
 {
@@ -48,15 +50,20 @@ final class MaterialVersionRepository
     /**
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, int $materialId, int $page = 1, int $pageSize = 20): array
+    public function page(int $materialId, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationLearningMaterialVersion::query()
-            ->where('tenant_id', $tenantId)
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterialVersion::query(), [], $context)
             ->where('material_id', $materialId);
 
+        $total = (int) (clone $query)->count();
+        $list = $query->orderByDesc('version_no')
+            ->forPage($page, $pageSize)
+            ->get()
+            ->toArray();
+
         return [
-            'list' => $query->orderByDesc('version_no')->forPage($page, $pageSize)->get()->toArray(),
-            'total' => (int) (clone $query)->count(),
+            'list' => $list,
+            'total' => $total,
         ];
     }
 }

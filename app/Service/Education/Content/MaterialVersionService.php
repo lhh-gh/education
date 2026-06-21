@@ -14,6 +14,7 @@ namespace App\Service\Education\Content;
 
 use App\Repository\Education\Content\LearningMaterialRepository;
 use App\Repository\Education\Content\MaterialVersionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialVersionService
 {
@@ -65,9 +66,9 @@ final class MaterialVersionService
     /**
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, int $materialId, int $page = 1, int $pageSize = 20): array
+    public function page(int $materialId, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        return $this->versions->page($tenantId, $materialId, $page, $pageSize);
+        return $this->versions->page($materialId, $context, $page, $pageSize);
     }
 
     /**

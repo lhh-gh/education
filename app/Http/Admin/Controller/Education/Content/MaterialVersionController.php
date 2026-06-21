@@ -47,8 +47,8 @@ final class MaterialVersionController extends AbstractController
         $context = $this->context();
 
         return $this->success($this->service->page(
-            $this->tenantId($context),
             (int) $request->input('material_id', 0),
+            $context,
             $this->pageNumber($request),
             $this->pageSize($request)
         ));
