@@ -39,7 +39,7 @@ final class CommentTemplateService
             'campus_id' => $context->currentCampusId,
             'created_by' => $context->userId,
             'updated_by' => $context->userId,
-        ]);
+        ], $context);
 
         return $template->toArray();
     }
@@ -64,7 +64,7 @@ final class CommentTemplateService
             'campus_id' => $context->currentCampusId,
             'created_by' => $context->userId,
             'updated_by' => $context->userId,
-        ]);
+        ], $context);
 
         return $tag->toArray();
     }

@@ -18,6 +18,7 @@ use App\Model\Education\Family\EducationHomeworkAssignment;
 use App\Model\Education\Family\EducationHomeworkReview;
 use App\Model\Education\Family\EducationHomeworkSubmission;
 use App\Model\Education\Family\EducationHomeworkTarget;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class HomeworkRepository
@@ -130,10 +131,7 @@ final class HomeworkRepository
      */
     public function pageAssignments(array $filters, EducationUserContext $context): array
     {
-        $query = EducationHomeworkAssignment::query()->where('tenant_id', $context->tenantId);
-        if (($filters['campus_id'] ?? '') !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationHomeworkAssignment::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', (string) $filters['status']);
         }
