@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterial;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class LearningMaterialRepository
 {
@@ -41,9 +43,9 @@ final class LearningMaterialRepository
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationLearningMaterial::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterial::query(), $filters, $context);
         foreach (['course_id', 'status', 'material_type'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);

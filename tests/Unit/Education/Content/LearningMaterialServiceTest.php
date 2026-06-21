@@ -15,6 +15,7 @@ namespace HyperfTests\Unit\Education\Content;
 use App\Model\Education\Content\EducationContentReviewRecord;
 use App\Model\Education\Content\EducationLearningMaterial;
 use App\Model\Education\Content\EducationLearningMaterialVersion;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\LearningMaterialService;
 
 /**
@@ -23,6 +24,38 @@ use App\Service\Education\Content\LearningMaterialService;
  */
 final class LearningMaterialServiceTest extends ContentTestCase
 {
+    public function testPageUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_material_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-material');
+        $visible = EducationLearningMaterial::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'material_code' => 'MAT-VISIBLE',
+            'material_name' => 'Visible Material',
+            'course_id' => 301,
+            'material_type' => 'worksheet',
+            'status' => 'draft',
+            'guardian_visible' => true,
+        ]);
+        EducationLearningMaterial::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-HIDDEN',
+            'material_name' => 'Hidden Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'status' => 'draft',
+            'guardian_visible' => false,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9903);
+
+        $page = make(LearningMaterialService::class)->page([], $context, 1, 20);
+
+        self::assertSame(1, $page['total']);
+        self::assertSame((int) $visible->id, (int) $page['list'][0]['id']);
+    }
+
     public function testMaterialRequiresReviewBeforePublishWhenEnabled(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_material_review');

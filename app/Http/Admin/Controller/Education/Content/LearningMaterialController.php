@@ -49,8 +49,8 @@ final class LearningMaterialController extends AbstractController
         $context = $this->context();
 
         return $this->success($this->service->page(
-            $this->tenantId($context),
             $request->all(),
+            $context,
             $this->pageNumber($request),
             $this->pageSize($request)
         ));

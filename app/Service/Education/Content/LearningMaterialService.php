@@ -16,6 +16,7 @@ use App\Model\Education\Content\EducationMaterialPublishLog;
 use App\Repository\Education\Content\ContentReviewRepository;
 use App\Repository\Education\Content\LearningMaterialRepository;
 use App\Repository\Education\Content\MaterialVersionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class LearningMaterialService
 {
@@ -108,11 +109,12 @@ final class LearningMaterialService
     }
 
     /**
+     * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        return $this->materials->page($tenantId, $filters, $page, $pageSize);
+        return $this->materials->page($filters, $context, $page, $pageSize);
     }
 
     private function statusValue(mixed $status): string
