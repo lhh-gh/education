@@ -21,7 +21,7 @@ describe('education business pages shared scope', () => {
       .filter(path => !path.includes('/components/') || path.endsWith('/ReportDateRangeFilter.vue'))
       .filter((path) => {
         const content = readFileSync(path, 'utf8')
-        return /v-model="[^"]*\.(tenant_id|campus_id)"/.test(content)
+        return /v-model="[^"]*\.(?:tenant_id|campus_id)"/.test(content)
       })
 
     expect(offenders).toEqual([])

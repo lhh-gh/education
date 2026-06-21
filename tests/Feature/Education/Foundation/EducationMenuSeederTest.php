@@ -457,6 +457,32 @@ final class EducationMenuSeederTest extends TestCase
         );
     }
 
+    public function testEducationMenuSeederCoversControllerPermissions(): void
+    {
+        $controllerPermissions = [];
+        $controllers = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(BASE_PATH . '/app/Http/Admin/Controller/Education')
+        );
+        foreach ($controllers as $controller) {
+            if (! $controller instanceof \SplFileInfo || $controller->getExtension() !== 'php') {
+                continue;
+            }
+            preg_match_all("/Permission\\(code:\\s*'([^']+)'/", (string) file_get_contents($controller->getPathname()), $matches);
+            $controllerPermissions = array_merge($controllerPermissions, $matches[1] ?? []);
+        }
+
+        preg_match_all(
+            '/education:[a-z0-9:_-]+/',
+            (string) file_get_contents(BASE_PATH . '/databases/seeders/EducationMenuSeeder.php'),
+            $matches
+        );
+        $seededPermissions = array_values(array_unique($matches[0] ?? []));
+        $missing = array_values(array_diff(array_values(array_unique($controllerPermissions)), $seededPermissions));
+        sort($missing);
+
+        self::assertSame([], $missing, 'Education menu seeder is missing controller permissions.');
+    }
+
     private function menuTitle(object $menu): string
     {
         return (string) json_decode((string) $menu->meta, true)['title'];

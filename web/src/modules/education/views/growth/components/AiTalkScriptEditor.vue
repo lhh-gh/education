@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { containsBlockedAiPromise } from '../growthRules.ts'
-import { growthText } from '../growthRules.ts'
+import { containsBlockedAiPromise, growthText } from '../growthRules.ts'
 
 defineOptions({ name: 'EducationGrowthAiTalkScriptEditor' })
 

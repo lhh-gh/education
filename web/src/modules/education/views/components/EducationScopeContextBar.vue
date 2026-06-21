@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { pageCampuses } from '../../api/foundation/campus.ts'
 import { pageTenants } from '../../api/foundation/tenant.ts'
-import { getEducationScopeSnapshot, clearEducationScope } from '@/composables/education/useEducationScope.ts'
+import { clearEducationScope, getEducationScopeSnapshot } from '@/composables/education/useEducationScope.ts'
 import { useMessage } from '@/hooks/useMessage.ts'
+import type { EducationScopeOption } from './educationScopeContextRules.ts'
 import {
   buildCampusScopeOptions,
   buildTenantScopeOptions,
   resolveEducationScopePayload,
-  type EducationScopeOption,
 } from './educationScopeContextRules.ts'
 
 defineOptions({ name: 'EducationScopeContextBar' })
@@ -143,8 +143,8 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   min-height: 48px;
-  padding: 8px 12px;
   margin: 12px 12px 0;
+  padding: 8px 12px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 6px;
@@ -164,7 +164,7 @@ onMounted(async () => {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .education-scope-context-bar {
     flex-wrap: wrap;
 

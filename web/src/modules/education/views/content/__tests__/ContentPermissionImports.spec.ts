@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -12,11 +12,11 @@ describe('education content permission guards', () => {
 
     for (const file of files) {
       const source = readFileSync(join(contentDir, file), 'utf8')
-      if (! source.includes('hasAuth(')) {
+      if (!source.includes('hasAuth(')) {
         continue
       }
 
-      expect(source, file).toContain("import hasAuth from '@/utils/permission/hasAuth.ts'")
+      expect(source, file).toContain('import hasAuth from \'@/utils/permission/hasAuth.ts\'')
     }
   })
 })

@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
-  aiErrorTitle,
   aiErrorMessage,
+  aiErrorTitle,
   aiFeatureSafetyLevelLabel,
   aiModelConfigActionsByPermission,
   aiModelConfigText,
@@ -17,9 +17,9 @@ describe('ai model config list', () => {
     const promptController = readFileSync(resolve(projectRoot, 'app/Http/Admin/Controller/Education/Ai/PromptTemplateController.php'), 'utf8')
     const recommendationController = readFileSync(resolve(projectRoot, 'app/Http/Admin/Controller/Education/Ai/AiRecommendationController.php'), 'utf8')
 
-    expect(modelConfigController).toContain("#[Permission(code: 'education:ai:feature-setting:save')]")
-    expect(promptController).toContain("#[Permission(code: 'education:ai:prompt:publish')]")
-    expect(recommendationController).toContain("#[Permission(code: 'education:ai:recommendation:handle')]")
+    expect(modelConfigController).toContain('#[Permission(code: \'education:ai:feature-setting:save\')]')
+    expect(promptController).toContain('#[Permission(code: \'education:ai:prompt:publish\')]')
+    expect(recommendationController).toContain('#[Permission(code: \'education:ai:recommendation:handle\')]')
   })
 
   it('uses_chinese_copy_for_model_config_page', () => {

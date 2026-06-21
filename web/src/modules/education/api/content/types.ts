@@ -11,8 +11,10 @@ export interface ContentScopedParams extends Partial<PageParams> {
   campus_id?: number
   course_id?: number
   material_id?: number
+  material_version_id?: number
   student_id?: number
   teacher_id?: number
+  file_type?: string
   status?: string
   start_date?: string
   end_date?: string
@@ -39,6 +41,16 @@ export interface MaterialVersionRow {
   title: string
   status: ContentPublishStatus
   published_at?: string
+}
+
+export interface MaterialAttachmentRow {
+  id: number
+  material_version_id: number
+  file_name: string
+  file_url: string
+  file_type: string
+  file_size: number
+  sort_order: number
 }
 
 export interface MaterialRelationRow {

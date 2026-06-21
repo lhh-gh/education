@@ -1,4 +1,5 @@
-import { setEducationScope, type EducationScopeState } from '@/composables/education/useEducationScope.ts'
+import type { EducationScopeState } from '@/composables/education/useEducationScope.ts'
+import { setEducationScope } from '@/composables/education/useEducationScope.ts'
 import type { CampusListItem } from '../../api/foundation/campus.ts'
 import type { TenantListItem } from '../../api/foundation/tenant.ts'
 

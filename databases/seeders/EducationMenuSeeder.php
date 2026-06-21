@@ -215,6 +215,73 @@ class EducationMenuSeeder extends Seeder
         'withdraw' => '撤回',
     ];
 
+    private const EXTRA_BUTTONS = [
+        'education:foundation:tenant:page' => ['education:foundation:tenant:create', 'education:foundation:tenant:status'],
+        'education:foundation:campus:page' => ['education:foundation:campus:create', 'education:foundation:campus:status', 'education:foundation:campus-scope:page', 'education:foundation:campus-scope:save'],
+        'education:foundation:user-profile:page' => ['education:foundation:user-profile:create', 'education:foundation:user-profile:status'],
+        'education:foundation:dictionary:page' => ['education:foundation:dictionary:create', 'education:foundation:dictionary:status', 'education:foundation:dictionary-item:create', 'education:foundation:dictionary-item:delete', 'education:foundation:dictionary-item:lookup', 'education:foundation:dictionary-item:page', 'education:foundation:dictionary-item:status', 'education:foundation:dictionary-item:update'],
+        'education:foundation:feature-flag:page' => ['education:foundation:feature-flag:create', 'education:foundation:feature-flag:delete', 'education:foundation:feature-flag:lookup', 'education:foundation:feature-flag:status'],
+        'education:academic:classroom:page' => ['education:academic:classroom:create', 'education:academic:classroom:status'],
+        'education:academic:student:page' => ['education:academic:student:create', 'education:academic:student:status', 'education:academic:student-guardian:page', 'education:academic:student-guardian:save'],
+        'education:academic:guardian:page' => ['education:academic:guardian:create', 'education:academic:guardian:delete', 'education:academic:guardian:status'],
+        'education:academic:teacher:page' => ['education:academic:teacher:create', 'education:academic:teacher:delete', 'education:academic:teacher:status', 'education:academic:course-teacher:page', 'education:academic:course-teacher:save'],
+        'education:academic:course:page' => ['education:academic:course:create', 'education:academic:course:status'],
+        'education:academic:lesson-package:page' => ['education:academic:lesson-package:create', 'education:academic:lesson-package:delete', 'education:academic:lesson-package:status'],
+        'education:academic:enrollment:page' => ['education:academic:enrollment:create', 'education:academic:enrollment:cancel', 'education:academic:enrollment:detail'],
+        'education:academic:student-course-account:page' => ['education:academic:student-course-account:ledger', 'education:academic:student-course-account:status'],
+        'education:academic:class:page' => ['education:academic:class:create', 'education:academic:class:delete', 'education:academic:class:status', 'education:academic:class-student:page', 'education:academic:class-student:save'],
+        'education:academic:lesson-schedule:calendar' => ['education:academic:lesson-schedule:create', 'education:academic:lesson-schedule:batch', 'education:academic:lesson-schedule:conflict-check'],
+        'education:academic:lesson:page' => ['education:academic:lesson:detail', 'education:academic:lesson:delete'],
+        'education:academic:attendance:lesson-page' => ['education:academic:attendance:detail', 'education:academic:attendance:submit'],
+        'education:academic:leave-request:page' => ['education:academic:leave-request:create', 'education:academic:leave-request:detail', 'education:academic:leave-request:cancel', 'education:academic:leave-request:approve', 'education:academic:leave-request:reject'],
+        'education:academic:lesson-change:page' => ['education:academic:lesson-change:detail', 'education:academic:lesson-change:makeup', 'education:academic:lesson-change:reschedule'],
+        'education:academic:consumption:page' => ['education:academic:consumption:detail', 'education:academic:consumption:rollback'],
+        'education:academic:account-adjustment:page' => ['education:academic:account-adjustment:create', 'education:academic:account-adjustment:detail', 'education:academic:account-adjustment:rollback'],
+        'education:academic:notice:page' => ['education:academic:notice:create', 'education:academic:notice:detail', 'education:academic:notice:receipt', 'education:academic:notice:update', 'education:academic:notice:withdraw'],
+        'education:operations:lesson-change:page' => ['education:operations:lesson-change:apply', 'education:operations:lesson-change:approve', 'education:operations:lesson-change:batch', 'education:operations:lesson-change:create', 'education:operations:lesson-change:reject'],
+        'education:operations:makeup:page' => ['education:operations:makeup:arrange', 'education:operations:makeup:cancel'],
+        'education:operations:consumption-review:page' => ['education:operations:consumption-review:approve', 'education:operations:consumption-adjustment:create'],
+        'education:operations:renewal-alert:page' => ['education:operations:renewal-task:follow'],
+        'education:family:comment-template:page' => ['education:family:comment-template:create'],
+        'education:family:performance-tag:page' => ['education:family:performance-tag:create'],
+        'education:family:homework:page' => ['education:family:homework:create'],
+        'education:family:report:page' => ['education:family:report:create'],
+        'education:ai:prompt:page' => ['education:ai:knowledge:save'],
+        'education:group:org:tree' => ['education:group:org:create'],
+        'education:group:data-permission:page' => ['education:group:data-permission:preview'],
+        'education:group:approval-task:page' => ['education:group:approval:create', 'education:group:approval:complete'],
+        'education:group:contract:page' => ['education:group:contract:create', 'education:group:contract:submit-review'],
+        'education:group:contract-renewal:page' => ['education:group:contract-renewal:save'],
+        'education:group:risk-audit:page' => ['education:group:risk-audit:handle'],
+        'education:payroll:rule:page' => ['education:payroll:rule:create'],
+        'education:payroll:batch:page' => ['education:payroll:batch:approve', 'education:payroll:batch:submit'],
+        'education:payroll:slip:page' => ['education:payroll:slip:adjust'],
+        'education:payroll:payment:page' => ['education:payroll:payment:mark'],
+        'education:payroll:dispute:page' => ['education:payroll:dispute:review'],
+        'education:workflow:rule:page' => ['education:workflow:rule:enable'],
+        'education:workflow:task:page' => ['education:workflow:task:comment', 'education:workflow:task:complete'],
+    ];
+
+    private const ACTION_TITLE_OVERRIDES = [
+        'arrange' => '安排',
+        'batch' => '批量',
+        'comment' => '评论',
+        'complete' => '完成',
+        'conflict-check' => '冲突检测',
+        'enable' => '启用',
+        'ledger' => '明细',
+        'lookup' => '查询',
+        'makeup' => '补课',
+        'mark' => '标记',
+        'preview' => '预览',
+        'receipt' => '回执',
+        'reject' => '驳回',
+        'reschedule' => '改期',
+        'rollback' => '回滚',
+        'submit' => '提交',
+        'submit-review' => '提交审核',
+    ];
+
     /**
      * Run the database seeds.
      */
@@ -441,6 +508,8 @@ class EducationMenuSeeder extends Seeder
 
     private function page(string $name, string $title, string $path, string $component, array $buttons = []): array
     {
+        $buttons = array_values(array_unique(array_merge($buttons, self::EXTRA_BUTTONS[$name] ?? [])));
+
         return $this->menu($name, $title, $path, $component, 'material-symbols:article-outline-rounded', [
             'children' => array_map(fn (string $button): array => $this->button($button), $buttons),
         ]);
@@ -484,6 +553,6 @@ class EducationMenuSeeder extends Seeder
     {
         $action = trim((string) mb_strrchr($name, ':'), ': ');
 
-        return self::ACTION_TITLES[$action] ?? ucwords(str_replace('-', ' ', $action));
+        return self::ACTION_TITLE_OVERRIDES[$action] ?? self::ACTION_TITLES[$action] ?? ucwords(str_replace('-', ' ', $action));
     }
 }

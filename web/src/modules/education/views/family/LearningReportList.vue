@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LearningReportRecord } from '../../api/family/report.ts'
 import { pageLearningReports, publishLearningReport, withdrawLearningReport } from '../../api/family/report.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { familyStatusLabel, familyTagType, guardianVisibleMarker } from './familyRules.ts'
 import LearningReportEditor from './components/LearningReportEditor.vue'
 
@@ -11,6 +12,8 @@ const editorVisible = ref(false)
 const rows = ref<LearningReportRecord[]>([])
 const total = ref(0)
 const search = reactive({ page: 1, pageSize: 20, status: '' })
+const canCreate = computed(() => hasAuth('education:family:report:create'))
+const canPublish = computed(() => hasAuth('education:family:report:publish'))
 
 async function loadRows() {
   loading.value = true
@@ -43,7 +46,7 @@ onMounted(loadRows)
       <template #header>
         <div class="page-header">
           <span>学习报告</span>
-          <el-button type="primary" @click="editorVisible = true">
+          <el-button v-if="canCreate" type="primary" @click="editorVisible = true">
             新增报告
           </el-button>
         </div>
@@ -65,10 +68,10 @@ onMounted(loadRows)
         </el-table-column>
         <el-table-column label="操作" width="160">
           <template #default="{ row }">
-            <el-button link type="primary" @click="publish(row)">
+            <el-button v-if="canPublish" link type="primary" @click="publish(row)">
               发布
             </el-button>
-            <el-button link type="danger" @click="withdraw(row)">
+            <el-button v-if="canPublish" link type="danger" @click="withdraw(row)">
               撤回
             </el-button>
           </template>

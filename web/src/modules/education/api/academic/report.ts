@@ -1,5 +1,5 @@
 import type { MineResult, PageParams } from '../foundation/types.ts'
-import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
+import { educationScopeGetOptions } from '../scope.ts'
 
 export type ReportGroupBy = 'date' | 'campus' | 'class' | 'teacher' | 'course' | 'status' | 'source_type'
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'leave'
@@ -284,10 +284,6 @@ export interface V1AcceptanceSummary {
   }
   modules: Record<string, V1AcceptanceStatus>
   next_action: string
-}
-
-function scopeOptions(input: { tenant_id?: number, campus_id?: number } = {}): { headers?: Record<string, string> } {
-  return educationScopeRequestOptions(input)
 }
 
 export function getAcademicDashboard(params: DashboardReportParams): Promise<MineResult<AcademicDashboardResult>> {

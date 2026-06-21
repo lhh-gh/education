@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Operations;
 
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Model\Education\Operations\EducationRenewalAlert;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Operations\RenewalAlertRepository;
 use App\Service\Education\Foundation\EducationUserContext;
 

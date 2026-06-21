@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { SalaryRuleRecord } from '../../api/payroll/rule.ts'
 import { pageSalaryRules } from '../../api/payroll/rule.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import SalaryRuleForm from './components/SalaryRuleForm.vue'
 import { canSelectRuleForPreview, centsToYuan, payrollStatusLabel, payrollTagType, payrollTypeLabel } from './payrollRules.ts'
 
@@ -11,6 +12,7 @@ const rows = ref<SalaryRuleRecord[]>([])
 const total = ref(0)
 const formVisible = ref(false)
 const search = reactive({ page: 1, pageSize: 20, status: '', rule_type: '' } as any)
+const canCreate = computed(() => hasAuth('education:payroll:rule:create'))
 
 async function loadRows() {
   loading.value = true
@@ -33,7 +35,7 @@ onMounted(loadRows)
       <template #header>
         <div class="page-header">
           <span>薪酬规则</span>
-          <el-button type="primary" @click="formVisible = true">
+          <el-button v-if="canCreate" type="primary" @click="formVisible = true">
             新增规则
           </el-button>
         </div>
