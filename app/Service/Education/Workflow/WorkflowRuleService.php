@@ -12,10 +12,14 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Workflow;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use App\Model\Education\Workflow\EducationWorkflowRule;
 use App\Model\Education\Workflow\EducationWorkflowRuleAction;
 use App\Model\Education\Workflow\EducationWorkflowRuleCondition;
 use App\Repository\Education\Workflow\WorkflowRuleRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class WorkflowRuleService
 {
@@ -76,10 +80,19 @@ final class WorkflowRuleService
     /**
      * @return array{rule_id: int, status: string}
      */
-    public function setEnabled(int $id, bool $enabled): array
+    public function setEnabled(int $id, bool $enabled, EducationUserContext $context): array
     {
-        $rule = EducationWorkflowRule::query()->findOrFail($id);
+        $rule = (new EducationScopeQuery())->applyTenantCampus(
+            EducationWorkflowRule::query()->whereKey($id),
+            [],
+            $context
+        )->first();
+        if (! $rule instanceof EducationWorkflowRule) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'workflow rule not found in current context', ['rule_id' => $id]);
+        }
+
         $rule->status = $enabled ? 'enabled' : 'disabled';
+        $rule->updated_by = $context->userId;
         $rule->save();
 
         return ['rule_id' => $id, 'status' => $enabled ? 'enabled' : 'disabled'];

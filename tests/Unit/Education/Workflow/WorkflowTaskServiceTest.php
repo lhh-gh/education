@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Workflow;
 
 use App\Model\Education\Workflow\EducationWorkflowTaskLog;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Workflow\WorkflowTaskService;
 
 /**
@@ -36,9 +37,10 @@ final class WorkflowTaskServiceTest extends WorkflowTestCase
             'assignee_user_id' => $fixture['teacher_user_id'],
             'created_by' => $fixture['teacher_user_id'],
         ]);
+        $context = $this->context($fixture['tenant_id'], EducationRoleCode::Teacher, [$fixture['campus_id']], $fixture['teacher_user_id']);
 
-        $first = $service->completeTask($task['task_id'], $fixture['teacher_user_id'], 'done', 'followed up');
-        $second = $service->completeTask($task['task_id'], $fixture['teacher_user_id'], 'done', 'followed up again');
+        $first = $service->completeTask($task['task_id'], $context, 'done', 'followed up');
+        $second = $service->completeTask($task['task_id'], $context, 'done', 'followed up again');
 
         self::assertSame('completed', $first['status']);
         self::assertSame('completed', $second['status']);

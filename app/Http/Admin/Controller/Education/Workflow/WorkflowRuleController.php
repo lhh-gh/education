@@ -64,7 +64,7 @@ final class WorkflowRuleController extends AbstractController
     {
         $context = $this->context();
         $data = $request->validated();
-        $result = $this->service->setEnabled($id, (bool) $data['enabled']);
+        $result = $this->service->setEnabled($id, (bool) $data['enabled'], $context);
         $this->audit($this->events, 'education.workflow.rule.enabled', 'workflow_rule', $id, $context, $result);
 
         return $this->success($result);

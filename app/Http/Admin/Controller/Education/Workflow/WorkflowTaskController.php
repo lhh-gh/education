@@ -49,7 +49,7 @@ final class WorkflowTaskController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->pageTasks($this->tenantId($context), $request->validated(), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->pageTasks($context, $request->validated(), $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/workflow/tasks/{id}/complete', operationId: 'educationWorkflowTaskComplete', summary: 'Workflow task complete', tags: ['Education Workflow'])]
@@ -59,7 +59,7 @@ final class WorkflowTaskController extends AbstractController
     {
         $context = $this->context();
         $data = $request->validated();
-        $result = $this->service->completeTask($id, $context->userId, (string) $data['result'], (string) $data['content']);
+        $result = $this->service->completeTask($id, $context, (string) $data['result'], (string) $data['content']);
         $this->audit($this->events, 'education.workflow.task.completed', 'workflow_task', $id, $context, $result);
 
         return $this->success($result);
@@ -71,7 +71,7 @@ final class WorkflowTaskController extends AbstractController
     public function comment(int $id, WorkflowTaskCommentRequest $request): Result
     {
         $context = $this->context();
-        $this->service->addComment($id, $context->userId, (string) $request->validated()['content']);
+        $this->service->addComment($id, $context, (string) $request->validated()['content']);
         $result = ['task_id' => $id, 'commented' => true];
         $this->audit($this->events, 'education.workflow.task.commented', 'workflow_task', $id, $context, $result);
 
