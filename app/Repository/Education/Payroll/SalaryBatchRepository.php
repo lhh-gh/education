@@ -15,6 +15,7 @@ namespace App\Repository\Education\Payroll;
 use App\Model\Education\Payroll\EducationTeacherSalaryBatch;
 use App\Model\Education\Payroll\EducationTeacherSalaryItem;
 use App\Model\Education\Payroll\EducationTeacherSalarySlip;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -27,7 +28,7 @@ final class SalaryBatchRepository
     public function page(array $filters, EducationUserContext $context): array
     {
         $query = $this->scopedQuery($filters, $context);
-        foreach (['salary_month', 'status', 'campus_id'] as $field) {
+        foreach (['salary_month', 'status'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }
@@ -86,18 +87,6 @@ final class SalaryBatchRepository
      */
     public function scopedQuery(array $filters, EducationUserContext $context): mixed
     {
-        $query = EducationTeacherSalaryBatch::query();
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
-            }
-
-            return $query;
-        }
-        if ($context->tenantId === null) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('tenant_id', $context->tenantId);
+        return (new EducationScopeQuery())->applyTenantCampus(EducationTeacherSalaryBatch::query(), $filters, $context);
     }
 }

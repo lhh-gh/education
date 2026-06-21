@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Payroll;
 
 use App\Model\Education\Payroll\EducationTeacherWorkloadDispute;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class WorkloadDisputeRepository
@@ -23,11 +24,8 @@ final class WorkloadDisputeRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationTeacherWorkloadDispute::query();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
-        foreach (['teacher_id', 'status', 'campus_id', 'source_workload_id'] as $field) {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationTeacherWorkloadDispute::query(), $filters, $context);
+        foreach (['teacher_id', 'status', 'source_workload_id'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }
@@ -42,10 +40,11 @@ final class WorkloadDisputeRepository
 
     public function lockScoped(int $id, EducationUserContext $context): ?EducationTeacherWorkloadDispute
     {
-        $query = EducationTeacherWorkloadDispute::query()->whereKey($id)->lockForUpdate();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(
+            EducationTeacherWorkloadDispute::query()->whereKey($id)->lockForUpdate(),
+            [],
+            $context
+        );
         $dispute = $query->first();
 
         return $dispute instanceof EducationTeacherWorkloadDispute ? $dispute : null;
