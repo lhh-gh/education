@@ -15,13 +15,14 @@ namespace App\Repository\Education\Group;
 use App\Model\Education\Group\EducationContract;
 use App\Model\Education\Group\EducationContractAttachment;
 use App\Model\Education\Group\EducationContractParty;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContractRepository
 {
     public function find(int $id, EducationUserContext $context): ?EducationContract
     {
-        $row = EducationContract::query()->where('tenant_id', $context->tenantId)->whereKey($id)->first();
+        $row = (new EducationScopeQuery())->applyTenantCampus(EducationContract::query()->whereKey($id), [], $context)->first();
 
         return $row instanceof EducationContract ? $row : null;
     }
@@ -75,10 +76,7 @@ final class ContractRepository
      */
     public function page(array $filters, EducationUserContext $context, array $campusIds): array
     {
-        $query = EducationContract::query()->where('tenant_id', $context->tenantId);
-        if ($campusIds !== []) {
-            $query->whereIn('campus_id', $campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationContract::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', $filters['status']);
         }

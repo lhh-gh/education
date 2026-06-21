@@ -15,6 +15,7 @@ namespace App\Repository\Education\Group;
 use App\Model\Education\Group\EducationApprovalInstance;
 use App\Model\Education\Group\EducationApprovalLog;
 use App\Model\Education\Group\EducationApprovalTask;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class ApprovalInstanceRepository
@@ -52,14 +53,14 @@ final class ApprovalInstanceRepository
 
     public function lockTask(int $taskId, EducationUserContext $context): ?EducationApprovalTask
     {
-        $row = EducationApprovalTask::query()->where('tenant_id', $context->tenantId)->whereKey($taskId)->lockForUpdate()->first();
+        $row = (new EducationScopeQuery())->applyTenantCampus(EducationApprovalTask::query()->whereKey($taskId), [], $context)->lockForUpdate()->first();
 
         return $row instanceof EducationApprovalTask ? $row : null;
     }
 
     public function findInstance(int $id, EducationUserContext $context): ?EducationApprovalInstance
     {
-        $row = EducationApprovalInstance::query()->where('tenant_id', $context->tenantId)->whereKey($id)->first();
+        $row = (new EducationScopeQuery())->applyTenantCampus(EducationApprovalInstance::query()->whereKey($id), [], $context)->first();
 
         return $row instanceof EducationApprovalInstance ? $row : null;
     }
@@ -70,7 +71,7 @@ final class ApprovalInstanceRepository
      */
     public function pageTasks(array $filters, EducationUserContext $context): array
     {
-        $query = EducationApprovalTask::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationApprovalTask::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', $filters['status']);
         }

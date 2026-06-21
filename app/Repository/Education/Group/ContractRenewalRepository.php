@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationContractRenewal;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContractRenewalRepository
@@ -31,7 +32,7 @@ final class ContractRenewalRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationContractRenewal::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationContractRenewal::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', $filters['status']);
         }

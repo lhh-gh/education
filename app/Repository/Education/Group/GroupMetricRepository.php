@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationGroupOperationMetric;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class GroupMetricRepository
@@ -32,10 +33,7 @@ final class GroupMetricRepository
      */
     public function page(array $filters, EducationUserContext $context, array $campusIds): array
     {
-        $query = EducationGroupOperationMetric::query()->where('tenant_id', $context->tenantId);
-        if ($campusIds !== []) {
-            $query->whereIn('campus_id', $campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationGroupOperationMetric::query(), $filters, $context);
         if (($filters['start_date'] ?? '') !== '') {
             $query->where('metric_date', '>=', $filters['start_date']);
         }
