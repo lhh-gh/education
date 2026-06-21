@@ -19,6 +19,7 @@ use App\Repository\Education\Ai\AiConfigRepository;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiUsageRepository;
 use App\Repository\Education\Ai\PromptTemplateRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -103,10 +104,10 @@ final class AiGenerationService
     /**
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function pageTasks(int $tenantId, int $page = 1, int $pageSize = 20): array
+    public function pageTasks(EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationAiGenerationTask::query()->where('tenant_id', $tenantId);
-        $total = (int) $query->count();
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationAiGenerationTask::query(), [], $context);
+        $total = (int) (clone $query)->count();
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];
@@ -115,9 +116,14 @@ final class AiGenerationService
     /**
      * @return array<string, mixed>
      */
-    public function resultDetail(int $id): array
+    public function resultDetail(int $id, EducationUserContext $context): array
     {
-        return $this->generationRepository->result($id)->toArray();
+        $result = $this->generationRepository->resultInContext($id, $context);
+        if ($result === null) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'ai generation result not found in current context', ['generation_result_id' => $id]);
+        }
+
+        return $result->toArray();
     }
 
     /**

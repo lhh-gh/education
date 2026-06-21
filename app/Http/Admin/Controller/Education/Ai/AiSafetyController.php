@@ -46,7 +46,7 @@ final class AiSafetyController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->page($this->tenantId($context), $this->getRequest()->all(), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->page($context, $this->getRequest()->all(), $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/ai/safety-events/{id}/handle', operationId: 'educationAiSafetyEventHandle', summary: 'AI safety event handle', tags: ['Education AI'])]
@@ -55,8 +55,7 @@ final class AiSafetyController extends AbstractController
     public function handle(int $id): Result
     {
         $context = $this->context();
-        $this->service->markHandled($id);
-        $result = ['safety_event_id' => $id, 'handled' => true];
+        $result = $this->service->markHandled($id, $context);
         $this->audit($this->events, 'education.ai.safety.blocked', 'safety_event', $id, $context, $result);
 
         return $this->success($result);

@@ -46,7 +46,7 @@ final class AiRecommendationController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->page($this->tenantId($context), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->page($context, $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/ai/recommendation-tasks/{id}/handle', operationId: 'educationAiRecommendationHandle', summary: 'AI recommendation handle', tags: ['Education AI'])]
@@ -55,8 +55,7 @@ final class AiRecommendationController extends AbstractController
     public function handle(int $id): Result
     {
         $context = $this->context();
-        $this->service->markHandled($id);
-        $result = ['recommendation_task_id' => $id, 'status' => 'handled'];
+        $result = $this->service->markHandled($id, $context);
         $this->audit($this->events, 'education.ai.recommendation.handled', 'recommendation_task', $id, $context, $result);
 
         return $this->success($result);

@@ -17,6 +17,7 @@ use App\Http\Common\ResultCode;
 use App\Model\Education\Ai\EducationAiGenerationResult;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiReviewRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -32,7 +33,11 @@ final class AiReviewService
      */
     public function approve(int $resultId, EducationUserContext $context, string $note = '', ?string $editedText = null): array
     {
-        $result = $this->generationRepository->result($resultId);
+        $result = $this->generationRepository->resultInContext($resultId, $context);
+        if ($result === null) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'ai generation result not found in current context', ['generation_result_id' => $resultId]);
+        }
+
         if ($result->safety_status instanceof \BackedEnum && $result->safety_status->value === 'blocked') {
             throw new BusinessException(ResultCode::CONFLICT, 'ai result was blocked by safety policy', ['generation_result_id' => $resultId]);
         }
@@ -62,10 +67,10 @@ final class AiReviewService
     /**
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function pagePending(int $tenantId, int $page = 1, int $pageSize = 20): array
+    public function pagePending(EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationAiGenerationResult::query()->where('tenant_id', $tenantId);
-        $total = (int) $query->count();
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationAiGenerationResult::query(), [], $context);
+        $total = (int) (clone $query)->count();
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];

@@ -47,7 +47,7 @@ final class AiReviewController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->pagePending($this->tenantId($context), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->pagePending($context, $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/ai/generation-results/{id}/approve', operationId: 'educationAiReviewApprove', summary: 'AI review approve', tags: ['Education AI'])]
