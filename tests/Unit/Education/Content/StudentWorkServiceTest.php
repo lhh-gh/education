@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Content;
 
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\StudentWorkService;
 
 /**
@@ -20,6 +21,37 @@ use App\Service\Education\Content\StudentWorkService;
  */
 final class StudentWorkServiceTest extends ContentTestCase
 {
+    public function testPageUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work');
+        $service = make(StudentWorkService::class);
+        $visible = $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'student_id' => 1201,
+            'lesson_id' => 8801,
+            'teacher_id' => 701,
+            'title' => 'Visible work',
+            'description' => 'current campus work',
+        ], [1201]);
+        $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'description' => 'other campus work',
+        ], [1202]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $page = $service->page([], $context, 1, 20);
+
+        self::assertSame(1, $page['total']);
+        self::assertSame($visible['student_work_id'], (int) $page['list'][0]['id']);
+    }
+
     public function testTeacherUploadsWorkForAssignedStudentOnly(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_student_work');

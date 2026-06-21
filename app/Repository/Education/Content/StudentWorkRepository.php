@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationStudentWork;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class StudentWorkRepository
 {
@@ -35,5 +37,27 @@ final class StudentWorkRepository
     public function findInTenant(int $tenantId, int $id): EducationStudentWork
     {
         return EducationStudentWork::query()->where('tenant_id', $tenantId)->findOrFail($id);
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationStudentWork::query(), $filters, $context);
+        foreach (['student_id', 'teacher_id', 'status'] as $field) {
+            if (isset($filters[$field]) && $filters[$field] !== '') {
+                $query->where($field, $filters[$field]);
+            }
+        }
+
+        $total = (int) (clone $query)->count();
+        $list = $query->orderByDesc('id')
+            ->forPage($page, $pageSize)
+            ->get()
+            ->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

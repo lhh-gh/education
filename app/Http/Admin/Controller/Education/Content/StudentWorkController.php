@@ -18,7 +18,6 @@ use App\Http\Admin\Middleware\PermissionMiddleware;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
-use App\Model\Education\Content\EducationStudentWork;
 use App\Service\Education\Content\StudentWorkService;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -45,18 +44,13 @@ final class StudentWorkController extends AbstractController
     public function page(RequestInterface $request): Result
     {
         $context = $this->context();
-        $query = EducationStudentWork::query()->where('tenant_id', $this->tenantId($context));
-        foreach (['student_id', 'teacher_id', 'status'] as $field) {
-            if ($request->input($field) !== null && $request->input($field) !== '') {
-                $query->where($field, $request->input($field));
-            }
-        }
-        $total = (int) (clone $query)->count();
 
-        return $this->success([
-            'list' => $query->orderByDesc('id')->forPage($this->pageNumber($request), $this->pageSize($request))->get()->toArray(),
-            'total' => $total,
-        ]);
+        return $this->success($this->service->page(
+            $request->all(),
+            $context,
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
     }
 
     #[Post(path: '/admin/education/content/student-works/{id}/publish', operationId: 'educationContentStudentWorkPublish', summary: 'Content student work publish', tags: ['Education Content'])]
