@@ -31,9 +31,11 @@ describe('learning material list', () => {
     expect(relation?.meta?.auth).toEqual(['education:content:relation:page'])
   })
 
-  it('shows_guardian_visible_indicator_and_publish_409_review_error', () => {
+  it('shows_guardian_visible_indicator_and_publish_errors_in_chinese', () => {
     expect(guardianVisibleLabel({ guardian_visible: true })).toBe('家长可见')
+    expect(guardianVisibleLabel({ guardian_visible: false })).toBe('内部使用')
     expect(materialPublishState({ status: 'draft' })).toEqual({ canPublish: true, badge: '待审核' })
+    expect(materialPublishState({ status: 'published' })).toEqual({ canPublish: false, badge: '已发布' })
     expect(publishFailureNotice({ code: 409, message: 'material requires approved review before publish' })).toBe('material requires approved review before publish')
     expect(publishFailureNotice({ code: 403 })).toBe('暂无操作权限')
   })

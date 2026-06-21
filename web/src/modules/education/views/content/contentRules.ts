@@ -1,4 +1,33 @@
-import type { ContentReviewStatus, LearningMaterialRow, ShowcaseRow } from '../../api/content/types.ts'
+import type { ContentPublishStatus, ContentReviewStatus, LearningMaterialRow, ShowcaseRow } from '../../api/content/types.ts'
+
+export function contentStatusLabel(status?: string): string {
+  const labels: Record<string, string> = {
+    draft: '草稿',
+    reviewing: '审核中',
+    published: '已发布',
+    withdrawn: '已撤回',
+    archived: '已归档',
+    pending: '待审核',
+    approved: '已通过',
+    rejected: '已驳回',
+  }
+
+  return status ? labels[status] ?? status : '-'
+}
+
+export function contentStatusTag(status?: string): 'success' | 'warning' | 'danger' | 'info' {
+  if (status === 'published' || status === 'approved') {
+    return 'success'
+  }
+  if (status === 'reviewing' || status === 'pending') {
+    return 'warning'
+  }
+  if (status === 'rejected') {
+    return 'danger'
+  }
+
+  return 'info'
+}
 
 export function guardianVisibleLabel(row: Pick<LearningMaterialRow, 'guardian_visible'>): string {
   return row.guardian_visible ? '家长可见' : '内部使用'
@@ -17,10 +46,10 @@ export function materialPublishState(row: Pick<LearningMaterialRow, 'status'>): 
 
 export function publishFailureNotice(error: { code?: number, message?: string }): string {
   if (error.code === 409) {
-    return error.message ?? 'material requires approved review before publish'
+    return error.message ?? '资料需要审核通过后才能发布'
   }
   if (error.code === 422) {
-    return error.message ?? 'validation failed'
+    return error.message ?? '请检查提交内容'
   }
   if (error.code === 403) {
     return '暂无操作权限'
@@ -58,3 +87,17 @@ export function metricFilterPayload(input: { tenant_id?: number, campus_id?: num
     end_date: input.dateRange?.[1],
   }
 }
+
+export const contentPublishStatusOptions: Array<{ label: string, value: ContentPublishStatus }> = [
+  { label: '草稿', value: 'draft' },
+  { label: '审核中', value: 'reviewing' },
+  { label: '已发布', value: 'published' },
+  { label: '已撤回', value: 'withdrawn' },
+  { label: '已归档', value: 'archived' },
+]
+
+export const contentReviewStatusOptions: Array<{ label: string, value: ContentReviewStatus }> = [
+  { label: '待审核', value: 'pending' },
+  { label: '已通过', value: 'approved' },
+  { label: '已驳回', value: 'rejected' },
+]
