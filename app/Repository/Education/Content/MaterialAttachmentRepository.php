@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterialAttachment;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialAttachmentRepository
 {
@@ -48,5 +50,25 @@ final class MaterialAttachmentRepository
             ->orderBy('sort_order')
             ->get()
             ->toArray();
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterialAttachment::query(), $filters, $context);
+        if (($filters['material_version_id'] ?? '') !== '') {
+            $query->where('material_version_id', (int) $filters['material_version_id']);
+        }
+        if (($filters['file_type'] ?? '') !== '') {
+            $query->where('file_type', (string) $filters['file_type']);
+        }
+
+        $total = (int) (clone $query)->count();
+        $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
+
+        return ['list' => $list, 'total' => $total];
     }
 }

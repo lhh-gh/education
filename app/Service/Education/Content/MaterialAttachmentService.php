@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Content;
 
 use App\Repository\Education\Content\MaterialAttachmentRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialAttachmentService
 {
@@ -32,5 +33,14 @@ final class MaterialAttachmentService
     public function listForVersion(int $tenantId, int $versionId): array
     {
         return $this->attachments->listForVersion($tenantId, $versionId);
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->attachments->page($filters, $context, $page, $pageSize);
     }
 }
