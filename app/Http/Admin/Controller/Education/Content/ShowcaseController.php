@@ -19,7 +19,6 @@ use App\Http\Admin\Request\Education\Content\ShowcaseSaveRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
-use App\Model\Education\Content\EducationStageAchievementShowcase;
 use App\Service\Education\Content\ShowcaseService;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -46,18 +45,13 @@ final class ShowcaseController extends AbstractController
     public function page(RequestInterface $request): Result
     {
         $context = $this->context();
-        $query = EducationStageAchievementShowcase::query()->where('tenant_id', $this->tenantId($context));
-        foreach (['student_id', 'status'] as $field) {
-            if ($request->input($field) !== null && $request->input($field) !== '') {
-                $query->where($field, $request->input($field));
-            }
-        }
-        $total = (int) (clone $query)->count();
 
-        return $this->success([
-            'list' => $query->orderByDesc('id')->forPage($this->pageNumber($request), $this->pageSize($request))->get()->toArray(),
-            'total' => $total,
-        ]);
+        return $this->success($this->service->page(
+            $request->all(),
+            $context,
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
     }
 
     #[Post(path: '/admin/education/content/showcases', operationId: 'educationContentShowcaseSave', summary: 'Content showcase save', tags: ['Education Content'])]

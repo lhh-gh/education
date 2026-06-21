@@ -14,6 +14,8 @@ namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationShowcaseItem;
 use App\Model\Education\Content\EducationStageAchievementShowcase;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ShowcaseRepository
 {
@@ -36,6 +38,29 @@ final class ShowcaseRepository
     public function findInTenant(int $tenantId, int $id): EducationStageAchievementShowcase
     {
         return EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->findOrFail($id);
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationStageAchievementShowcase::query(), $filters, $context);
+        foreach (['student_id', 'status'] as $field) {
+            if (isset($filters[$field]) && $filters[$field] !== '') {
+                $query->where($field, $filters[$field]);
+            }
+        }
+
+        $total = (int) (clone $query)->count();
+        $list = $query->orderByDesc('id')
+            ->forPage($page, $pageSize)
+            ->get()
+            ->map(static fn (EducationStageAchievementShowcase $row): array => $row->toArray())
+            ->all();
+
+        return ['list' => $list, 'total' => $total];
     }
 
     /**

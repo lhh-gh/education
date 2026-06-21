@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Content;
 
+use App\Model\Education\Content\EducationStageAchievementShowcase;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\ShowcaseService;
 
 /**
@@ -20,6 +22,38 @@ use App\Service\Education\Content\ShowcaseService;
  */
 final class ShowcaseServiceTest extends ContentTestCase
 {
+    public function testPageUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_showcase_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-showcase');
+        $visible = EducationStageAchievementShowcase::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'student_id' => 1201,
+            'stage_goal_id' => 3301,
+            'title' => 'Visible Showcase',
+            'summary' => 'Visible current campus showcase',
+            'status' => 'published',
+            'published_at' => '2026-06-10 10:00:00',
+        ]);
+        EducationStageAchievementShowcase::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'stage_goal_id' => 3302,
+            'title' => 'Hidden Showcase',
+            'summary' => 'Hidden other campus showcase',
+            'status' => 'published',
+            'published_at' => '2026-06-10 10:00:00',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9904);
+
+        $page = make(ShowcaseService::class)->page([], $context, 1, 20);
+
+        self::assertSame(1, $page['total']);
+        self::assertSame((int) $visible->id, (int) $page['list'][0]['id']);
+    }
+
     public function testGuardianSeesPublishedShowcaseForBoundStudentOnly(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_showcase');
