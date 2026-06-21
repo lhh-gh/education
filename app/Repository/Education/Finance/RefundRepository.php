@@ -14,6 +14,7 @@ namespace App\Repository\Education\Finance;
 
 use App\Model\Education\Finance\EducationRefundRecord;
 use App\Model\Education\Finance\EducationRefundRequest;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -25,17 +26,8 @@ final class RefundRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationRefundRequest::query();
-        if (! $context->platformAccess) {
-            if ($context->tenantId === null) {
-                $query->whereRaw('1 = 0');
-            } else {
-                $query->where('tenant_id', $context->tenantId);
-            }
-        } elseif (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-            $query->where('tenant_id', (int) $filters['tenant_id']);
-        }
-        foreach (['campus_id', 'order_id', 'status'] as $field) {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationRefundRequest::query(), $filters, $context);
+        foreach (['order_id', 'status'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }
@@ -50,10 +42,11 @@ final class RefundRepository
 
     public function lockRequest(int $id, EducationUserContext $context): ?EducationRefundRequest
     {
-        $query = EducationRefundRequest::query()->whereKey($id)->lockForUpdate();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(
+            EducationRefundRequest::query()->whereKey($id)->lockForUpdate(),
+            [],
+            $context
+        );
         $request = $query->first();
 
         return $request instanceof EducationRefundRequest ? $request : null;

@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Finance;
 
 use App\Model\Education\Finance\EducationPaymentChannel;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class PaymentChannelRepository
@@ -23,15 +24,7 @@ final class PaymentChannelRepository
      */
     public function list(array $filters, EducationUserContext $context): array
     {
-        $query = EducationPaymentChannel::query();
-        if (! $context->platformAccess) {
-            if ($context->tenantId === null) {
-                return [];
-            }
-            $query->where('tenant_id', $context->tenantId);
-        } elseif (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-            $query->where('tenant_id', (int) $filters['tenant_id']);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationPaymentChannel::query(), $filters, $context);
         if (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
         }
