@@ -18,14 +18,20 @@ use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContentReviewRepository
 {
-    public function hasApprovedReview(int $tenantId, string $businessType, int $businessId): bool
+    public function hasApprovedReview(int $tenantId, ?int $campusId, string $businessType, int $businessId): bool
     {
-        return EducationContentReviewRecord::query()
+        $query = EducationContentReviewRecord::query()
             ->where('tenant_id', $tenantId)
             ->where('business_type', $businessType)
             ->where('business_id', $businessId)
-            ->where('status', 'approved')
-            ->exists();
+            ->where('status', 'approved');
+        if ($campusId === null) {
+            $query->whereNull('campus_id');
+        } else {
+            $query->where('campus_id', $campusId);
+        }
+
+        return $query->exists();
     }
 
     /**

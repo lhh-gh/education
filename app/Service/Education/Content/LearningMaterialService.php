@@ -60,7 +60,8 @@ final class LearningMaterialService
     {
         $tenantId = $this->tenantId($context);
         $material = $this->materials->findInContext($context, $materialId);
-        if ($requiresApprovedReview && ! $this->reviews->hasApprovedReview($tenantId, 'learning_material', $materialId)) {
+        $campusId = $material->campus_id === null ? null : (int) $material->campus_id;
+        if ($requiresApprovedReview && ! $this->reviews->hasApprovedReview($tenantId, $campusId, 'learning_material', $materialId)) {
             throw new \RuntimeException('material requires approved review before publish', 409);
         }
         $version = $this->versions->findInContext($context, (int) $material->current_version_id);

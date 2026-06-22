@@ -110,6 +110,37 @@ final class LearningMaterialServiceTest extends ContentTestCase
         self::assertSame('published', EducationLearningMaterialVersion::query()->find($result['current_version_id'])->status->value);
     }
 
+    public function testApprovedReviewMustUseMaterialCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_material_review_campus_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-material-review-campus');
+        $created = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'material_code' => 'ART-REVIEW-CAMPUS-001',
+            'material_name' => 'Campus Review Material',
+            'course_id' => 301,
+            'material_type' => 'worksheet',
+            'guardian_visible' => true,
+        ]);
+        EducationContentReviewRecord::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'business_type' => 'learning_material',
+            'business_id' => $created['material_id'],
+            'reviewer_id' => 9003,
+            'status' => 'approved',
+            'reviewed_at' => '2026-06-10 10:00:00',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9001);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionCode(409);
+        $this->expectExceptionMessage('material requires approved review before publish');
+
+        make(LearningMaterialService::class)->publish($context, $created['material_id'], 9001, true);
+    }
+
     public function testSaveUsesCurrentCampusScopeForExistingMaterial(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_material_save_scope');
