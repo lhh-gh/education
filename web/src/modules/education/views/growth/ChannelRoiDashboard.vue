@@ -7,10 +7,17 @@ defineOptions({ name: 'EducationGrowthChannelRoiDashboard' })
 
 const filters = reactive({ source_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
 const rows = ref<ChannelRoiRecord[]>([])
+const loading = ref(false)
 
 async function loadRows() {
-  const response = await getChannelRoi(channelRoiFilterPayload(filters))
-  rows.value = response.data.list
+  loading.value = true
+  try {
+    const response = await getChannelRoi(channelRoiFilterPayload(filters))
+    rows.value = response.data.list
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 onMounted(loadRows)
@@ -21,8 +28,8 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>{{ growthText.channelRoiTitle }}</span>
-          <el-button type="primary" @click="loadRows">
+          <span>渠道 ROI</span>
+          <el-button type="primary" :loading="loading" @click="loadRows">
             {{ growthText.refresh }}
           </el-button>
         </div>
@@ -31,11 +38,11 @@ onMounted(loadRows)
         <el-form-item :label="growthText.fields.source">
           <el-input-number v-model="filters.source_id" :min="1" controls-position="right" />
         </el-form-item>
-        <el-form-item :label="growthText.fields.date">
+        <el-form-item label="日期范围">
           <el-date-picker v-model="filters.dateRange" type="daterange" value-format="YYYY-MM-DD" />
         </el-form-item>
       </el-form>
-      <el-table :data="rows" row-key="source_id">
+      <el-table v-loading="loading" :data="rows" row-key="source_id">
         <el-table-column prop="source_id" :label="growthText.fields.source" width="100" />
         <el-table-column prop="lead_count" :label="growthText.fields.lead" width="100" />
         <el-table-column prop="converted_count" :label="growthText.fields.converted" width="120" />
@@ -48,6 +55,9 @@ onMounted(loadRows)
             </el-tag>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无渠道 ROI 数据" />
+        </template>
       </el-table>
     </el-card>
   </div>

@@ -35,7 +35,7 @@ onMounted(loadWorkbench)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>{{ growthText.workbenchTitle }}</span>
+          <span>增长工作台</span>
           <el-button type="primary" @click="loadWorkbench">
             {{ growthText.refresh }}
           </el-button>
@@ -62,7 +62,7 @@ onMounted(loadWorkbench)
         </el-table-column>
         <el-table-column prop="summary" :label="growthText.fields.summary" min-width="220" />
         <template #empty>
-          <el-empty :description="growthText.empty.hotLeads" />
+          <el-empty description="暂无高意向线索" />
         </template>
       </el-table>
     </el-card>

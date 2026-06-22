@@ -8,6 +8,7 @@ defineOptions({ name: 'EducationGrowthLossReasonReport' })
 const reasonForm = reactive({ reason_code: '', reason_name: '', category: 'price' })
 const lossForm = reactive({ lead_id: undefined as number | undefined, loss_reason_id: undefined as number | undefined, detail: '' })
 const rows = ref<Array<{ lead_id: number, status: string }>>([])
+const loading = ref(false)
 const canSaveReason = computed(() => hasAuth('education:growth:loss-reason:save'))
 const canCreateLoss = computed(() => hasAuth('education:growth:loss:create'))
 
@@ -19,8 +20,14 @@ async function createLoss() {
   if (!lossForm.lead_id || !lossForm.loss_reason_id) {
     return
   }
-  const response = await createLeadLossRecord(lossForm.lead_id, { loss_reason_id: lossForm.loss_reason_id, detail: lossForm.detail })
-  rows.value.unshift(response.data)
+  loading.value = true
+  try {
+    const response = await createLeadLossRecord(lossForm.lead_id, { loss_reason_id: lossForm.loss_reason_id, detail: lossForm.detail })
+    rows.value.unshift(response.data)
+  }
+  finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -28,7 +35,7 @@ async function createLoss() {
   <div class="mine-layout education-growth-page pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>{{ growthText.lossReasonTitle }}</span>
+        <span>流失原因</span>
       </template>
       <el-form inline>
         <el-form-item :label="growthText.fields.code">
@@ -53,15 +60,15 @@ async function createLoss() {
         <el-form-item :label="growthText.fields.lead">
           <el-input-number v-model="lossForm.lead_id" :min="1" controls-position="right" />
         </el-form-item>
-        <el-form-item :label="growthText.fields.reason">
+        <el-form-item :label="growthText.fields.reasonId">
           <el-input-number v-model="lossForm.loss_reason_id" :min="1" controls-position="right" />
         </el-form-item>
         <el-form-item :label="growthText.fields.detail">
           <el-input v-model="lossForm.detail" />
         </el-form-item>
         <el-form-item v-if="canCreateLoss">
-          <el-button type="primary" @click="createLoss">
-            {{ growthText.markLost }}
+          <el-button type="primary" :loading="loading" @click="createLoss">
+            标记流失
           </el-button>
         </el-form-item>
         <el-form-item v-else>
@@ -70,13 +77,16 @@ async function createLoss() {
           </el-tag>
         </el-form-item>
       </el-form>
-      <el-table :data="rows" row-key="lead_id">
+      <el-table v-loading="loading" :data="rows" row-key="lead_id">
         <el-table-column prop="lead_id" :label="growthText.fields.lead" width="120" />
         <el-table-column :label="growthText.fields.status" width="120">
           <template #default="{ row }">
             {{ growthStatusLabel(row.status) }}
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无流失记录" />
+        </template>
       </el-table>
     </el-card>
   </div>

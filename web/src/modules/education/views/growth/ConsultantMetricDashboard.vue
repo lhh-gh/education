@@ -7,10 +7,17 @@ defineOptions({ name: 'EducationGrowthConsultantMetricDashboard' })
 
 const filters = reactive({ consultant_user_id: undefined as number | undefined, dateRange: undefined as [string, string] | undefined })
 const rows = ref<ConsultantMetricRecord[]>([])
+const loading = ref(false)
 
 async function loadRows() {
-  const response = await getConsultantMetrics(consultantMetricFilterPayload(filters))
-  rows.value = response.data.list
+  loading.value = true
+  try {
+    const response = await getConsultantMetrics(consultantMetricFilterPayload(filters))
+    rows.value = response.data.list
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 onMounted(loadRows)
@@ -21,8 +28,8 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>{{ growthText.consultantMetricTitle }}</span>
-          <el-button type="primary" @click="loadRows">
+          <span>顾问指标</span>
+          <el-button type="primary" :loading="loading" @click="loadRows">
             {{ growthText.refresh }}
           </el-button>
         </div>
@@ -35,18 +42,21 @@ onMounted(loadRows)
           <el-date-picker v-model="filters.dateRange" type="daterange" value-format="YYYY-MM-DD" />
         </el-form-item>
       </el-form>
-      <el-table :data="rows" row-key="consultant_user_id">
+      <el-table v-loading="loading" :data="rows" row-key="consultant_user_id">
         <el-table-column prop="consultant_user_id" :label="growthText.fields.consultant" width="120" />
         <el-table-column prop="assigned_leads_count" :label="growthText.fields.assigned" width="110" />
         <el-table-column prop="follow_count" :label="growthText.fields.follows" width="100" />
         <el-table-column prop="trial_count" :label="growthText.fields.trials" width="100" />
         <el-table-column prop="converted_count" :label="growthText.fields.converted" width="120" />
         <el-table-column prop="lost_count" :label="growthText.fields.lost" width="100" />
-        <el-table-column :label="growthText.fields.conversion" width="130">
+        <el-table-column label="转化率" width="130">
           <template #default="{ row }">
             {{ consultantConversionRate(row) }}
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无顾问指标" />
+        </template>
       </el-table>
     </el-card>
   </div>

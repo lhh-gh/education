@@ -17,11 +17,11 @@ const blocked = computed(() => containsBlockedAiPromise(localValue.value))
 
 <template>
   <div class="growth-script-editor">
-    <el-input v-model="localValue" type="textarea" :rows="8" :placeholder="growthText.scriptPlaceholder" />
+    <el-input v-model="localValue" type="textarea" :rows="8" placeholder="请先生成或编辑话术内容" />
     <div class="editor-actions">
-      <el-alert v-if="blocked" type="error" show-icon :closable="false" :title="growthText.aiBlocked" />
+      <el-alert v-if="blocked" type="error" show-icon :closable="false" title="AI 不允许承诺自动优惠" />
       <el-button v-if="canConfirm" type="primary" :disabled="blocked || !localValue.trim()" @click="emit('confirm', localValue)">
-        {{ growthText.confirm }}
+        确认话术
       </el-button>
       <el-tag v-else type="info">
         {{ growthText.noPermission }}

@@ -9,6 +9,7 @@ defineOptions({ name: 'EducationGrowthAiTalkScriptWorkbench' })
 const form = reactive({ lead_id: undefined as number | undefined, script_type: 'trial_invitation', goal: '', generated_text: '' })
 const scriptId = ref<number>()
 const scriptText = ref('')
+const loading = ref(false)
 const blocked = computed(() => containsBlockedAiPromise(form.generated_text))
 const canGenerate = computed(() => hasAuth('education:growth:ai-script:generate'))
 const canConfirm = computed(() => hasAuth('education:growth:ai-script:confirm'))
@@ -17,9 +18,15 @@ async function generate() {
   if (!form.lead_id || blocked.value) {
     return
   }
-  const response = await generateAiTalkScript(aiScriptPayload({ lead_id: form.lead_id, script_type: form.script_type, goal: form.goal, generated_text: form.generated_text || undefined }))
-  scriptId.value = response.data.ai_talk_script_id
-  scriptText.value = form.generated_text || growthText.generatedFallback
+  loading.value = true
+  try {
+    const response = await generateAiTalkScript(aiScriptPayload({ lead_id: form.lead_id, script_type: form.script_type, goal: form.goal, generated_text: form.generated_text || undefined }))
+    scriptId.value = response.data.ai_talk_script_id
+    scriptText.value = form.generated_text || growthText.generatedFallback
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 async function confirm(value: string) {
@@ -34,7 +41,7 @@ async function confirm(value: string) {
   <div class="mine-layout education-growth-page pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>{{ growthText.aiScriptTitle }}</span>
+        <span>AI 话术</span>
       </template>
       <el-form label-width="120px">
         <el-form-item :label="growthText.fields.leadId">
@@ -49,9 +56,12 @@ async function confirm(value: string) {
         <el-form-item :label="growthText.fields.draftText">
           <el-input v-model="form.generated_text" type="textarea" :rows="4" />
         </el-form-item>
+        <el-form-item v-if="blocked">
+          <el-alert type="error" show-icon :closable="false" title="AI 不允许承诺自动优惠" />
+        </el-form-item>
         <el-form-item>
-          <el-button v-if="canGenerate" type="primary" :disabled="blocked" @click="generate">
-            {{ growthText.generate }}
+          <el-button v-if="canGenerate" type="primary" :loading="loading" :disabled="blocked" @click="generate">
+            生成话术
           </el-button>
           <el-tag v-else type="info">
             {{ growthText.noPermission }}

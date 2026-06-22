@@ -7,11 +7,18 @@ defineOptions({ name: 'EducationGrowthFollowupStrategyList' })
 
 const form = reactive({ strategy_code: '', strategy_name: '', lead_stage: 'followed', score_level: 'hot', suggestion_template: '', next_follow_hours: 4 })
 const rows = ref<Array<typeof form & { status: string }>>([])
+const loading = ref(false)
 const canSave = computed(() => hasAuth('education:growth:strategy:save'))
 
 async function save() {
-  const response = await saveFollowupStrategy(form)
-  rows.value.unshift({ ...form, status: response.data.status })
+  loading.value = true
+  try {
+    const response = await saveFollowupStrategy(form)
+    rows.value.unshift({ ...form, status: response.data.status })
+  }
+  finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -19,20 +26,20 @@ async function save() {
   <div class="mine-layout education-growth-page pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>{{ growthText.followupStrategyTitle }}</span>
+        <span>跟进策略</span>
       </template>
       <el-form inline>
-        <el-form-item :label="growthText.fields.code">
+        <el-form-item label="策略编码">
           <el-input v-model="form.strategy_code" />
         </el-form-item>
         <el-form-item :label="growthText.fields.name">
           <el-input v-model="form.strategy_name" />
         </el-form-item>
-        <el-form-item :label="growthText.fields.template">
+        <el-form-item label="建议模板">
           <el-input v-model="form.suggestion_template" />
         </el-form-item>
         <el-form-item v-if="canSave">
-          <el-button type="primary" @click="save">
+          <el-button type="primary" :loading="loading" @click="save">
             {{ growthText.save }}
           </el-button>
         </el-form-item>
@@ -42,7 +49,7 @@ async function save() {
           </el-tag>
         </el-form-item>
       </el-form>
-      <el-table :data="rows" row-key="strategy_code">
+      <el-table v-loading="loading" :data="rows" row-key="strategy_code">
         <el-table-column prop="strategy_code" :label="growthText.fields.code" width="140" />
         <el-table-column prop="strategy_name" :label="growthText.fields.name" min-width="160" />
         <el-table-column :label="growthText.fields.score" width="120">
@@ -55,6 +62,9 @@ async function save() {
             {{ growthStatusLabel(row.status) }}
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无跟进策略" />
+        </template>
       </el-table>
     </el-card>
   </div>
