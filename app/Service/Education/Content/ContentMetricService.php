@@ -29,9 +29,17 @@ final class ContentMetricService
      */
     public function aggregateMaterialDaily(int $tenantId, ?int $campusId, int $materialId, ?int $courseId, string $metricDate): array
     {
-        $teacherUseCount = (int) EducationLessonMaterialUsage::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereDate('used_at', $metricDate)->count();
-        $guardianReadCount = (int) EducationMaterialReadRecord::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereNotNull('guardian_user_id')->whereDate('read_at', $metricDate)->count();
-        $favoriteCount = (int) EducationTeacherMaterialFavorite::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->count();
+        $usageQuery = EducationLessonMaterialUsage::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereDate('used_at', $metricDate);
+        $readQuery = EducationMaterialReadRecord::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereNotNull('guardian_user_id')->whereDate('read_at', $metricDate);
+        $favoriteQuery = EducationTeacherMaterialFavorite::query()->where('tenant_id', $tenantId)->where('material_id', $materialId);
+        if ($campusId !== null) {
+            $usageQuery->where('campus_id', $campusId);
+            $readQuery->where('campus_id', $campusId);
+            $favoriteQuery->where('campus_id', $campusId);
+        }
+        $teacherUseCount = (int) $usageQuery->count();
+        $guardianReadCount = (int) $readQuery->count();
+        $favoriteCount = (int) $favoriteQuery->count();
         $metric = $this->metrics->saveMaterialDaily([
             'tenant_id' => $tenantId,
             'campus_id' => $campusId,

@@ -12,8 +12,11 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Content;
 
+use App\Model\Education\Content\EducationLessonMaterialUsage;
+use App\Model\Education\Content\EducationMaterialReadRecord;
 use App\Model\Education\Content\EducationMaterialUsageMetricDaily;
 use App\Model\Education\Content\EducationStudentWorkMetricDaily;
+use App\Model\Education\Content\EducationTeacherMaterialFavorite;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\ContentMetricService;
 
@@ -23,6 +26,47 @@ use App\Service\Education\Content\ContentMetricService;
  */
 final class ContentMetricServiceTest extends ContentTestCase
 {
+    public function testAggregateMaterialDailyUsesCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_metric_material_aggregate_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-metric-material-aggregate');
+        $metricDate = '2026-06-20';
+        foreach ([$campus->id, $hiddenCampus->id] as $index => $campusId) {
+            EducationLessonMaterialUsage::query()->create([
+                'tenant_id' => $tenant->id,
+                'campus_id' => $campusId,
+                'lesson_id' => 7001 + $index,
+                'teacher_id' => 8001 + $index,
+                'material_id' => 901,
+                'material_version_id' => 1901 + $index,
+                'usage_type' => 'preview',
+                'used_at' => $metricDate . ' 09:00:00',
+            ]);
+            EducationMaterialReadRecord::query()->create([
+                'tenant_id' => $tenant->id,
+                'campus_id' => $campusId,
+                'material_id' => 901,
+                'material_version_id' => 2901 + $index,
+                'student_id' => 3001 + $index,
+                'guardian_user_id' => 4001 + $index,
+                'read_at' => $metricDate . ' 10:00:00',
+            ]);
+            EducationTeacherMaterialFavorite::query()->create([
+                'tenant_id' => $tenant->id,
+                'campus_id' => $campusId,
+                'teacher_id' => 5001 + $index,
+                'material_id' => 901,
+                'favorited_at' => $metricDate . ' 11:00:00',
+            ]);
+        }
+
+        $metric = make(ContentMetricService::class)->aggregateMaterialDaily((int) $tenant->id, (int) $campus->id, 901, 301, $metricDate);
+
+        self::assertSame(1, $metric['teacher_use_count']);
+        self::assertSame(1, $metric['guardian_read_count']);
+        self::assertSame(1, $metric['favorite_count']);
+    }
+
     public function testPageMaterialUsageUsesCurrentCampusScope(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_metric_material_scope');
