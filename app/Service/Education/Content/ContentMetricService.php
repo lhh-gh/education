@@ -18,6 +18,7 @@ use App\Model\Education\Content\EducationStageAchievementShowcase;
 use App\Model\Education\Content\EducationStudentWork;
 use App\Model\Education\Content\EducationTeacherMaterialFavorite;
 use App\Repository\Education\Content\ContentMetricRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContentMetricService
 {
@@ -48,6 +49,15 @@ final class ContentMetricService
             'guardian_read_count' => $guardianReadCount,
             'favorite_count' => $favoriteCount,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageMaterialUsage(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->metrics->pageMaterialUsage($filters, $context, $page, $pageSize);
     }
 
     /**
@@ -83,5 +93,14 @@ final class ContentMetricService
             'published_count' => $publishedCount,
             'showcase_count' => $showcaseCount,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageStudentWork(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->metrics->pageStudentWork($filters, $context, $page, $pageSize);
     }
 }
