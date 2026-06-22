@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Content;
 
+use App\Model\Education\Content\EducationStudentWork;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\StudentWorkService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -81,5 +83,45 @@ final class StudentWorkServiceTest extends ContentTestCase
             'teacher_id' => 701,
             'title' => 'Hidden work',
         ], [1201]);
+    }
+
+    public function testPublishUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_publish_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-publish');
+        $hidden = EducationStudentWork::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'status' => 'draft',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(StudentWorkService::class)->publish($context, (int) $hidden->id);
+    }
+
+    public function testWithdrawUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_withdraw_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-withdraw');
+        $hidden = EducationStudentWork::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'status' => 'published',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(StudentWorkService::class)->withdraw($context, (int) $hidden->id);
     }
 }

@@ -84,7 +84,7 @@ final class LearningMaterialController extends AbstractController
     {
         $context = $this->context();
         try {
-            $result = $this->service->publish($this->tenantId($context), $id, $context->userId, true);
+            $result = $this->service->publish($context, $id, $context->userId, true);
         } catch (\RuntimeException $exception) {
             throw $this->businessFailure($exception);
         }
@@ -99,7 +99,7 @@ final class LearningMaterialController extends AbstractController
     public function withdraw(int $id): Result
     {
         $context = $this->context();
-        $result = $this->service->withdraw($this->tenantId($context), $id, $context->userId);
+        $result = $this->service->withdraw($context, $id, $context->userId);
         $this->audit($this->events, 'education.content.material.withdrawn', 'learning_material', $id, $context, $result);
 
         return $this->success($result);

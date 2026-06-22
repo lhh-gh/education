@@ -47,9 +47,9 @@ final class ShowcaseService
     /**
      * @return array{showcase_id: int, status: string}
      */
-    public function publish(int $tenantId, int $showcaseId): array
+    public function publish(EducationUserContext $context, int $showcaseId): array
     {
-        $showcase = $this->showcases->findInTenant($tenantId, $showcaseId);
+        $showcase = $this->showcases->findInContext($context, $showcaseId);
         $showcase->status = 'published';
         $showcase->published_at = date('Y-m-d H:i:s');
         $showcase->save();
@@ -60,9 +60,9 @@ final class ShowcaseService
     /**
      * @return array{showcase_id: int, status: string}
      */
-    public function withdraw(int $tenantId, int $showcaseId): array
+    public function withdraw(EducationUserContext $context, int $showcaseId): array
     {
-        $showcase = $this->showcases->findInTenant($tenantId, $showcaseId);
+        $showcase = $this->showcases->findInContext($context, $showcaseId);
         $showcase->status = 'withdrawn';
         $showcase->withdrawn_at = date('Y-m-d H:i:s');
         $showcase->save();

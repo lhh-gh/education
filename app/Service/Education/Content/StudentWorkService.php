@@ -47,9 +47,9 @@ final class StudentWorkService
     /**
      * @return array{student_work_id: int, status: string}
      */
-    public function publish(int $tenantId, int $workId): array
+    public function publish(EducationUserContext $context, int $workId): array
     {
-        $work = $this->works->findInTenant($tenantId, $workId);
+        $work = $this->works->findInContext($context, $workId);
         $work->status = 'published';
         $work->published_at = date('Y-m-d H:i:s');
         $work->save();
@@ -60,9 +60,9 @@ final class StudentWorkService
     /**
      * @return array{student_work_id: int, status: string}
      */
-    public function withdraw(int $tenantId, int $workId): array
+    public function withdraw(EducationUserContext $context, int $workId): array
     {
-        $work = $this->works->findInTenant($tenantId, $workId);
+        $work = $this->works->findInContext($context, $workId);
         $work->status = 'withdrawn';
         $work->save();
 

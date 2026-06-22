@@ -60,7 +60,7 @@ final class StudentWorkController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->publish($this->tenantId($context), $id));
+        return $this->success($this->service->publish($context, $id));
     }
 
     #[Post(path: '/admin/education/content/student-works/{id}/withdraw', operationId: 'educationContentStudentWorkWithdraw', summary: 'Content student work withdraw', tags: ['Education Content'])]
@@ -70,6 +70,6 @@ final class StudentWorkController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->withdraw($this->tenantId($context), $id));
+        return $this->success($this->service->withdraw($context, $id));
     }
 }

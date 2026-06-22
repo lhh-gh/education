@@ -39,6 +39,13 @@ final class LearningMaterialRepository
         return EducationLearningMaterial::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInContext(EducationUserContext $context, int $id): EducationLearningMaterial
+    {
+        return (new EducationScopeQuery())
+            ->applyTenantCampus(EducationLearningMaterial::query(), [], $context)
+            ->findOrFail($id);
+    }
+
     /**
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}

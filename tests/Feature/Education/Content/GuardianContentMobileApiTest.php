@@ -14,7 +14,9 @@ namespace HyperfTests\Feature\Education\Content;
 
 use App\Http\Common\ResultCode;
 use App\Model\Education\Content\EducationMaterialReadRecord;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\LearningMaterialService;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -34,7 +36,15 @@ final class GuardianContentMobileApiTest extends ContentApiCase
             'material_type' => 'worksheet',
             'guardian_visible' => true,
         ]);
-        make(LearningMaterialService::class)->publish($fixture['tenant_id'], $created['material_id'], $this->user->id, false);
+        $context = new EducationUserContext(
+            userId: $this->user->id,
+            tenantId: $fixture['tenant_id'],
+            roleCode: EducationRoleCode::Guardian,
+            platformAccess: false,
+            campusIds: [$fixture['campus_id']],
+            currentCampusId: $fixture['campus_id']
+        );
+        make(LearningMaterialService::class)->publish($context, $created['material_id'], $this->user->id, false);
 
         $headers = $this->mobileHeaders($fixture['tenant']);
         $first = $this->get('/mobile/education/content/guardian/students/' . $fixture['student_id'] . '/materials', [], $headers);

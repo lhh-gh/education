@@ -39,6 +39,13 @@ final class MaterialVersionRepository
         return EducationLearningMaterialVersion::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInContext(EducationUserContext $context, int $id): EducationLearningMaterialVersion
+    {
+        return (new EducationScopeQuery())
+            ->applyTenantCampus(EducationLearningMaterialVersion::query(), [], $context)
+            ->findOrFail($id);
+    }
+
     public function nextVersionNo(int $tenantId, int $materialId): int
     {
         return ((int) EducationLearningMaterialVersion::query()

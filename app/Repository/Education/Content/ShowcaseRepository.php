@@ -40,6 +40,13 @@ final class ShowcaseRepository
         return EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInContext(EducationUserContext $context, int $id): EducationStageAchievementShowcase
+    {
+        return (new EducationScopeQuery())
+            ->applyTenantCampus(EducationStageAchievementShowcase::query(), [], $context)
+            ->findOrFail($id);
+    }
+
     /**
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}

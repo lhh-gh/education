@@ -39,6 +39,13 @@ final class StudentWorkRepository
         return EducationStudentWork::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInContext(EducationUserContext $context, int $id): EducationStudentWork
+    {
+        return (new EducationScopeQuery())
+            ->applyTenantCampus(EducationStudentWork::query(), [], $context)
+            ->findOrFail($id);
+    }
+
     /**
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}

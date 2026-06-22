@@ -56,13 +56,14 @@ final class LearningMaterialService
     /**
      * @return array{material_id: int, current_version_id: int, status: string}
      */
-    public function publish(int $tenantId, int $materialId, int $operatorId, bool $requiresApprovedReview = true): array
+    public function publish(EducationUserContext $context, int $materialId, int $operatorId, bool $requiresApprovedReview = true): array
     {
-        $material = $this->materials->findInTenant($tenantId, $materialId);
+        $tenantId = $this->tenantId($context);
+        $material = $this->materials->findInContext($context, $materialId);
         if ($requiresApprovedReview && ! $this->reviews->hasApprovedReview($tenantId, 'learning_material', $materialId)) {
             throw new \RuntimeException('material requires approved review before publish', 409);
         }
-        $version = $this->versions->findInTenant($tenantId, (int) $material->current_version_id);
+        $version = $this->versions->findInContext($context, (int) $material->current_version_id);
         $fromStatus = $this->statusValue($material->status);
         $material->status = 'published';
         $material->save();
@@ -89,9 +90,10 @@ final class LearningMaterialService
     /**
      * @return array{material_id: int, status: string}
      */
-    public function withdraw(int $tenantId, int $materialId, int $operatorId = 0): array
+    public function withdraw(EducationUserContext $context, int $materialId, int $operatorId = 0): array
     {
-        $material = $this->materials->findInTenant($tenantId, $materialId);
+        $tenantId = $this->tenantId($context);
+        $material = $this->materials->findInContext($context, $materialId);
         $fromStatus = $this->statusValue($material->status);
         $material->status = 'withdrawn';
         $material->save();
@@ -120,5 +122,14 @@ final class LearningMaterialService
     private function statusValue(mixed $status): string
     {
         return $status instanceof \BackedEnum ? (string) $status->value : (string) $status;
+    }
+
+    private function tenantId(EducationUserContext $context): int
+    {
+        if ($context->tenantId === null) {
+            throw new \RuntimeException('education tenant context is missing', 403);
+        }
+
+        return $context->tenantId;
     }
 }

@@ -78,7 +78,7 @@ final class ShowcaseController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->publish($this->tenantId($context), $id));
+        return $this->success($this->service->publish($context, $id));
     }
 
     #[Post(path: '/admin/education/content/showcases/{id}/withdraw', operationId: 'educationContentShowcaseWithdraw', summary: 'Content showcase withdraw', tags: ['Education Content'])]
@@ -88,6 +88,6 @@ final class ShowcaseController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->withdraw($this->tenantId($context), $id));
+        return $this->success($this->service->withdraw($context, $id));
     }
 }
