@@ -41,6 +41,14 @@ final class StandardVersionRepository
         return EducationCourseStandardVersion::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInCampus(int $tenantId, int $campusId, int $id): EducationCourseStandardVersion
+    {
+        return EducationCourseStandardVersion::query()
+            ->where('tenant_id', $tenantId)
+            ->where('campus_id', $campusId)
+            ->findOrFail($id);
+    }
+
     public function hasApprovedReview(EducationCourseStandardVersion $version): bool
     {
         $query = EducationCourseStandardReviewRecord::query()

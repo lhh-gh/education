@@ -46,7 +46,7 @@ final class StandardVersionController extends AbstractController
     {
         $context = $this->context();
         try {
-            $result = $this->service->publish($this->tenantId($context), $id, $context->userId, true);
+            $result = $this->service->publish($this->tenantId($context), $this->campusId($context), $id, $context->userId, true);
         } catch (\RuntimeException $exception) {
             throw $this->businessFailure($exception);
         }
