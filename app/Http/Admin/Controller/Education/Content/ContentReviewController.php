@@ -19,7 +19,6 @@ use App\Http\Admin\Request\Education\Content\ContentReviewRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
-use App\Model\Education\Content\EducationContentReviewRecord;
 use App\Service\Education\Content\ContentReviewService;
 use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Contract\RequestInterface;
@@ -46,19 +45,12 @@ final class ContentReviewController extends AbstractController
     #[Permission(code: 'education:content:review:page')]
     public function page(RequestInterface $request): Result
     {
-        $context = $this->context();
-        $query = EducationContentReviewRecord::query()->where('tenant_id', $this->tenantId($context));
-        foreach (['business_type', 'business_id', 'status'] as $field) {
-            if ($request->input($field) !== null && $request->input($field) !== '') {
-                $query->where($field, $request->input($field));
-            }
-        }
-        $total = (int) (clone $query)->count();
-
-        return $this->success([
-            'list' => $query->orderByDesc('id')->forPage($this->pageNumber($request), $this->pageSize($request))->get()->toArray(),
-            'total' => $total,
-        ]);
+        return $this->success($this->service->page(
+            $request->all(),
+            $this->context(),
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
     }
 
     #[Post(path: '/admin/education/content/reviews/{id}/review', operationId: 'educationContentReviewHandle', summary: 'Content review handle', tags: ['Education Content'])]
@@ -69,7 +61,7 @@ final class ContentReviewController extends AbstractController
         $context = $this->context();
         $data = $request->validated();
         try {
-            $result = $this->service->reviewExisting($this->tenantId($context), $id, $context->userId, $data['status'], $data['review_note'] ?? null);
+            $result = $this->service->reviewExisting($context, $id, $context->userId, $data['status'], $data['review_note'] ?? null);
         } catch (\Throwable $exception) {
             throw $this->businessFailure($exception);
         }

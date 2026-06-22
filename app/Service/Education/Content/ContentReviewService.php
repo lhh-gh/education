@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Content;
 
-use App\Model\Education\Content\EducationContentReviewRecord;
 use App\Repository\Education\Content\ContentReviewRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContentReviewService
 {
@@ -34,14 +34,23 @@ final class ContentReviewService
     }
 
     /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->reviews->page($filters, $context, $page, $pageSize);
+    }
+
+    /**
      * @return array{content_review_id: int, status: string}
      */
-    public function reviewExisting(int $tenantId, int $id, int $reviewerId, string $status, ?string $note = null): array
+    public function reviewExisting(EducationUserContext $context, int $id, int $reviewerId, string $status, ?string $note = null): array
     {
         if (! \in_array($status, ['approved', 'rejected'], true)) {
             throw new \InvalidArgumentException('review status must be approved or rejected', 422);
         }
-        $review = EducationContentReviewRecord::query()->where('tenant_id', $tenantId)->findOrFail($id);
+        $review = $this->reviews->findInContext($context, $id);
         $review->reviewer_id = $reviewerId;
         $review->status = $status;
         $review->review_note = $note;
