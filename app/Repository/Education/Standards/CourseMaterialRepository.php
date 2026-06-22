@@ -21,12 +21,37 @@ final class CourseMaterialRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationCourseMaterial
+    public function save(array $data, ?EducationUserContext $context = null): EducationCourseMaterial
     {
-        return EducationCourseMaterial::query()->updateOrCreate([
-            'tenant_id' => $data['tenant_id'],
-            'material_code' => $data['material_code'],
-        ], $data + ['status' => 'draft']);
+        $material = EducationCourseMaterial::query()
+            ->where('tenant_id', $data['tenant_id'])
+            ->where('material_code', $data['material_code'])
+            ->first();
+
+        if ($material !== null) {
+            if ($context !== null) {
+                $material = (new EducationScopeQuery())
+                    ->applyTenantCampus(EducationCourseMaterial::query(), [], $context)
+                    ->findOrFail((int) $material->id);
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $material->tenant_id,
+                    'campus_id' => $material->campus_id === null ? null : (int) $material->campus_id,
+                ]);
+            }
+            $material->fill($data + ['status' => 'draft']);
+            $material->save();
+
+            return $material;
+        }
+
+        if ($context !== null) {
+            $data = array_merge($data, [
+                'tenant_id' => $this->tenantId($context, $data),
+                'campus_id' => $context->currentCampusId,
+            ]);
+        }
+
+        return EducationCourseMaterial::query()->create($data + ['status' => 'draft']);
     }
 
     /**
@@ -50,5 +75,20 @@ final class CourseMaterialRepository
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function tenantId(EducationUserContext $context, array $data): int
+    {
+        if ($context->tenantId !== null) {
+            return $context->tenantId;
+        }
+        if (isset($data['tenant_id']) && $data['tenant_id'] !== '') {
+            return (int) $data['tenant_id'];
+        }
+
+        throw new \RuntimeException('education tenant context is missing', 403);
     }
 }

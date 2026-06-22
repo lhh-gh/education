@@ -15,6 +15,7 @@ namespace HyperfTests\Unit\Education\Standards;
 use App\Model\Education\Standards\EducationCourseMaterial;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Standards\CourseMaterialService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -22,6 +23,34 @@ use App\Service\Education\Standards\CourseMaterialService;
  */
 final class CourseMaterialServiceTest extends StandardsTestCase
 {
+    public function testSaveUsesCurrentCampusScopeForExistingMaterialCode(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('standards_material_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-standards-material-save');
+        make(CourseMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-SHARED',
+            'material_name' => 'Hidden Material',
+            'course_id' => 302,
+            'material_type' => 'file',
+            'file_url' => '/hidden.pdf',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9913);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(CourseMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'material_code' => 'MAT-SHARED',
+            'material_name' => 'Visible Attempt',
+            'course_id' => 301,
+            'material_type' => 'file',
+            'file_url' => '/visible.pdf',
+        ], $context);
+    }
+
     public function testPageUsesCurrentCampusScope(): void
     {
         [$tenant, $campus] = $this->tenantCampus('standards_material_scope');

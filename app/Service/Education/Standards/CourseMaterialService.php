@@ -23,9 +23,9 @@ final class CourseMaterialService
      * @param array<string, mixed> $data
      * @return array{material_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
-        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false]);
+        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false], $context);
 
         return ['material_id' => (int) $material->id, 'status' => (string) $material->status];
     }

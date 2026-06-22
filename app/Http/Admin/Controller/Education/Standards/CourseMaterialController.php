@@ -59,7 +59,7 @@ final class CourseMaterialController extends AbstractController
     public function save(CourseMaterialSaveRequest $request): Result
     {
         $context = $this->context();
-        $result = $this->service->save($request->validated() + ['tenant_id' => $this->tenantId($context), 'campus_id' => $context->currentCampusId]);
+        $result = $this->service->save($request->validated() + ['tenant_id' => $this->tenantId($context), 'campus_id' => $context->currentCampusId], $context);
         $this->audit($this->events, 'education.standards.material.saved', 'material', $result['material_id'], $context, $result);
 
         return $this->success($result);
