@@ -71,7 +71,7 @@ final class LearningMaterialController extends AbstractController
             'campus_id' => $context->currentCampusId,
             'created_by' => $context->userId,
             'updated_by' => $context->userId,
-        ]);
+        ], $context);
         $this->audit($this->events, 'education.content.material.saved', 'learning_material', $result['material_id'], $context, $result);
 
         return $this->success($result);

@@ -21,14 +21,29 @@ final class LearningMaterialRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationLearningMaterial
+    public function save(array $data, ?EducationUserContext $context = null): EducationLearningMaterial
     {
         if (isset($data['id'])) {
-            $material = EducationLearningMaterial::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id']);
+            $material = $context === null
+                ? EducationLearningMaterial::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id'])
+                : $this->findInContext($context, (int) $data['id']);
+            if ($context !== null) {
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $material->tenant_id,
+                    'campus_id' => $material->campus_id === null ? null : (int) $material->campus_id,
+                ]);
+            }
             $material->fill($data);
             $material->save();
 
             return $material;
+        }
+
+        if ($context !== null) {
+            $data = array_merge($data, [
+                'tenant_id' => $this->tenantId($context, $data),
+                'campus_id' => $context->currentCampusId,
+            ]);
         }
 
         return EducationLearningMaterial::query()->create($data);
@@ -70,5 +85,20 @@ final class LearningMaterialRepository
             ->all();
 
         return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function tenantId(EducationUserContext $context, array $data): int
+    {
+        if ($context->tenantId !== null) {
+            return $context->tenantId;
+        }
+        if (isset($data['tenant_id']) && $data['tenant_id'] !== '') {
+            return (int) $data['tenant_id'];
+        }
+
+        throw new \RuntimeException('education tenant context is missing', 403);
     }
 }

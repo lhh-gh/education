@@ -30,9 +30,9 @@ final class LearningMaterialService
      * @param array<string, mixed> $data
      * @return array{material_id: int, current_version_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
-        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false]);
+        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false], $context);
         $version = $this->versions->save([
             'tenant_id' => $material->tenant_id,
             'campus_id' => $material->campus_id,

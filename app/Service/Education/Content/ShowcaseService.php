@@ -32,11 +32,11 @@ final class ShowcaseService
      * @param array<string, mixed> $data
      * @return array{showcase_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
         $items = $data['items'] ?? [];
         unset($data['items']);
-        $showcase = $this->showcases->save($data + ['status' => 'draft']);
+        $showcase = $this->showcases->save($data + ['status' => 'draft'], $context);
         if (\is_array($items)) {
             $this->showcases->replaceItems((int) $showcase->tenant_id, $showcase->campus_id === null ? null : (int) $showcase->campus_id, (int) $showcase->id, $items);
         }

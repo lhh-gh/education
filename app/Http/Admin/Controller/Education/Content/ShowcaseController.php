@@ -68,7 +68,7 @@ final class ShowcaseController extends AbstractController
         return $this->success($this->service->save($data + [
             'tenant_id' => $this->tenantId($context),
             'campus_id' => $context->currentCampusId,
-        ]));
+        ], $context));
     }
 
     #[Post(path: '/admin/education/content/showcases/{id}/publish', operationId: 'educationContentShowcasePublish', summary: 'Content showcase publish', tags: ['Education Content'])]

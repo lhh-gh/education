@@ -110,6 +110,33 @@ final class LearningMaterialServiceTest extends ContentTestCase
         self::assertSame('published', EducationLearningMaterialVersion::query()->find($result['current_version_id'])->status->value);
     }
 
+    public function testSaveUsesCurrentCampusScopeForExistingMaterial(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_material_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-material-save');
+        $created = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'ART-HIDDEN-SAVE-001',
+            'material_name' => 'Hidden Save Material',
+            'course_id' => 301,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9001);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(LearningMaterialService::class)->save([
+            'id' => $created['material_id'],
+            'material_code' => 'ART-HIDDEN-SAVE-001',
+            'material_name' => 'Hidden Save Material Updated',
+            'course_id' => 301,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ], $context);
+    }
+
     public function testPublishUsesCurrentCampusScope(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_material_publish_scope');

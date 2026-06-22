@@ -22,14 +22,29 @@ final class ShowcaseRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationStageAchievementShowcase
+    public function save(array $data, ?EducationUserContext $context = null): EducationStageAchievementShowcase
     {
         if (isset($data['id'])) {
-            $showcase = EducationStageAchievementShowcase::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id']);
+            $showcase = $context === null
+                ? EducationStageAchievementShowcase::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id'])
+                : $this->findInContext($context, (int) $data['id']);
+            if ($context !== null) {
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $showcase->tenant_id,
+                    'campus_id' => $showcase->campus_id === null ? null : (int) $showcase->campus_id,
+                ]);
+            }
             $showcase->fill($data);
             $showcase->save();
 
             return $showcase;
+        }
+
+        if ($context !== null) {
+            $data = array_merge($data, [
+                'tenant_id' => $this->tenantId($context, $data),
+                'campus_id' => $context->currentCampusId,
+            ]);
         }
 
         return EducationStageAchievementShowcase::query()->create($data);
@@ -81,12 +96,12 @@ final class ShowcaseRepository
             ->delete();
 
         foreach ($items as $index => $item) {
-            EducationShowcaseItem::query()->create($item + [
+            EducationShowcaseItem::query()->create(array_merge($item, [
                 'tenant_id' => $tenantId,
                 'campus_id' => $campusId,
                 'showcase_id' => $showcaseId,
                 'sort_order' => $index,
-            ]);
+            ]));
         }
     }
 
@@ -104,5 +119,20 @@ final class ShowcaseRepository
             'list' => $query->orderByDesc('published_at')->get()->toArray(),
             'total' => (int) (clone $query)->count(),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function tenantId(EducationUserContext $context, array $data): int
+    {
+        if ($context->tenantId !== null) {
+            return $context->tenantId;
+        }
+        if (isset($data['tenant_id']) && $data['tenant_id'] !== '') {
+            return (int) $data['tenant_id'];
+        }
+
+        throw new \RuntimeException('education tenant context is missing', 403);
     }
 }

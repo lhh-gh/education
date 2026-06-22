@@ -92,6 +92,31 @@ final class ShowcaseServiceTest extends ContentTestCase
         $service->pageGuardianShowcases((int) $tenant->id, 1202, [1201]);
     }
 
+    public function testSaveUsesCurrentCampusScopeForExistingShowcase(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_showcase_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-showcase-save');
+        $created = make(ShowcaseService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'stage_goal_id' => 3302,
+            'title' => 'Hidden Save Showcase',
+            'summary' => 'Hidden other campus showcase',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9904);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(ShowcaseService::class)->save([
+            'id' => $created['showcase_id'],
+            'student_id' => 1202,
+            'stage_goal_id' => 3302,
+            'title' => 'Hidden Save Showcase Updated',
+            'summary' => 'Hidden other campus showcase updated',
+        ], $context);
+    }
+
     public function testPublishUsesCurrentCampusScope(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_showcase_publish_scope');
