@@ -99,4 +99,35 @@ final class StandardVersionServiceTest extends StandardsTestCase
         self::assertSame('published', $result['status']);
         self::assertSame('published', EducationCourseStandardVersion::query()->find($version->id)->status->value);
     }
+
+    public function testApprovedReviewMustUseVersionCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('standards_publish_review_campus_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-standards-publish-review-campus');
+        $version = EducationCourseStandardVersion::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'business_type' => 'service_package',
+            'business_id' => 702,
+            'version_no' => 1,
+            'status' => 'reviewing',
+            'snapshot_json' => ['name' => 'Campus Review'],
+        ]);
+        EducationCourseStandardReviewRecord::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'business_type' => 'service_package',
+            'business_id' => 702,
+            'standard_version_id' => $version->id,
+            'reviewer_id' => 9003,
+            'status' => 'approved',
+            'reviewed_at' => '2026-06-10 09:00:00',
+        ]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionCode(409);
+        $this->expectExceptionMessage('standard version requires approved review before publish');
+
+        make(StandardVersionService::class)->publish((int) $tenant->id, (int) $version->id, 9001, true);
+    }
 }

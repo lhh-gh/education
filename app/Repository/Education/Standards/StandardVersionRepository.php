@@ -43,11 +43,17 @@ final class StandardVersionRepository
 
     public function hasApprovedReview(EducationCourseStandardVersion $version): bool
     {
-        return EducationCourseStandardReviewRecord::query()
+        $query = EducationCourseStandardReviewRecord::query()
             ->where('tenant_id', $version->tenant_id)
             ->where('standard_version_id', $version->id)
-            ->where('status', 'approved')
-            ->exists();
+            ->where('status', 'approved');
+        if ($version->campus_id === null) {
+            $query->whereNull('campus_id');
+        } else {
+            $query->where('campus_id', (int) $version->campus_id);
+        }
+
+        return $query->exists();
     }
 
     public function publish(EducationCourseStandardVersion $version, int $operatorId): void
