@@ -20,6 +20,8 @@ use App\Repository\Education\Finance\PaymentChannelRepository;
 use App\Repository\Education\Finance\ReceiptRepository;
 use App\Repository\Education\Finance\RefundRepository;
 use App\Service\Education\Foundation\EducationUserContext;
+use App\Service\Education\Finance\PaymentChannelService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -75,6 +77,24 @@ final class FinanceScopeRepositoryTest extends FinanceTestCase
 
         self::assertCount(1, $list);
         self::assertSame((int) $visible->id, (int) $list[0]['id']);
+    }
+
+    public function testSaveUsesCurrentCampusScopeForExistingPaymentChannelCode(): void
+    {
+        [$tenantId, $campusId, $otherCampusId] = $this->tenantCampusPair('fin_scope_channel_save');
+        EducationPaymentChannel::query()->create($this->channelData($tenantId, $otherCampusId, 'cash_shared'));
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(PaymentChannelService::class)->save([
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'channel_code' => 'cash_shared',
+            'channel_name' => 'Visible Cash',
+            'channel_type' => 'offline_cash',
+            'status' => 'enabled',
+            'sort_order' => 1,
+        ], $this->platformContext($tenantId, $campusId));
     }
 
     private function tenantCampusPair(string $code): array

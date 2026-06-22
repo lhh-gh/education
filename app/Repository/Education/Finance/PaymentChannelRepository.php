@@ -42,11 +42,29 @@ final class PaymentChannelRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationPaymentChannel
+    public function save(array $data, ?EducationUserContext $context = null): EducationPaymentChannel
     {
-        return EducationPaymentChannel::query()->updateOrCreate([
-            'tenant_id' => $data['tenant_id'],
-            'channel_code' => $data['channel_code'],
-        ], $data);
+        $channel = EducationPaymentChannel::query()
+            ->where('tenant_id', $data['tenant_id'])
+            ->where('channel_code', $data['channel_code'])
+            ->first();
+
+        if ($channel !== null) {
+            if ($context !== null) {
+                $channel = (new EducationScopeQuery())
+                    ->applyTenantCampus(EducationPaymentChannel::query(), $data, $context)
+                    ->findOrFail((int) $channel->id);
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $channel->tenant_id,
+                    'campus_id' => $channel->campus_id === null ? null : (int) $channel->campus_id,
+                ]);
+            }
+            $channel->fill($data);
+            $channel->save();
+
+            return $channel;
+        }
+
+        return EducationPaymentChannel::query()->create($data);
     }
 }
