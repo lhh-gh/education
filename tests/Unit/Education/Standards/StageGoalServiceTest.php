@@ -14,8 +14,10 @@ namespace HyperfTests\Unit\Education\Standards;
 
 use App\Model\Education\Standards\EducationCourseAbilityPoint;
 use App\Model\Education\Standards\EducationCourseStageGoalAbilityRelation;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Standards\ServicePackageService;
 use App\Service\Education\Standards\StageGoalService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -23,6 +25,41 @@ use App\Service\Education\Standards\StageGoalService;
  */
 final class StageGoalServiceTest extends StandardsTestCase
 {
+    public function testSaveUsesCurrentCampusScopeForExistingGoal(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('standards_goal_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-standards-goal-save');
+        $package = make(ServicePackageService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'package_code' => 'ART-GOAL-HIDDEN',
+            'package_name' => 'Hidden Goal Package',
+            'course_id' => 302,
+        ]);
+        $service = make(StageGoalService::class);
+        $hidden = $service->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'service_package_id' => $package['service_package_id'],
+            'goal_code' => 'HIDDEN-S1',
+            'goal_name' => 'Hidden line basics',
+            'goal_content' => 'hidden line',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9912);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $service->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'id' => $hidden['stage_goal_id'],
+            'service_package_id' => $package['service_package_id'],
+            'goal_code' => 'HIDDEN-S1',
+            'goal_name' => 'Hidden line basics updated',
+            'goal_content' => 'hidden line updated',
+        ], $context);
+    }
+
     public function testAbilityPointsAttachToStageGoal(): void
     {
         [$tenant, $campus] = $this->tenantCampus('standards_goal');
