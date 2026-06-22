@@ -19,9 +19,12 @@ final class StandardReviewService
     /**
      * @return array{review_record_id: int, status: string}
      */
-    public function review(int $tenantId, int $reviewRecordId, int $reviewerId, string $status, ?string $note = null): array
+    public function review(int $tenantId, int $campusId, int $reviewRecordId, int $reviewerId, string $status, ?string $note = null): array
     {
-        $record = EducationCourseStandardReviewRecord::query()->where('tenant_id', $tenantId)->findOrFail($reviewRecordId);
+        $record = EducationCourseStandardReviewRecord::query()
+            ->where('tenant_id', $tenantId)
+            ->where('campus_id', $campusId)
+            ->findOrFail($reviewRecordId);
         if ((int) $record->reviewer_id !== $reviewerId) {
             throw new \RuntimeException('review record is assigned to another reviewer', 403);
         }
