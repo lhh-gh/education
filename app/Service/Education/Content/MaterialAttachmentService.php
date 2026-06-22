@@ -22,17 +22,17 @@ final class MaterialAttachmentService
     /**
      * @param list<array<string, mixed>> $attachments
      */
-    public function replaceForVersion(int $tenantId, ?int $campusId, int $versionId, array $attachments): void
+    public function replaceForVersion(EducationUserContext $context, int $versionId, array $attachments): void
     {
-        $this->attachments->replaceForVersion($tenantId, $campusId, $versionId, $attachments);
+        $this->attachments->replaceForVersion($context, $versionId, $attachments);
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function listForVersion(int $tenantId, int $versionId): array
+    public function listForVersion(EducationUserContext $context, int $versionId): array
     {
-        return $this->attachments->listForVersion($tenantId, $versionId);
+        return $this->attachments->listForVersion($context, $versionId);
     }
 
     /**
