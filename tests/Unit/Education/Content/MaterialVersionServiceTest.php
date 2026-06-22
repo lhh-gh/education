@@ -14,6 +14,7 @@ namespace HyperfTests\Unit\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterialVersion;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
+use App\Repository\Education\Content\MaterialVersionRepository;
 use App\Service\Education\Content\LearningMaterialService;
 use App\Service\Education\Content\MaterialVersionService;
 use Hyperf\Database\Model\ModelNotFoundException;
@@ -99,6 +100,35 @@ final class MaterialVersionServiceTest extends ContentTestCase
             'title' => 'Hidden Update',
             'content' => 'new content',
         ]);
+    }
+
+    public function testRepositorySaveUsesCurrentCampusScopeForExistingVersion(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_version_repository_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-version-repository-save');
+        $hidden = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-VERSION-REPOSITORY-SAVE-HIDDEN',
+            'material_name' => 'Hidden Version Repository Save Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9905);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(MaterialVersionRepository::class)->save([
+            'id' => $hidden['current_version_id'],
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_id' => $hidden['material_id'],
+            'version_no' => 1,
+            'title' => 'Hidden Version Repository Updated',
+            'content' => 'hidden update',
+            'status' => 'draft',
+        ], $context);
     }
 
     public function testPublishedVersionIsImmutable(): void
