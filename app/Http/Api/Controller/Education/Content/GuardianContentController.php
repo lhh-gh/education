@@ -24,6 +24,7 @@ use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Education\Content\EducationLearningMaterial;
 use App\Model\Education\Foundation\EducationUserProfile;
 use App\Service\Education\Content\MaterialReadService;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use App\Service\Education\Foundation\MobileContextService;
 use Hyperf\HttpServer\Annotation\Middleware;
@@ -46,8 +47,7 @@ final class GuardianContentController extends AbstractController
         $tenantId = $this->tenantId($context);
         $guardianId = $this->guardianId($context);
         $this->assertBoundStudent($tenantId, $guardianId, $studentId);
-        $rows = EducationLearningMaterial::query()
-            ->where('tenant_id', $tenantId)
+        $rows = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterial::query(), [], $context)
             ->where('status', 'published')
             ->where('guardian_visible', true)
             ->orderByDesc('id')
