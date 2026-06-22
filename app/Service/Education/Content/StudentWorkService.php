@@ -33,13 +33,13 @@ final class StudentWorkService
      * @param list<int> $assignedStudentIds
      * @return array{student_work_id: int, status: string}
      */
-    public function saveForTeacher(array $data, array $assignedStudentIds): array
+    public function saveForTeacher(array $data, array $assignedStudentIds, ?EducationUserContext $context = null): array
     {
         if (! \in_array((int) $data['student_id'], $assignedStudentIds, true)) {
             throw new \RuntimeException('student is not assigned to current teacher', 403);
         }
         unset($data['attachment_ids']);
-        $work = $this->works->save($data + ['status' => 'draft']);
+        $work = $this->works->save($data + ['status' => 'draft'], $context);
 
         return ['student_work_id' => (int) $work->id, 'status' => $this->statusValue($work->status)];
     }

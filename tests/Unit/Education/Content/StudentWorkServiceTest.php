@@ -85,6 +85,36 @@ final class StudentWorkServiceTest extends ContentTestCase
         ], [1201]);
     }
 
+    public function testSaveForTeacherUsesCurrentCampusScopeForExistingWork(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-save');
+        $service = make(StudentWorkService::class);
+        $created = $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'description' => 'other campus work',
+        ], [1202]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $service->saveForTeacher([
+            'id' => $created['student_work_id'],
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work updated',
+            'description' => 'other campus work updated',
+        ], [1202], $context);
+    }
+
     public function testPublishUsesCurrentCampusScope(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_student_work_publish_scope');

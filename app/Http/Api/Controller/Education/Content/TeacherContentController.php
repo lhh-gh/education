@@ -99,7 +99,7 @@ final class TeacherContentController extends AbstractController
             'tenant_id' => $tenantId,
             'campus_id' => $context->currentCampusId,
             'teacher_id' => $teacherId,
-        ], $studentIds));
+        ], $studentIds, $context));
     }
 
     private function tenantId(EducationUserContext $context): int
