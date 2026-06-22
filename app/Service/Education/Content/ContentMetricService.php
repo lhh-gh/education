@@ -74,6 +74,11 @@ final class ContentMetricService
     public function aggregateStudentWorkDaily(int $tenantId, ?int $campusId, ?int $studentId, ?int $teacherId, string $metricDate): array
     {
         $workQuery = EducationStudentWork::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate);
+        $showcaseQuery = EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate);
+        if ($campusId !== null) {
+            $workQuery->where('campus_id', $campusId);
+            $showcaseQuery->where('campus_id', $campusId);
+        }
         if ($studentId !== null) {
             $workQuery->where('student_id', $studentId);
         }
@@ -82,7 +87,7 @@ final class ContentMetricService
         }
         $createdCount = (int) (clone $workQuery)->count();
         $publishedCount = (int) (clone $workQuery)->where('status', 'published')->count();
-        $showcaseCount = (int) EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate)->count();
+        $showcaseCount = (int) $showcaseQuery->count();
         $metric = $this->metrics->saveStudentWorkDaily([
             'tenant_id' => $tenantId,
             'campus_id' => $campusId,

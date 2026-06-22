@@ -15,6 +15,8 @@ namespace HyperfTests\Unit\Education\Content;
 use App\Model\Education\Content\EducationLessonMaterialUsage;
 use App\Model\Education\Content\EducationMaterialReadRecord;
 use App\Model\Education\Content\EducationMaterialUsageMetricDaily;
+use App\Model\Education\Content\EducationStageAchievementShowcase;
+use App\Model\Education\Content\EducationStudentWork;
 use App\Model\Education\Content\EducationStudentWorkMetricDaily;
 use App\Model\Education\Content\EducationTeacherMaterialFavorite;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
@@ -65,6 +67,45 @@ final class ContentMetricServiceTest extends ContentTestCase
         self::assertSame(1, $metric['teacher_use_count']);
         self::assertSame(1, $metric['guardian_read_count']);
         self::assertSame(1, $metric['favorite_count']);
+    }
+
+    public function testAggregateStudentWorkDailyUsesCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_metric_work_aggregate_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-metric-work-aggregate');
+        $metricDate = '2026-06-20';
+        foreach ([$campus->id, $hiddenCampus->id] as $index => $campusId) {
+            EducationStudentWork::query()->create([
+                'tenant_id' => $tenant->id,
+                'campus_id' => $campusId,
+                'student_id' => 1201 + $index,
+                'lesson_id' => 2201 + $index,
+                'teacher_id' => 3201 + $index,
+                'stage_goal_id' => 4201 + $index,
+                'title' => 'student work ' . $index,
+                'status' => 'published',
+                'published_at' => $metricDate . ' 09:30:00',
+                'created_at' => $metricDate . ' 09:00:00',
+                'updated_at' => $metricDate . ' 09:00:00',
+            ]);
+            EducationStageAchievementShowcase::query()->create([
+                'tenant_id' => $tenant->id,
+                'campus_id' => $campusId,
+                'student_id' => 1201 + $index,
+                'stage_goal_id' => 4201 + $index,
+                'title' => 'showcase ' . $index,
+                'status' => 'published',
+                'published_at' => $metricDate . ' 10:30:00',
+                'created_at' => $metricDate . ' 10:00:00',
+                'updated_at' => $metricDate . ' 10:00:00',
+            ]);
+        }
+
+        $metric = make(ContentMetricService::class)->aggregateStudentWorkDaily((int) $tenant->id, (int) $campus->id, null, null, $metricDate);
+
+        self::assertSame(1, $metric['created_count']);
+        self::assertSame(1, $metric['published_count']);
+        self::assertSame(1, $metric['showcase_count']);
     }
 
     public function testPageMaterialUsageUsesCurrentCampusScope(): void
