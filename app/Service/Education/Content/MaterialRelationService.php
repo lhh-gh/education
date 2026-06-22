@@ -12,19 +12,29 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Content;
 
+use App\Repository\Education\Content\LearningMaterialRepository;
 use App\Repository\Education\Content\MaterialRelationRepository;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialRelationService
 {
-    public function __construct(private readonly MaterialRelationRepository $relations) {}
+    public function __construct(
+        private readonly LearningMaterialRepository $materials,
+        private readonly MaterialRelationRepository $relations
+    ) {}
 
     /**
      * @param list<array<string, mixed>> $relations
      */
-    public function saveMaterialRelations(int $tenantId, ?int $campusId, int $materialId, array $relations): void
+    public function saveMaterialRelations(EducationUserContext $context, int $materialId, array $relations): void
     {
-        $this->relations->replaceForMaterial($tenantId, $campusId, $materialId, $relations);
+        $material = $this->materials->findInContext($context, $materialId);
+        $this->relations->replaceForMaterial(
+            (int) $material->tenant_id,
+            $material->campus_id === null ? null : (int) $material->campus_id,
+            $materialId,
+            $relations
+        );
     }
 
     /**

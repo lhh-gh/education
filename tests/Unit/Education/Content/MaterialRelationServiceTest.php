@@ -16,6 +16,7 @@ use App\Model\Education\Content\EducationLearningMaterialRelation;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\LearningMaterialService;
 use App\Service\Education\Content\MaterialRelationService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -71,5 +72,29 @@ final class MaterialRelationServiceTest extends ContentTestCase
         self::assertSame((int) $visible->id, (int) $page['list'][0]['id']);
         self::assertCount(1, $targetRows);
         self::assertSame((int) $visible->id, (int) $targetRows[0]['id']);
+    }
+
+    public function testSaveUsesCurrentCampusScopeForMaterial(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_relation_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-relation-save');
+        $hiddenMaterial = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-RELATION-SAVE-HIDDEN',
+            'material_name' => 'Hidden Relation Save Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9906);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(MaterialRelationService::class)->saveMaterialRelations($context, $hiddenMaterial['material_id'], [[
+            'target_type' => 'course',
+            'target_id' => 501,
+            'relation_note' => 'hidden relation',
+        ]]);
     }
 }

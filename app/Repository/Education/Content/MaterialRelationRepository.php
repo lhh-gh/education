@@ -29,11 +29,11 @@ final class MaterialRelationRepository
             ->delete();
 
         foreach ($relations as $relation) {
-            EducationLearningMaterialRelation::query()->create($relation + [
+            EducationLearningMaterialRelation::query()->create(array_merge($relation, [
                 'tenant_id' => $tenantId,
                 'campus_id' => $campusId,
                 'material_id' => $materialId,
-            ]);
+            ]));
         }
     }
 

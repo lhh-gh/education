@@ -60,7 +60,7 @@ final class MaterialRelationController extends AbstractController
     public function save(int $id, MaterialRelationSaveRequest $request): Result
     {
         $context = $this->context();
-        $this->service->saveMaterialRelations($this->tenantId($context), $context->currentCampusId, $id, $request->validated()['relations'] ?? []);
+        $this->service->saveMaterialRelations($context, $id, $request->validated()['relations'] ?? []);
 
         return $this->success(['material_id' => $id, 'status' => 'saved']);
     }
