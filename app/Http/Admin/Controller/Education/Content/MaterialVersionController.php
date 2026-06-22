@@ -61,7 +61,7 @@ final class MaterialVersionController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->detail($this->tenantId($context), $id));
+        return $this->success($this->service->detail($context, $id));
     }
 
     #[Post(path: '/admin/education/content/materials/{id}/versions', operationId: 'educationContentMaterialVersionCreate', summary: 'Content version create', tags: ['Education Content'])]
@@ -72,9 +72,7 @@ final class MaterialVersionController extends AbstractController
         $context = $this->context();
         $data = $request->validated();
 
-        return $this->success($this->service->save($data + [
-            'tenant_id' => $this->tenantId($context),
-            'campus_id' => $context->currentCampusId,
+        return $this->success($this->service->save($context, $data + [
             'material_id' => $id,
         ]));
     }

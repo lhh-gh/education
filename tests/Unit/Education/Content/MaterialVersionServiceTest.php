@@ -16,6 +16,7 @@ use App\Model\Education\Content\EducationLearningMaterialVersion;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\LearningMaterialService;
 use App\Service\Education\Content\MaterialVersionService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -56,6 +57,50 @@ final class MaterialVersionServiceTest extends ContentTestCase
         self::assertSame(0, $hiddenPage['total']);
     }
 
+    public function testDetailUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_version_detail_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-version-detail');
+        $hidden = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-VERSION-DETAIL-HIDDEN',
+            'material_name' => 'Hidden Version Detail Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9905);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(MaterialVersionService::class)->detail($context, $hidden['current_version_id']);
+    }
+
+    public function testSaveUsesCurrentCampusScopeForMaterial(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_version_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-version-save');
+        $hidden = make(LearningMaterialService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'MAT-VERSION-SAVE-HIDDEN',
+            'material_name' => 'Hidden Version Save Material',
+            'course_id' => 302,
+            'material_type' => 'video',
+            'guardian_visible' => true,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9905);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(MaterialVersionService::class)->save($context, [
+            'material_id' => $hidden['material_id'],
+            'title' => 'Hidden Update',
+            'content' => 'new content',
+        ]);
+    }
+
     public function testPublishedVersionIsImmutable(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_version_immutable');
@@ -69,10 +114,9 @@ final class MaterialVersionServiceTest extends ContentTestCase
             'guardian_visible' => true,
         ]);
         EducationLearningMaterialVersion::query()->whereKey($created['current_version_id'])->update(['status' => 'published']);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9905);
 
-        $edited = make(MaterialVersionService::class)->save([
-            'tenant_id' => $tenant->id,
-            'campus_id' => $campus->id,
+        $edited = make(MaterialVersionService::class)->save($context, [
             'material_id' => $created['material_id'],
             'material_version_id' => $created['current_version_id'],
             'title' => 'Shape Practice 2026',
