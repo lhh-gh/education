@@ -47,7 +47,7 @@ final class AiGenerationController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->pageTasks($this->tenantId($context), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->pageTasks($context, $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/ai/generation-tasks', operationId: 'educationAiGenerationTaskCreate', summary: 'AI generation task create', tags: ['Education AI'])]
@@ -67,6 +67,6 @@ final class AiGenerationController extends AbstractController
     #[Permission(code: 'education:ai:generation:page')]
     public function result(int $id): Result
     {
-        return $this->success($this->service->resultDetail($id));
+        return $this->success($this->service->resultDetail($id, $this->context()));
     }
 }

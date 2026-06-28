@@ -11,14 +11,18 @@ import {
 import useUserStore from '@/store/modules/useUserStore.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import {
+  configOwnerTypeLabel,
   defaultFeatureFlagSearch,
   dictionaryOwnerTypeOptions,
+  enabledFlagLabel,
   extractApiErrorMessage,
   featureFlagActionsByPermission,
+  foundationStatusLabel,
   normalizeFeatureFlagSearch,
   resetFeatureFlagSearch,
 } from './actionRules.ts'
 import FeatureFlagForm from './components/FeatureFlagForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationFeatureFlagList' })
 
@@ -64,15 +68,15 @@ function normalizeSearch(): FeatureFlagPageParams {
 }
 
 function ownerTypeLabel(ownerType: ConfigOwnerType): string {
-  return ownerType === 'system' ? '系统' : '租户'
+  return configOwnerTypeLabel(ownerType)
 }
 
 function statusLabel(status: string): string {
-  return status === 'enabled' ? '启用' : '停用'
+  return foundationStatusLabel(status as 'enabled' | 'disabled')
 }
 
 function enabledLabel(enabled: boolean): string {
-  return enabled ? '开启' : '关闭'
+  return enabledFlagLabel(enabled)
 }
 
 function flagActions(row: FeatureFlagRecord) {
@@ -105,7 +109,7 @@ async function loadFlags() {
   }
   catch (error: any) {
     errorText.value = error?.message ?? '功能开关列表加载失败'
-    errorText.value = extractApiErrorMessage(error, errorText.value || 'feature flags failed to load')
+    errorText.value = extractApiErrorMessage(error, errorText.value || '功能开关加载失败')
     message.error(errorText.value)
   }
   finally {
@@ -143,7 +147,7 @@ async function changeEnabled(row: FeatureFlagRecord) {
     await loadFlags()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'feature flag value update failed'))
+    message.error(extractApiErrorMessage(error, '功能开关值更新失败'))
   }
 }
 
@@ -154,7 +158,7 @@ async function changeStatus(row: FeatureFlagRecord) {
     await loadFlags()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'feature flag status update failed'))
+    message.error(extractApiErrorMessage(error, '功能开关状态更新失败'))
   }
 }
 
@@ -165,7 +169,7 @@ async function removeFlag(row: FeatureFlagRecord) {
     await loadFlags()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'feature flag delete failed'))
+    message.error(extractApiErrorMessage(error, '功能开关删除失败'))
   }
 }
 
@@ -176,7 +180,7 @@ async function resolveFlag(row: FeatureFlagRecord) {
   }
 
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'feature flag resolve failed'))
+    message.error(extractApiErrorMessage(error, '功能开关解析失败'))
   }
 }
 
@@ -208,8 +212,8 @@ onMounted(loadFlags)
             <el-option v-for="option in ownerOptions" :key="option.value" :label="option.label" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isPlatformContext && search.owner_type === 'tenant'" label="租户 ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" placeholder="tenant_id" />
+        <el-form-item v-if="isPlatformContext && search.owner_type === 'tenant'" label="机构ID">
+          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" placeholder="机构ID" />
         </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable placeholder="功能编码/名称" />
@@ -252,7 +256,7 @@ onMounted(loadFlags)
             {{ ownerTypeLabel(row.owner_type) }}
           </template>
         </el-table-column>
-        <el-table-column prop="tenant_id" label="租户 ID" width="100" />
+        <el-table-column prop="tenant_id" label="机构ID" width="100" />
         <el-table-column prop="feature_code" label="功能编码" min-width="220" />
         <el-table-column prop="feature_name" label="功能名称" min-width="160" />
         <el-table-column prop="enabled" label="开关值" width="100">

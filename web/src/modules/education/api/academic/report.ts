@@ -1,4 +1,5 @@
 import type { MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeGetOptions } from '../scope.ts'
 
 export type ReportGroupBy = 'date' | 'campus' | 'class' | 'teacher' | 'course' | 'status' | 'source_type'
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'leave'
@@ -285,34 +286,26 @@ export interface V1AcceptanceSummary {
   next_action: string
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(params: { tenant_id?: number }): number | undefined {
-  return params.tenant_id
-}
-
 export function getAcademicDashboard(params: DashboardReportParams): Promise<MineResult<AcademicDashboardResult>> {
-  return useHttp().get('/admin/education/academic/reports/dashboard', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/dashboard', educationScopeGetOptions(params))
 }
 
 export function pageAttendanceReport(params: AttendanceReportParams): Promise<MineResult<ReportPageResult<AttendanceReportRow, AttendanceReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/attendance', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/attendance', educationScopeGetOptions(params))
 }
 
 export function pageConsumptionReport(params: ConsumptionReportParams): Promise<MineResult<ReportPageResult<ConsumptionReportRow, ConsumptionReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/consumption', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/consumption', educationScopeGetOptions(params))
 }
 
 export function pageAccountBalanceReport(params: AccountBalanceReportParams): Promise<MineResult<ReportPageResult<AccountBalanceReportRow, AccountBalanceReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/account-balances', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/account-balances', educationScopeGetOptions(params))
 }
 
 export function pageLeaveReport(params: LeaveReportParams): Promise<MineResult<ReportPageResult<LeaveReportRow, LeaveReportSummary>>> {
-  return useHttp().get('/admin/education/academic/reports/leaves', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/leaves', educationScopeGetOptions(params))
 }
 
 export function getV1AcceptanceSummary(params: V1AcceptanceParams): Promise<MineResult<V1AcceptanceSummary>> {
-  return useHttp().get('/admin/education/academic/reports/v1-acceptance-summary', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/reports/v1-acceptance-summary', educationScopeGetOptions(params))
 }

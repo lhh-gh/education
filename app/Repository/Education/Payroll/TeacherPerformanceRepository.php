@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Payroll;
 
 use App\Model\Education\Payroll\EducationTeacherPerformanceMetric;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class TeacherPerformanceRepository
@@ -23,11 +24,8 @@ final class TeacherPerformanceRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationTeacherPerformanceMetric::query();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
-        foreach (['metric_month', 'teacher_id', 'campus_id'] as $field) {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationTeacherPerformanceMetric::query(), $filters, $context);
+        foreach (['metric_month', 'teacher_id'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }

@@ -14,5 +14,5 @@ export function getWorkflowMetrics(params: WorkflowScopedParams): Promise<MineRe
 }
 
 export function getWorkflowDashboard(params: WorkflowScopedParams): Promise<MineResult<WorkflowMetricSummary>> {
-  return useHttp().get('/admin/education/workflow/dashboard', workflowGetOptions(params))
+  return useHttp().get('/admin/education/workflow/metrics', workflowGetOptions(params))
 }

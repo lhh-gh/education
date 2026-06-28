@@ -21,6 +21,8 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
 use App\Service\Education\Content\MaterialVersionService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -37,7 +39,32 @@ final class MaterialVersionController extends AbstractController
 
     public function __construct(private readonly MaterialVersionService $service) {}
 
-    #[Post(path: '/admin/education/content/materials/{id}/versions', operationId: 'educationContentMaterialVersionCreate', summary: 'Content material version create', tags: ['Education Content'])]
+    #[Get(path: '/admin/education/content/material-versions', operationId: 'educationContentMaterialVersionPage', summary: 'Content material version page', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:version:page')]
+    public function page(RequestInterface $request): Result
+    {
+        $context = $this->context();
+
+        return $this->success($this->service->page(
+            (int) $request->input('material_id', 0),
+            $context,
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
+    }
+
+    #[Get(path: '/admin/education/content/material-versions/{id}', operationId: 'educationContentMaterialVersionDetail', summary: 'Content version detail', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:version:page')]
+    public function detail(int $id): Result
+    {
+        $context = $this->context();
+
+        return $this->success($this->service->detail($context, $id));
+    }
+
+    #[Post(path: '/admin/education/content/materials/{id}/versions', operationId: 'educationContentMaterialVersionCreate', summary: 'Content version create', tags: ['Education Content'])]
     #[ResultResponse(instance: new Result())]
     #[Permission(code: 'education:content:version:create')]
     public function save(int $id, MaterialVersionSaveRequest $request): Result
@@ -45,9 +72,7 @@ final class MaterialVersionController extends AbstractController
         $context = $this->context();
         $data = $request->validated();
 
-        return $this->success($this->service->save($data + [
-            'tenant_id' => $this->tenantId($context),
-            'campus_id' => $context->currentCampusId,
+        return $this->success($this->service->save($context, $data + [
             'material_id' => $id,
         ]));
     }

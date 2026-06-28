@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { containsBlockedAiPromise } from '../growthRules.ts'
+import { containsBlockedAiPromise, growthText } from '../growthRules.ts'
 
 defineOptions({ name: 'EducationGrowthAiTalkScriptEditor' })
 
-const props = defineProps<{ modelValue: string }>()
+const props = withDefaults(defineProps<{ modelValue: string, canConfirm?: boolean }>(), {
+  canConfirm: true,
+})
 const emit = defineEmits<{ 'update:modelValue': [value: string], 'confirm': [value: string] }>()
 
 const localValue = computed({
@@ -15,12 +17,15 @@ const blocked = computed(() => containsBlockedAiPromise(localValue.value))
 
 <template>
   <div class="growth-script-editor">
-    <el-input v-model="localValue" type="textarea" :rows="8" placeholder="Script content" />
+    <el-input v-model="localValue" type="textarea" :rows="8" placeholder="请先生成或编辑话术内容" />
     <div class="editor-actions">
-      <el-alert v-if="blocked" type="error" show-icon :closable="false" title="Automatic discount promises are blocked" />
-      <el-button type="primary" :disabled="blocked || !localValue.trim()" @click="emit('confirm', localValue)">
-        Confirm
+      <el-alert v-if="blocked" type="error" show-icon :closable="false" title="AI 不允许承诺自动优惠" />
+      <el-button v-if="canConfirm" type="primary" :disabled="blocked || !localValue.trim()" @click="emit('confirm', localValue)">
+        确认话术
       </el-button>
+      <el-tag v-else type="info">
+        {{ growthText.noPermission }}
+      </el-tag>
     </div>
   </div>
 </template>

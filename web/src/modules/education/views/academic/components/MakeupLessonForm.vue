@@ -2,6 +2,7 @@
 import type { MakeupLessonPayload, MakeupLessonResult } from '../../../api/academic/lessonChange.ts'
 import { createMakeupLesson } from '../../../api/academic/lessonChange.ts'
 import { conflictMessage, makeupSuccessSummary } from '../leaveMakeupRescheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationMakeupLessonForm' })
 

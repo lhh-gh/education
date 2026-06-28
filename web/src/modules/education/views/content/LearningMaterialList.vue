@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LearningMaterialPayload } from '../../api/content/material.ts'
 import type { LearningMaterialRow } from '../../api/content/types.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
 import { pageLearningMaterials, publishLearningMaterial, saveLearningMaterial, withdrawLearningMaterial } from '../../api/content/material.ts'
 import { guardianVisibleLabel, materialPublishState, publishFailureNotice } from './contentRules.ts'
 import LearningMaterialForm from './components/LearningMaterialForm.vue'
@@ -14,6 +15,9 @@ const total = ref(0)
 const errorMessage = ref('')
 const search = reactive({ page: 1, pageSize: 20, status: '' })
 const form = reactive<LearningMaterialPayload>({ material_code: '', material_name: '', material_type: 'worksheet', guardian_visible: false })
+const canSave = computed(() => hasAuth('education:content:material:save'))
+const canPublish = computed(() => hasAuth('education:content:material:publish'))
+const canWithdraw = computed(() => hasAuth('education:content:material:withdraw'))
 
 async function loadRows() {
   loading.value = true
@@ -65,40 +69,40 @@ onMounted(loadRows)
     <el-alert v-if="errorMessage" class="mb-3" :title="errorMessage" type="error" show-icon />
     <el-card shadow="never">
       <template #header>
-        <span>Learning Materials</span>
+        <span>学习资料</span>
       </template>
       <LearningMaterialForm v-model="form" />
-      <el-button type="primary" :loading="saving" @click="save">
-        Save
+      <el-button v-if="canSave" type="primary" :loading="saving" @click="save">
+        保存资料
       </el-button>
       <el-table v-loading="loading" class="mt-4" :data="rows" row-key="id">
-        <el-table-column prop="material_code" label="Code" width="150" />
-        <el-table-column prop="material_name" label="Name" min-width="180" />
-        <el-table-column prop="material_type" label="Type" width="120" />
-        <el-table-column label="Visibility" width="150">
+        <el-table-column prop="material_code" label="资料编码" width="150" />
+        <el-table-column prop="material_name" label="资料名称" min-width="180" />
+        <el-table-column prop="material_type" label="资料类型" width="120" />
+        <el-table-column label="可见范围" width="150">
           <template #default="{ row }">
             <el-tag :type="row.guardian_visible ? 'success' : 'info'">
               {{ guardianVisibleLabel(row) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="150">
+        <el-table-column label="发布状态" width="150">
           <template #default="{ row }">
             <el-tag>{{ materialPublishState(row).badge }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="180">
+        <el-table-column label="操作" width="180">
           <template #default="{ row }">
-            <el-button link type="primary" :disabled="!materialPublishState(row).canPublish" @click="publish(row)">
-              Publish
+            <el-button v-if="canPublish" link type="primary" :disabled="!materialPublishState(row).canPublish" @click="publish(row)">
+              发布
             </el-button>
-            <el-button link type="warning" @click="withdraw(row)">
-              Withdraw
+            <el-button v-if="canWithdraw" link type="warning" @click="withdraw(row)">
+              撤回
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No learning materials" />
+          <el-empty description="暂无学习资料" />
         </template>
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />

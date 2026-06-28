@@ -54,37 +54,31 @@ function handleReset() {
   <div class="report-date-range-filter">
     <el-alert v-if="errorText" class="mb-3" type="warning" show-icon :closable="false" :title="errorText" />
     <el-form :inline="true" :model="localValue" class="report-filter-form">
-      <el-form-item label="Tenant ID">
-        <el-input-number :model-value="localValue.tenant_id" :min="1" :controls="false" @update:model-value="updateField('tenant_id', $event || undefined)" />
-      </el-form-item>
-      <el-form-item label="Campus ID">
-        <el-input-number :model-value="localValue.campus_id" :min="1" :controls="false" @update:model-value="updateField('campus_id', $event || undefined)" />
-      </el-form-item>
-      <el-form-item label="Start">
+      <el-form-item label="开始时间">
         <el-date-picker :model-value="localValue.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" @update:model-value="updateField('start_at', $event || undefined)" />
       </el-form-item>
-      <el-form-item label="End">
+      <el-form-item label="结束时间">
         <el-date-picker :model-value="localValue.end_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" @update:model-value="updateField('end_at', $event || undefined)" />
       </el-form-item>
       <el-form-item>
         <el-button-group>
           <el-button @click="applyQuickRange('today')">
-            Today
+            今天
           </el-button>
           <el-button @click="applyQuickRange('this_week')">
-            This Week
+            本周
           </el-button>
           <el-button @click="applyQuickRange('this_month')">
-            This Month
+            本月
           </el-button>
         </el-button-group>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSubmit">
-          Search
+          查询
         </el-button>
         <el-button @click="handleReset">
-          Reset
+          重置
         </el-button>
       </el-form-item>
     </el-form>

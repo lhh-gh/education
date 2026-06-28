@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FamilyMessageRecord } from '../../../api/family/message.ts'
 import { getFamilyMessageThread, sendFamilyMessage } from '../../../api/family/message.ts'
-import { messageReplyPayload } from '../familyRules.ts'
+import { familySenderLabel, messageReplyPayload } from '../familyRules.ts'
 
 const props = defineProps<{ thread?: { student_id: number, thread_id: string } }>()
 const visible = defineModel<boolean>({ default: false })
@@ -37,18 +37,22 @@ watch(() => props.thread, loadRows)
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="Message Thread" size="520px">
+  <el-drawer v-model="visible" title="消息会话" size="520px">
     <el-table v-loading="loading" :data="rows" row-key="id">
-      <el-table-column prop="sender_type" label="Sender" width="110" />
-      <el-table-column prop="content" label="Content" min-width="220" />
+      <el-table-column label="发送方" width="110">
+        <template #default="{ row }">
+          {{ familySenderLabel(row.sender_type) }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="content" label="内容" min-width="220" />
       <template #empty>
-        <el-empty description="No messages" />
+        <el-empty description="暂无消息" />
       </template>
     </el-table>
     <div class="reply-box">
       <el-input v-model="content" type="textarea" :rows="3" />
       <el-button type="primary" @click="reply">
-        Reply
+        回复
       </el-button>
     </div>
   </el-drawer>

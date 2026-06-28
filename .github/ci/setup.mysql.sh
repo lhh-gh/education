@@ -23,6 +23,7 @@ fi
 
 echo -e "Create MySQL database..."
 mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS mineadmin charset=utf8mb4 collate=utf8mb4_unicode_ci;"
+mysql -h 127.0.0.1 -u root -e "CREATE DATABASE IF NOT EXISTS mineadmin_test charset=utf8mb4 collate=utf8mb4_unicode_ci;"
 echo -e "Done\n"
 
 wait

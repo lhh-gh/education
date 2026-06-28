@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { LeaveRequestRecord } from '../../../api/academic/lessonChange.ts'
 import { approveLeaveRequest, rejectLeaveRequest } from '../../../api/academic/lessonChange.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationLeaveReviewDialog' })
 

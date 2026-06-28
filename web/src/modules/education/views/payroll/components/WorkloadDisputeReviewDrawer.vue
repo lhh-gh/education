@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { WorkloadDisputeRecord } from '../../../api/payroll/dispute.ts'
 import { reviewWorkloadDispute } from '../../../api/payroll/dispute.ts'
-import { disputeReviewPayload } from '../payrollRules.ts'
+import { disputeReviewPayload, payrollStatusLabel } from '../payrollRules.ts'
 
 const props = defineProps<{ modelValue: boolean, row: WorkloadDisputeRecord | null }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] }>()
@@ -22,20 +22,24 @@ async function submit() {
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="Review Dispute" size="420px">
+  <el-drawer v-model="visible" title="申诉复核" size="420px">
     <el-form label-width="110px">
-      <el-form-item label="Decision">
+      <el-form-item label="复核结果">
         <el-radio-group v-model="form.status">
-          <el-radio-button label="approved" />
-          <el-radio-button label="rejected" />
+          <el-radio-button label="approved">
+            {{ payrollStatusLabel('approved') }}
+          </el-radio-button>
+          <el-radio-button label="rejected">
+            {{ payrollStatusLabel('rejected') }}
+          </el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="Review Note">
+      <el-form-item label="复核备注">
         <el-input v-model="form.review_note" type="textarea" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submit">
-          Submit
+          提交
         </el-button>
       </el-form-item>
     </el-form>

@@ -12,9 +12,13 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Ai;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use App\Model\Education\Ai\EducationAiSafetyEvent;
 use App\Repository\Education\Ai\AiGenerationRepository;
 use App\Repository\Education\Ai\AiSafetyRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
 final class AiSafetyService
@@ -55,20 +59,35 @@ final class AiSafetyService
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(EducationUserContext $context, array $filters = [], int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationAiSafetyEvent::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationAiSafetyEvent::query(), $filters, $context);
         if (($filters['risk_level'] ?? '') !== '') {
             $query->where('risk_level', $filters['risk_level']);
         }
-        $total = (int) $query->count();
+        $total = (int) (clone $query)->count();
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];
     }
 
-    public function markHandled(int $id): void
+    /**
+     * @return array{safety_event_id: int, handled: bool}
+     */
+    public function markHandled(int $id, EducationUserContext $context): array
     {
-        EducationAiSafetyEvent::query()->where('id', $id)->update(['handled' => true]);
+        $event = (new EducationScopeQuery())->applyTenantCampus(
+            EducationAiSafetyEvent::query()->whereKey($id),
+            [],
+            $context
+        )->first();
+        if (! $event instanceof EducationAiSafetyEvent) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'ai safety event not found in current context', ['safety_event_id' => $id]);
+        }
+
+        $event->fill(['handled' => true, 'updated_by' => $context->userId]);
+        $event->save();
+
+        return ['safety_event_id' => $id, 'handled' => true];
     }
 }

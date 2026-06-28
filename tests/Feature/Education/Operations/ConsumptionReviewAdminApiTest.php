@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace HyperfTests\Feature\Education\Operations;
 
 use App\Http\Common\ResultCode;
+use App\Model\Education\Operations\EducationLessonConsumptionReview;
 
 /**
  * @internal
@@ -20,6 +21,20 @@ use App\Http\Common\ResultCode;
  */
 final class ConsumptionReviewAdminApiTest extends OperationApiCase
 {
+    public function testPlatformUserCanPageConsumptionReviewsWithoutTenantHeader(): void
+    {
+        $this->grantPermissions('education:operations:consumption-review:page');
+        $fixture = $this->fixture('ops_consumption_page_platform');
+        $this->createEducationProfile();
+        $review = EducationLessonConsumptionReview::query()->create(['tenant_id' => $fixture['tenant']->id, 'campus_id' => $fixture['campus']->id, 'lesson_id' => $fixture['lesson']->id, 'status' => 'pending', 'submitted_by' => $this->user->id, 'submitted_at' => '2026-06-10 12:00:00']);
+
+        $page = $this->get('/admin/education/operations/consumption-reviews/page?page=1&pageSize=20&status=pending', [], $this->authHeaders());
+
+        self::assertSame(ResultCode::SUCCESS->value, $page['code']);
+        self::assertSame(1, $page['data']['total']);
+        self::assertSame($review->id, $page['data']['list'][0]['id']);
+    }
+
     public function testValidationAndBusinessFailuresMatchCatalog(): void
     {
         $this->grantPermissions('education:operations:consumption-adjustment:create');

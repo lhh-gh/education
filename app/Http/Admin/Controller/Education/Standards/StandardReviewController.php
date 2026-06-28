@@ -46,7 +46,7 @@ final class StandardReviewController extends AbstractController
         $context = $this->context();
         $data = $request->validated();
         try {
-            $result = $this->service->review($this->tenantId($context), $id, $context->userId, $data['status'], $data['review_note'] ?? null);
+            $result = $this->service->review($this->tenantId($context), $this->campusId($context), $id, $context->userId, $data['status'], $data['review_note'] ?? null);
         } catch (\RuntimeException $exception) {
             throw $this->businessFailure($exception);
         }

@@ -13,21 +13,41 @@ declare(strict_types=1);
 namespace App\Service\Education\Operations;
 
 use App\Repository\Education\Operations\DailyOperationMetricRepository;
+use App\Repository\Education\Operations\RenewalAlertRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class OperationDashboardService
 {
-    public function __construct(private readonly DailyOperationMetricRepository $repository) {}
+    public function __construct(
+        private readonly DailyOperationMetricRepository $repository,
+        private readonly RenewalAlertRepository $renewalAlertRepository
+    ) {}
 
     public function upsertDailyMetric(array $data): array
     {
         return $this->repository->upsertDailyMetric($data)->toArray();
     }
 
-    public function overview(int $tenantId, ?int $campusId = null): array
+    public function overview(EducationUserContext $context, ?int $campusId = null): array
     {
         return [
-            'summary' => $this->repository->dashboardSummary($tenantId, $campusId),
-            'trend' => $this->repository->trend($tenantId, $campusId),
+            'summary' => $this->repository->dashboardSummary($context, $campusId),
+            'trend' => $this->repository->trend($context, $campusId),
         ];
+    }
+
+    public function consumptionTrend(EducationUserContext $context, array $params): array
+    {
+        return ['list' => $this->repository->consumptionTrend($context, $params)];
+    }
+
+    public function renewalAlertSummary(EducationUserContext $context, array $params): array
+    {
+        return $this->renewalAlertRepository->summaryByLevel($params, $context);
+    }
+
+    public function dailyMetrics(EducationUserContext $context, array $params): array
+    {
+        return ['list' => $this->repository->dailyMetrics($context, $params)];
     }
 }

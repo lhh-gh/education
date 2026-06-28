@@ -2,6 +2,7 @@
 import type { RescheduleLessonPayload, RescheduleLessonResult } from '../../../api/academic/lessonChange.ts'
 import { rescheduleLesson } from '../../../api/academic/lessonChange.ts'
 import { conflictMessage, rescheduleSuccessSummary } from '../leaveMakeupRescheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationRescheduleLessonForm' })
 

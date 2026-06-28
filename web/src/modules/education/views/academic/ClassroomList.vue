@@ -3,8 +3,13 @@ import type { ClassroomPageParams, ClassroomRecord } from '../../api/academic/pr
 import { deleteClassroom, pageClassrooms, updateClassroomStatus } from '../../api/academic/profile.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import ClassroomForm from './components/ClassroomForm.vue'
+import { academicActionText, academicStatusLabel, academicStatusTagType } from './actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicClassroomList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -22,7 +27,7 @@ const canStatus = computed(() => hasAuth('education:academic:classroom:status'))
 const canDelete = computed(() => hasAuth('education:academic:classroom:delete'))
 
 function defaultSearch(): ClassroomPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, keyword: '', status: undefined }
+  return { page: 1, page_size: 20, keyword: '', status: undefined }
 }
 
 async function loadRows() {
@@ -34,7 +39,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Classroom list loading failed'
+    errorText.value = error?.message ?? '教室列表加载失败'
   }
   finally {
     loading.value = false
@@ -64,13 +69,13 @@ function openEdit(row: ClassroomRecord) {
 }
 
 async function changeStatus(row: ClassroomRecord) {
-  await updateClassroomStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', search.tenant_id)
+  await updateClassroomStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', scope.tenant_id)
   await loadRows()
 }
 
 async function removeRow(row: ClassroomRecord) {
-  await message.confirm('Delete this classroom?')
-  await deleteClassroom(row.id, search.tenant_id)
+  await message.confirm('确认删除该教室？')
+  await deleteClassroom(row.id, scope.tenant_id)
   await loadRows()
 }
 
@@ -87,68 +92,68 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Classrooms</span>
+          <span>教室管理</span>
           <el-button v-if="canCreate" type="primary" @click="openCreate">
-            New
+            新增
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Campus ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Keyword">
+        <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 130px;">
-            <el-option label="Enabled" value="enabled" />
-            <el-option label="Disabled" value="disabled" />
+            <el-option label="启用" value="enabled" />
+            <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="code" label="Code" width="120" />
-        <el-table-column prop="name" label="Name" min-width="160" />
-        <el-table-column prop="campus_id" label="Campus" width="100" />
-        <el-table-column prop="capacity" label="Capacity" width="100" />
-        <el-table-column prop="location" label="Location" min-width="160" />
-        <el-table-column prop="status" label="Status" width="110" />
-        <el-table-column prop="sort_order" label="Sort" width="90" />
-        <el-table-column prop="updated_at" label="Updated" width="180" />
-        <el-table-column label="Actions" fixed="right" width="220">
+        <el-table-column prop="code" label="教室编码" width="120" />
+        <el-table-column prop="name" label="教室名称" min-width="160" />
+        <el-table-column prop="campus_id" label="校区" width="100" />
+        <el-table-column prop="capacity" label="容量" width="100" />
+        <el-table-column prop="location" label="位置" min-width="160" />
+        <el-table-column label="状态" width="110">
+          <template #default="{ row }">
+            <el-tag :type="academicStatusTagType(row.status)">
+              {{ academicStatusLabel(row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sort_order" label="排序" width="90" />
+        <el-table-column prop="updated_at" label="更新时间" width="180" />
+        <el-table-column label="操作" fixed="right" width="220">
           <template #default="{ row }">
             <el-button v-if="canEdit" link type="primary" @click="openEdit(row)">
-              Edit
+              编辑
             </el-button>
             <el-button v-if="canStatus" link type="primary" @click="changeStatus(row)">
-              {{ row.status === 'enabled' ? 'Disable' : 'Enable' }}
+              {{ academicActionText(row.status) }}
             </el-button>
             <el-button v-if="canDelete" link type="danger" @click="removeRow(row)">
-              Delete
+              删除
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No classrooms" />
+          <el-empty description="暂无教室" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? 'New Classroom' : 'Edit Classroom'" width="560px">
-      <ClassroomForm :mode="dialogMode" :tenant-id="search.tenant_id" :data="current" @success="onFormSuccess" />
+    <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新增教室' : '编辑教室'" width="560px">
+      <ClassroomForm :mode="dialogMode" :tenant-id="scope.tenant_id" :data="current" @success="onFormSuccess" />
     </el-dialog>
   </div>
 </template>

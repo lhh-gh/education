@@ -12,6 +12,6 @@ describe('trial lesson calendar', () => {
     const route = flattenRoutes(educationRoutes).find(route => route.name === 'EducationAdmissionTrialCalendar')
     expect(route?.path).toBe('/education/admissions/trials')
     expect(route?.meta?.auth).toEqual(['education:admissions:trial:page'])
-    expect(admissionErrorText({ code: 409, data: { conflict_lesson_id: 401 } })).toBe('Trial conflict #401')
+    expect(admissionErrorText({ code: 409, data: { conflict_lesson_id: 401 } })).toBe('试听时间冲突：#401')
   })
 })

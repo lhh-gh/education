@@ -14,6 +14,8 @@ namespace App\Repository\Education\Ai;
 
 use App\Model\Education\Ai\EducationAiGenerationResult;
 use App\Model\Education\Ai\EducationAiGenerationTask;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class AiGenerationRepository
 {
@@ -41,5 +43,23 @@ final class AiGenerationRepository
     public function result(int $id): EducationAiGenerationResult
     {
         return EducationAiGenerationResult::query()->findOrFail($id);
+    }
+
+    public function taskInContext(int $id, EducationUserContext $context): ?EducationAiGenerationTask
+    {
+        return (new EducationScopeQuery())->applyTenantCampus(
+            EducationAiGenerationTask::query()->whereKey($id),
+            [],
+            $context
+        )->first();
+    }
+
+    public function resultInContext(int $id, EducationUserContext $context): ?EducationAiGenerationResult
+    {
+        return (new EducationScopeQuery())->applyTenantCampus(
+            EducationAiGenerationResult::query()->whereKey($id),
+            [],
+            $context
+        )->first();
     }
 }

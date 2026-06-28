@@ -4,6 +4,7 @@ import { pageTeachers } from '../../../api/academic/profile.ts'
 import type { TeacherCourseRecord } from '../../../api/academic/courseAccount.ts'
 import { getCourseTeachers, saveCourseTeachers } from '../../../api/academic/courseAccount.ts'
 import { normalizeTeacherSelection } from '../courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

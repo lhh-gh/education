@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Finance;
 
 use App\Model\Education\Finance\EducationReceipt;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
@@ -24,13 +25,8 @@ final class ReceiptRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationReceipt::query();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        } elseif (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-            $query->where('tenant_id', (int) $filters['tenant_id']);
-        }
-        foreach (['campus_id', 'order_id', 'student_id', 'status'] as $field) {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationReceipt::query(), $filters, $context);
+        foreach (['order_id', 'student_id', 'status'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }
@@ -53,10 +49,11 @@ final class ReceiptRepository
 
     public function lock(int $id, EducationUserContext $context): ?EducationReceipt
     {
-        $query = EducationReceipt::query()->whereKey($id)->lockForUpdate();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(
+            EducationReceipt::query()->whereKey($id)->lockForUpdate(),
+            [],
+            $context
+        );
         $receipt = $query->first();
 
         return $receipt instanceof EducationReceipt ? $receipt : null;

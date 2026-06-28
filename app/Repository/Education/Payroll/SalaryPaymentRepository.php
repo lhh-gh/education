@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Payroll;
 
 use App\Model\Education\Payroll\EducationTeacherSalaryPayment;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class SalaryPaymentRepository
@@ -23,11 +24,8 @@ final class SalaryPaymentRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationTeacherSalaryPayment::query();
-        if (! $context->platformAccess) {
-            $context->tenantId === null ? $query->whereRaw('1 = 0') : $query->where('tenant_id', $context->tenantId);
-        }
-        foreach (['teacher_id', 'salary_slip_id', 'campus_id'] as $field) {
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationTeacherSalaryPayment::query(), $filters, $context);
+        foreach (['teacher_id', 'salary_slip_id'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
             }

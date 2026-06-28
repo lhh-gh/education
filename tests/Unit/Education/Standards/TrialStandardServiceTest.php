@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Standards;
 
 use App\Model\Education\Standards\EducationTrialLessonStandardItem;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Standards\TrialStandardService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -21,6 +23,30 @@ use App\Service\Education\Standards\TrialStandardService;
  */
 final class TrialStandardServiceTest extends StandardsTestCase
 {
+    public function testSaveUsesCurrentCampusScopeForExistingStandardCode(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('standards_trial_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-standards-trial-save');
+        make(TrialStandardService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'course_id' => 303,
+            'standard_code' => 'TRIAL-SHARED',
+            'standard_name' => 'Hidden Trial',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9914);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(TrialStandardService::class)->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'course_id' => 303,
+            'standard_code' => 'TRIAL-SHARED',
+            'standard_name' => 'Visible Attempt',
+        ], $context);
+    }
+
     public function testTrialStandardItemsAreOrdered(): void
     {
         [$tenant, $campus] = $this->tenantCampus('standards_trial');

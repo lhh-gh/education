@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { userProfileActionsByPermission } from '../actionRules.ts'
+import { educationRoleLabel, educationRoleOptions, foundationStatusLabel, userProfileActionsByPermission } from '../actionRules.ts'
 
 describe('user profile list', () => {
   it('campus_scope_button_requires_permission', () => {
@@ -31,5 +31,13 @@ describe('user profile list', () => {
 
     expect(disabledPlatformActions.statusAction).toBe('enable')
     expect(disabledPlatformActions.canCampusScope).toBe(false)
+  })
+
+  it('uses_chinese_role_and_status_labels', () => {
+    expect(educationRoleLabel('platform_super_admin')).toBe('平台超级管理员')
+    expect(educationRoleLabel('academic_staff')).toBe('教务')
+    expect(educationRoleOptions().map(item => item.label)).toContain('教师')
+    expect(foundationStatusLabel('enabled')).toBe('启用')
+    expect(foundationStatusLabel('disabled')).toBe('停用')
   })
 })

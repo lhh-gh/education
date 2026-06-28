@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationLessonChangeRecord;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LessonChangeRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,27 @@ use App\Repository\Education\Academic\LessonChangeRepository;
  */
 final class LessonChangeRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('change_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = $this->changeRecord((int) $tenant->id, (int) $campusA->id, 'CHG-A', 'makeup', 'confirmed', 9001, 9101);
+        $this->changeRecord((int) $tenant->id, (int) $campusB->id, 'CHG-B', 'makeup', 'confirmed', 9002, 9102);
+
+        $result = make(LessonChangeRepository::class)->page([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByTypeStatusSourceAndTargetLesson(): void
     {
         $tenant = $this->tenant('tenant');

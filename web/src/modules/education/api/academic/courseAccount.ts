@@ -1,4 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AcademicRecordStatus = 'enabled' | 'disabled'
 export type EnrollmentStatus = 'pending' | 'confirmed' | 'cancelled'
@@ -175,86 +176,82 @@ export interface EnrollmentCreateResult {
   account: StudentCourseAccountRecord | null
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(typeof input === 'number' ? { tenant_id: input } : input)
 }
 
 export function pageCourses(params: CoursePageParams): Promise<MineResult<MinePage<CourseRecord>>> {
-  return useHttp().get('/admin/education/academic/courses/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/courses/page', educationScopeGetOptions(params))
 }
 
 export function createCourse(data: CourseSavePayload): Promise<MineResult<CourseRecord>> {
-  return useHttp().post('/admin/education/academic/courses', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/courses', data, scopeOptions(data))
 }
 
 export function updateCourse(id: number, data: CourseSavePayload): Promise<MineResult<CourseRecord>> {
-  return useHttp().put(`/admin/education/academic/courses/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/courses/${id}`, data, scopeOptions(data))
 }
 
 export function changeCourseStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<CourseRecord>> {
-  return useHttp().put(`/admin/education/academic/courses/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/courses/${id}/status`, { status }, scopeOptions(tenantId))
 }
 
 export function deleteCourse(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/courses/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/courses/${id}`, scopeOptions(tenantId))
 }
 
 export function getCourseTeachers(id: number, tenantId?: number): Promise<MineResult<{ list: TeacherCourseRecord[] }>> {
-  return useHttp().get(`/admin/education/academic/courses/${id}/teachers`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/courses/${id}/teachers`, scopeOptions(tenantId))
 }
 
 export function saveCourseTeachers(id: number, teacherIds: number[], tenantId?: number): Promise<MineResult<{ list: TeacherCourseRecord[] }>> {
-  return useHttp().put(`/admin/education/academic/courses/${id}/teachers`, { teacher_ids: teacherIds }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/courses/${id}/teachers`, { teacher_ids: teacherIds }, scopeOptions(tenantId))
 }
 
 export function pageLessonPackages(params: LessonPackagePageParams): Promise<MineResult<MinePage<LessonPackageRecord>>> {
-  return useHttp().get('/admin/education/academic/lesson-packages/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/lesson-packages/page', educationScopeGetOptions(params))
 }
 
 export function createLessonPackage(data: LessonPackageSavePayload): Promise<MineResult<LessonPackageRecord>> {
-  return useHttp().post('/admin/education/academic/lesson-packages', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/lesson-packages', data, scopeOptions(data))
 }
 
 export function updateLessonPackage(id: number, data: LessonPackageSavePayload): Promise<MineResult<LessonPackageRecord>> {
-  return useHttp().put(`/admin/education/academic/lesson-packages/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/lesson-packages/${id}`, data, scopeOptions(data))
 }
 
 export function changeLessonPackageStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<LessonPackageRecord>> {
-  return useHttp().put(`/admin/education/academic/lesson-packages/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/lesson-packages/${id}/status`, { status }, scopeOptions(tenantId))
 }
 
 export function deleteLessonPackage(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/lesson-packages/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/lesson-packages/${id}`, scopeOptions(tenantId))
 }
 
 export function pageEnrollments(params: EnrollmentPageParams): Promise<MineResult<MinePage<EnrollmentRecord>>> {
-  return useHttp().get('/admin/education/academic/enrollments/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/enrollments/page', educationScopeGetOptions(params))
 }
 
 export function getEnrollment(id: number, tenantId?: number): Promise<MineResult<EnrollmentRecord>> {
-  return useHttp().get(`/admin/education/academic/enrollments/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/enrollments/${id}`, scopeOptions(tenantId))
 }
 
 export function createEnrollment(data: EnrollmentCreatePayload): Promise<MineResult<EnrollmentCreateResult>> {
-  return useHttp().post('/admin/education/academic/enrollments', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/enrollments', data, scopeOptions(data))
 }
 
 export function cancelEnrollment(id: number, cancelReason: string, tenantId?: number): Promise<MineResult<EnrollmentCreateResult>> {
-  return useHttp().put(`/admin/education/academic/enrollments/${id}/cancel`, { cancel_reason: cancelReason }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/enrollments/${id}/cancel`, { cancel_reason: cancelReason }, scopeOptions(tenantId))
 }
 
 export function pageStudentCourseAccounts(params: StudentCourseAccountPageParams): Promise<MineResult<MinePage<StudentCourseAccountRecord>>> {
-  return useHttp().get('/admin/education/academic/student-course-accounts/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/student-course-accounts/page', educationScopeGetOptions(params))
 }
 
 export function getAccountLedger(id: number, params: AccountLedgerPageParams): Promise<MineResult<MinePage<AccountLedgerRecord>>> {
-  return useHttp().get(`/admin/education/academic/student-course-accounts/${id}/ledger`, { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get(`/admin/education/academic/student-course-accounts/${id}/ledger`, educationScopeGetOptions(params))
 }
 
 export function changeStudentCourseAccountStatus(id: number, status: StudentCourseAccountStatus, tenantId?: number): Promise<MineResult<StudentCourseAccountRecord>> {
-  return useHttp().put(`/admin/education/academic/student-course-accounts/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/student-course-accounts/${id}/status`, { status }, scopeOptions(tenantId))
 }

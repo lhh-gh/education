@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type { FinanceOverview } from '../../api/finance/dashboard.ts'
 import { getFinanceOverview } from '../../api/finance/dashboard.ts'
-import { buildFinanceDashboardParams, centsToYuan } from './financeRules.ts'
+import { buildFinanceDashboardParams, centsToYuan, financePageText } from './financeRules.ts'
 
 defineOptions({ name: 'EducationFinanceDashboard' })
 
 const loading = ref(false)
 const overview = ref<FinanceOverview | null>(null)
-const filter = reactive({ tenant_id: undefined as number | undefined, campus_id: undefined as number | undefined, start_at: '', end_at: '' })
+const filter = reactive({ start_at: '', end_at: '' })
 const cards = computed(() => [
-  { title: 'Orders', value: overview.value?.order_count ?? 0 },
-  { title: 'Payments', value: overview.value?.payment_count ?? 0 },
-  { title: 'Paid Amount', value: centsToYuan(overview.value?.paid_amount_cents) },
-  { title: 'Refund Amount', value: centsToYuan(overview.value?.refund_amount_cents) },
+  { title: financePageText.dashboard.cards.orders, value: overview.value?.order_count ?? 0 },
+  { title: financePageText.dashboard.cards.payments, value: overview.value?.payment_count ?? 0 },
+  { title: financePageText.dashboard.cards.paidAmount, value: centsToYuan(overview.value?.paid_amount_cents) },
+  { title: financePageText.dashboard.cards.refundAmount, value: centsToYuan(overview.value?.refund_amount_cents) },
 ])
 
 async function loadDashboard() {
@@ -34,19 +34,16 @@ onMounted(loadDashboard)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Finance Dashboard</span>
+          <span>{{ financePageText.dashboard.title }}</span>
           <el-button type="primary" @click="loadDashboard">
-            Refresh
+            {{ financePageText.dashboard.refresh }}
           </el-button>
         </div>
       </template>
       <el-form :inline="true" :model="filter" class="search-form">
-        <el-form-item label="Campus">
-          <el-input-number v-model="filter.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Date Range">
-          <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="Start" />
-          <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="End" />
+        <el-form-item :label="financePageText.dashboard.fields.dateRange">
+          <el-date-picker v-model="filter.start_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="financePageText.dashboard.fields.start" />
+          <el-date-picker v-model="filter.end_at" class="ml-2" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" :placeholder="financePageText.dashboard.fields.end" />
         </el-form-item>
       </el-form>
       <el-skeleton v-if="loading" :rows="4" animated />

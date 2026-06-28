@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GrowthRecordRecord } from '../../api/family/report.ts'
 import { pageGrowthRecords } from '../../api/family/report.ts'
-import { familyTagType, guardianVisibleMarker } from './familyRules.ts'
+import { familyRecordTypeLabel, familyStatusLabel, familyTagType, guardianVisibleMarker } from './familyRules.ts'
 
 defineOptions({ name: 'EducationFamilyGrowthRecordList' })
 
@@ -30,30 +30,34 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Growth Records</span>
+          <span>成长记录</span>
           <el-button :loading="loading" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="student_id" label="Student" width="120" />
-        <el-table-column prop="title" label="Title" min-width="220" />
-        <el-table-column prop="record_type" label="Type" width="130" />
-        <el-table-column label="Status" width="130">
+        <el-table-column prop="student_id" label="学员" width="120" />
+        <el-table-column prop="title" label="标题" min-width="220" />
+        <el-table-column label="类型" width="130">
+          <template #default="{ row }">
+            {{ familyRecordTypeLabel(row.record_type) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Visibility" width="150">
+        <el-table-column label="可见性" width="150">
           <template #default="{ row }">
             {{ guardianVisibleMarker(row) }}
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No growth records" />
+          <el-empty description="暂无成长记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

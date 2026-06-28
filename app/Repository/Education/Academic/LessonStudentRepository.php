@@ -13,8 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Academic;
 
 use App\Model\Education\Academic\EducationLessonStudent;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Database\Model\Builder;
 use Hyperf\DbConnection\Db;
@@ -118,20 +118,7 @@ final class LessonStudentRepository extends IRepository
 
     private function applyContext(Builder $query, EducationUserContext $context): Builder
     {
-        if ($context->platformAccess) {
-            return $query;
-        }
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-        $query->where('tenant_id', $context->tenantId);
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            return $query;
-        }
-
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('campus_id', $context->campusIds);
+        (new EducationScopeQuery())->applyTenantCampus($query, [], $context);
 
         return $query;
     }

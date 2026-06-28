@@ -45,7 +45,7 @@ final class OrgUnitController extends AbstractController
     #[Permission(code: 'education:group:org:tree')]
     public function tree(): Result
     {
-        return $this->success($this->service->tree($this->context()));
+        return $this->success($this->service->tree($this->context(), $this->getRequestData()));
     }
 
     #[Post(path: '/admin/education/group/org-units', operationId: 'educationGroupOrgSave', summary: 'Group org save', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Group'])]

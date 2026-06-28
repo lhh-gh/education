@@ -16,7 +16,10 @@ use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationLesson;
 use App\Model\Education\Academic\EducationLessonStudent;
+use App\Model\Education\Foundation\EducationTenant;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LessonStudentRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -24,6 +27,27 @@ use App\Repository\Education\Academic\LessonStudentRepository;
  */
 final class LessonStudentRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersListByLessonWithoutLocalFilters(): void
+    {
+        [$tenantId, $campusId, $lesson] = $this->fixture();
+        $tenant = EducationTenant::query()->findOrFail($tenantId);
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = EducationLessonStudent::query()->create($this->lessonStudentRow($tenantId, $campusId, (int) $lesson->id, (int) $lesson->class_id, (int) $lesson->course_id, 101));
+        EducationLessonStudent::query()->create($this->lessonStudentRow($tenantId, (int) $campusB->id, (int) $lesson->id, (int) $lesson->class_id, (int) $lesson->course_id, 102));
+
+        $rows = make(LessonStudentRepository::class)->listByLesson((int) $lesson->id, new EducationUserContext(
+            userId: 1,
+            tenantId: $tenantId,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $campusId
+        ));
+
+        self::assertCount(1, $rows);
+        self::assertSame((int) $visible->id, (int) $rows[0]['id']);
+    }
+
     public function testOverlappingStudentLessonsReturnsConflictingStudentRows(): void
     {
         [$tenantId, $campusId, $lesson] = $this->fixture();

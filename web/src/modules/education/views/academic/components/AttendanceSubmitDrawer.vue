@@ -2,6 +2,7 @@
 import type { AttendanceLessonDetail, AttendanceSubmitRecord, AttendanceSubmitResult } from '../../../api/academic/attendanceConsumption.ts'
 import { getAttendanceLesson, submitAttendance } from '../../../api/academic/attendanceConsumption.ts'
 import { accountBalanceWarning, defaultAttendanceRecords } from '../attendanceConsumptionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAttendanceSubmitDrawer' })
 

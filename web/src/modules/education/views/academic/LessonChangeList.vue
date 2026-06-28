@@ -5,9 +5,12 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import LessonChangeDetailDrawer from './components/LessonChangeDetailDrawer.vue'
 import MakeupLessonForm from './components/MakeupLessonForm.vue'
 import RescheduleLessonForm from './components/RescheduleLessonForm.vue'
-import { canRescheduleLesson, lessonChangeStatusType, lessonChangeTypeLabel } from './leaveMakeupRescheduleRules.ts'
+import { canRescheduleLesson, lessonChangeStatusLabel, lessonChangeStatusType, lessonChangeTypeLabel } from './leaveMakeupRescheduleRules.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLessonChangeList' })
+
+const { scope } = useEducationScope()
 
 const loading = ref(false)
 const makeupVisible = ref(false)
@@ -25,7 +28,7 @@ const canReschedule = computed(() => canRescheduleLesson(hasAuth('education:acad
 const canDetail = computed(() => hasAuth('education:academic:lesson-change:detail'))
 
 function defaultSearch(): LessonChangePageParams {
-  return { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, change_type: undefined, status: undefined, source_lesson_id: undefined, target_lesson_id: undefined, student_id: undefined, keyword: '' }
+  return { page: 1, pageSize: 20, change_type: undefined, status: undefined, source_lesson_id: undefined, target_lesson_id: undefined, student_id: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -37,7 +40,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Lesson change list loading failed'
+    errorText.value = error?.message ?? '调补课列表加载失败'
   }
   finally {
     loading.value = false
@@ -60,12 +63,12 @@ function openDetail(row: LessonChangeRecord) {
 }
 
 function onMakeupSuccess(result: MakeupLessonResult) {
-  successText.value = `Make-up lesson ${result.target_lesson.id}, ${result.change_record.change_no}`
+  successText.value = `补课课次 ${result.target_lesson.id}，${result.change_record.change_no}`
   loadRows()
 }
 
 function onRescheduleSuccess(result: RescheduleLessonResult) {
-  successText.value = `Rescheduled ${result.lesson.id}`
+  successText.value = `已调课 ${result.lesson.id}`
   loadRows()
 }
 
@@ -77,13 +80,13 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Lesson Changes</span>
+          <span>调补课管理</span>
           <div>
             <el-button v-if="canMakeup" type="primary" @click="makeupVisible = true">
-              Make-up
+              补课
             </el-button>
             <el-button v-if="canReschedule" @click="rescheduleVisible = true">
-              Reschedule
+              调课
             </el-button>
           </div>
         </div>
@@ -91,75 +94,69 @@ onMounted(loadRows)
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-alert v-if="successText" class="page-alert" type="success" show-icon :closable="true" :title="successText" @close="successText = ''" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Campus ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Type">
+        <el-form-item label="类型">
           <el-select v-model="search.change_type" clearable style="width: 150px;">
-            <el-option label="Make-up" value="makeup" />
-            <el-option label="Reschedule" value="reschedule" />
+            <el-option label="补课" value="makeup" />
+            <el-option label="调课" value="reschedule" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 150px;">
-            <el-option label="Confirmed" value="confirmed" />
-            <el-option label="Cancelled" value="cancelled" />
+            <el-option label="已确认" value="confirmed" />
+            <el-option label="已取消" value="cancelled" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Source Lesson">
+        <el-form-item label="原课次">
           <el-input-number v-model="search.source_lesson_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Keyword">
+        <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="change_no" label="Change No" width="190" />
-        <el-table-column label="Type" width="120">
+        <el-table-column prop="change_no" label="变更编号" width="190" />
+        <el-table-column label="类型" width="120">
           <template #default="{ row }">
             {{ lessonChangeTypeLabel(row.change_type) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="120">
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="lessonChangeStatusType(row.status)">
-              {{ row.status }}
+              {{ lessonChangeStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="source_lesson_id" label="Source Lesson" width="130" />
-        <el-table-column prop="target_lesson_id" label="Target Lesson" width="130" />
-        <el-table-column prop="student_id" label="Student ID" width="110" />
-        <el-table-column prop="source_start_at" label="Source Start" width="180" />
-        <el-table-column prop="target_start_at" label="Target Start" width="180" />
-        <el-table-column prop="lesson_units" label="Units" width="90" />
-        <el-table-column prop="reason" label="Reason" min-width="180" show-overflow-tooltip />
-        <el-table-column label="Actions" fixed="right" width="120">
+        <el-table-column prop="source_lesson_id" label="原课次" width="130" />
+        <el-table-column prop="target_lesson_id" label="目标课次" width="130" />
+        <el-table-column prop="student_id" label="学员ID" width="110" />
+        <el-table-column prop="source_start_at" label="原开始时间" width="180" />
+        <el-table-column prop="target_start_at" label="目标开始时间" width="180" />
+        <el-table-column prop="lesson_units" label="课时" width="90" />
+        <el-table-column prop="reason" label="原因" min-width="180" show-overflow-tooltip />
+        <el-table-column label="操作" fixed="right" width="120">
           <template #default="{ row }">
             <el-button v-if="canDetail" link type="primary" @click="openDetail(row)">
-              Detail
+              详情
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No lesson changes" />
+          <el-empty description="暂无调补课记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <MakeupLessonForm v-model="makeupVisible" :tenant-id="search.tenant_id" @success="onMakeupSuccess" />
-    <RescheduleLessonForm v-model="rescheduleVisible" :tenant-id="search.tenant_id" @success="onRescheduleSuccess" />
+    <MakeupLessonForm v-model="makeupVisible" :tenant-id="scope.tenant_id" @success="onMakeupSuccess" />
+    <RescheduleLessonForm v-model="rescheduleVisible" :tenant-id="scope.tenant_id" @success="onRescheduleSuccess" />
     <LessonChangeDetailDrawer v-model="detailVisible" :row="current" />
   </div>
 </template>

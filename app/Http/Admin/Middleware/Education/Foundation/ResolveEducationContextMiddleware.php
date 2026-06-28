@@ -31,21 +31,42 @@ final class ResolveEducationContextMiddleware implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $tenantId = $this->tenantIdFromHeader($request->getHeaderLine('X-Tenant-Id'));
-        $context = $this->profileService->resolveForUser($this->currentUser->id(), $tenantId);
+        $tenantId = $this->idFromRequest($request, 'X-Tenant-Id', 'tenant_id');
+        $campusId = $this->idFromRequest($request, 'X-Campus-Id', 'campus_id');
+        $context = $this->profileService->resolveForUser($this->currentUser->id(), $tenantId, $campusId);
         Context::set(self::CONTEXT_KEY, $context);
 
         return $handler->handle($request);
     }
 
-    private function tenantIdFromHeader(string $value): ?int
+    private function idFromRequest(ServerRequestInterface $request, string $header, string $field): ?int
     {
-        if ($value === '') {
+        $headerValue = $request->getHeaderLine($header);
+        if ($headerValue !== '') {
+            return $this->positiveId($headerValue);
+        }
+
+        $queryParams = $request->getQueryParams();
+        if (isset($queryParams[$field])) {
+            return $this->positiveId($queryParams[$field]);
+        }
+
+        $body = $request->getParsedBody();
+        if (\is_array($body) && isset($body[$field])) {
+            return $this->positiveId($body[$field]);
+        }
+
+        return null;
+    }
+
+    private function positiveId(mixed $value): ?int
+    {
+        if (\is_array($value) || \is_object($value)) {
             return null;
         }
 
-        $tenantId = (int) $value;
+        $id = (int) trim((string) $value);
 
-        return $tenantId > 0 ? $tenantId : null;
+        return $id > 0 ? $id : null;
     }
 }

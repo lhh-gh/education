@@ -20,7 +20,6 @@ use App\Http\Admin\Request\Education\Operations\TeacherWorkloadPageRequest;
 use App\Http\Common\Middleware\AccessTokenMiddleware;
 use App\Http\Common\Result;
 use App\Http\Common\ResultCode;
-use App\Model\Education\Operations\EducationTeacherWorkloadRecord;
 use App\Service\Education\Foundation\EducationUserContext;
 use App\Service\Education\Operations\TeacherWorkloadService;
 use Hyperf\Context\Context;
@@ -29,6 +28,7 @@ use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Mine\Access\Attribute\Permission;
 use Mine\Swagger\Attributes\PageResponse;
+use Mine\Swagger\Attributes\ResultResponse;
 
 #[HyperfServer(name: 'http')]
 #[Middleware(middleware: AccessTokenMiddleware::class, priority: 100)]
@@ -44,16 +44,16 @@ final class TeacherWorkloadController extends AbstractController
     public function report(TeacherWorkloadPageRequest $request): Result
     {
         $params = $request->validated();
-        $context = $this->context();
-        $query = EducationTeacherWorkloadRecord::query()->where('tenant_id', $context->tenantId);
-        foreach (['campus_id', 'teacher_id', 'workload_type'] as $field) {
-            if (isset($params[$field]) && $params[$field] !== '') {
-                $query->where($field, $params[$field]);
-            }
-        }
-        $list = $query->orderByDesc('recorded_at')->get()->map(static fn ($row): array => $row->toArray())->all();
 
-        return $this->success(['list' => $list, 'total' => \count($list), 'summary' => isset($params['teacher_id']) ? $this->service->summaryByTeacher($context->tenantId, (int) $params['teacher_id']) : []]);
+        return $this->success($this->service->report($params, $this->context()));
+    }
+
+    #[Get(path: '/admin/education/operations/reports/teacher-workloads/summary', operationId: 'educationOperationTeacherWorkloadSummary', summary: 'Teacher workload summary', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:operations:teacher-workload:report')]
+    public function summary(TeacherWorkloadPageRequest $request): Result
+    {
+        return $this->success($this->service->summary($request->validated(), $this->context()));
     }
 
     private function context(): EducationUserContext

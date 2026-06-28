@@ -129,7 +129,7 @@ final class LearningReportService
 
     private function mustFind(int $id, EducationUserContext $context): EducationLearningReport
     {
-        $report = $this->repository->find($id, (int) $context->tenantId);
+        $report = $this->repository->find($id, $context);
         if (! $report instanceof EducationLearningReport) {
             throw new BusinessException(ResultCode::NOT_FOUND, 'learning report not found', ['learning_report_id' => $id]);
         }

@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationAccountAdjustment;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\AccountAdjustmentRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,27 @@ use App\Repository\Education\Academic\AccountAdjustmentRepository;
  */
 final class AccountAdjustmentRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('adjustment_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = $this->adjustment((int) $tenant->id, (int) $campusA->id, 'ADJ-A', 101, 'supplement_deduction', 'confirmed');
+        $this->adjustment((int) $tenant->id, (int) $campusB->id, 'ADJ-B', 102, 'supplement_deduction', 'confirmed');
+
+        $result = make(AccountAdjustmentRepository::class)->page([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByAccountTypeStatusAndKeyword(): void
     {
         $tenant = $this->tenant('tenant');

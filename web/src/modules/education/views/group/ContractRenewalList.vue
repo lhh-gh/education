@@ -2,7 +2,7 @@
 import type { ContractRenewalRecord } from '../../api/group/contract.ts'
 import { pageContractRenewals } from '../../api/group/contract.ts'
 import ContractRenewalDrawer from './components/ContractRenewalDrawer.vue'
-import { groupTagType } from './groupRules.ts'
+import { groupStatusLabel, groupTagType } from './groupRules.ts'
 
 defineOptions({ name: 'EducationGroupContractRenewalList' })
 
@@ -29,29 +29,29 @@ onMounted(loadRows)
 
 <template>
   <div class="mine-layout education-group-page pt-3">
-    <el-alert class="mb-3" type="info" title="Renewal reminders use contract and campus scope" show-icon />
+    <el-alert class="mb-3" type="info" title="续签提醒按合同和校区范围过滤" show-icon />
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Contract Renewals</span>
+          <span>合同续签</span>
           <el-button type="primary" @click="drawerVisible = true">
-            Handle
+            处理
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="contract_id" label="Contract" width="120" />
-        <el-table-column prop="renewal_type" label="Type" width="140" />
-        <el-table-column prop="due_date" label="Due Date" width="150" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="contract_id" label="合同" width="120" />
+        <el-table-column prop="renewal_type" label="类型" width="140" />
+        <el-table-column prop="due_date" label="到期日期" width="150" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="groupTagType(row.status)">
-              {{ row.status }}
+              {{ groupStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No renewal reminders" />
+          <el-empty description="暂无续签提醒" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

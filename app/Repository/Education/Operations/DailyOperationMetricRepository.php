@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationDailyOperationMetric;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class DailyOperationMetricRepository
 {
@@ -25,22 +27,42 @@ final class DailyOperationMetricRepository
         ], $data);
     }
 
-    public function trend(int $tenantId, ?int $campusId = null): array
+    public function trend(EducationUserContext $context, ?int $campusId = null): array
     {
-        $query = EducationDailyOperationMetric::query()->where('tenant_id', $tenantId);
-        if ($campusId !== null) {
-            $query->where('campus_id', $campusId);
-        }
+        $query = $this->scopedQuery($context, $campusId);
 
         return $query->orderBy('metric_date')->get()->map(static fn ($row): array => $row->toArray())->all();
     }
 
-    public function dashboardSummary(int $tenantId, ?int $campusId = null): array
+    public function consumptionTrend(EducationUserContext $context, array $params): array
     {
-        $query = EducationDailyOperationMetric::query()->where('tenant_id', $tenantId);
-        if ($campusId !== null) {
-            $query->where('campus_id', $campusId);
-        }
+        $query = $this->scopedQuery($context, isset($params['campus_id']) && $params['campus_id'] !== '' ? (int) $params['campus_id'] : null);
+        $this->applyDateFilters($query, $params);
+
+        return $query->orderBy('metric_date')->get()->map(static fn (EducationDailyOperationMetric $row): array => [
+            'date' => $row->metric_date?->format('Y-m-d'),
+            'consumed_units' => number_format((float) $row->consumed_credits, 2, '.', ''),
+            'review_count' => (int) $row->pending_review_count,
+        ])->all();
+    }
+
+    public function dailyMetrics(EducationUserContext $context, array $params): array
+    {
+        $query = $this->scopedQuery($context, isset($params['campus_id']) && $params['campus_id'] !== '' ? (int) $params['campus_id'] : null);
+        $this->applyDateFilters($query, $params);
+
+        return $query->orderBy('metric_date')->get()->map(static fn (EducationDailyOperationMetric $row): array => [
+            'date' => $row->metric_date?->format('Y-m-d'),
+            'lesson_change_count' => 0,
+            'makeup_count' => 0,
+            'consumption_review_count' => (int) $row->pending_review_count,
+            'renewal_alert_count' => (int) $row->renewal_alert_count,
+        ])->all();
+    }
+
+    public function dashboardSummary(EducationUserContext $context, ?int $campusId = null): array
+    {
+        $query = $this->scopedQuery($context, $campusId);
         $row = $query->selectRaw(
             'SUM(lessons_count) as lessons_count, SUM(consumed_credits) as consumed_credits, SUM(renewal_alert_count) as renewal_alert_count, SUM(pending_review_count) as pending_review_count'
         )->first();
@@ -51,5 +73,23 @@ final class DailyOperationMetricRepository
             'renewal_alert_count' => (int) ($row->renewal_alert_count ?? 0),
             'pending_review_count' => (int) ($row->pending_review_count ?? 0),
         ];
+    }
+
+    private function scopedQuery(EducationUserContext $context, ?int $campusId = null): mixed
+    {
+        $query = EducationDailyOperationMetric::query();
+        $filters = $campusId === null ? [] : ['campus_id' => $campusId];
+
+        return (new EducationScopeQuery())->applyTenantCampus($query, $filters, $context);
+    }
+
+    private function applyDateFilters(mixed $query, array $params): void
+    {
+        if (isset($params['start_at']) && $params['start_at'] !== '') {
+            $query->where('metric_date', '>=', mb_substr((string) $params['start_at'], 0, 10));
+        }
+        if (isset($params['end_at']) && $params['end_at'] !== '') {
+            $query->where('metric_date', '<=', mb_substr((string) $params['end_at'], 0, 10));
+        }
     }
 }

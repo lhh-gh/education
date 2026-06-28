@@ -44,7 +44,31 @@ final class OperationDashboardController extends AbstractController
     {
         $params = $request->validated();
 
-        return $this->success($this->service->overview($this->context()->tenantId, isset($params['campus_id']) ? (int) $params['campus_id'] : null));
+        return $this->success($this->service->overview($this->context(), isset($params['campus_id']) ? (int) $params['campus_id'] : null));
+    }
+
+    #[Get(path: '/admin/education/operations/dashboard/consumption-trend', operationId: 'educationOperationDashboardConsumptionTrend', summary: 'Operation dashboard consumption trend', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:operations:dashboard:overview')]
+    public function consumptionTrend(OperationDashboardRequest $request): Result
+    {
+        return $this->success($this->service->consumptionTrend($this->context(), $request->validated()));
+    }
+
+    #[Get(path: '/admin/education/operations/dashboard/renewal-alert-summary', operationId: 'educationOperationDashboardRenewalAlertSummary', summary: 'Operation dashboard renewal alert summary', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:operations:dashboard:overview')]
+    public function renewalAlertSummary(OperationDashboardRequest $request): Result
+    {
+        return $this->success($this->service->renewalAlertSummary($this->context(), $request->validated()));
+    }
+
+    #[Get(path: '/admin/education/operations/dashboard/daily-metrics', operationId: 'educationOperationDashboardDailyMetrics', summary: 'Operation dashboard daily metrics', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:operations:dashboard:overview')]
+    public function dailyMetrics(OperationDashboardRequest $request): Result
+    {
+        return $this->success($this->service->dailyMetrics($this->context(), $request->validated()));
     }
 
     private function context(): EducationUserContext

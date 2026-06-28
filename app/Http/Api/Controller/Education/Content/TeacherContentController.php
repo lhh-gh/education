@@ -27,6 +27,7 @@ use App\Model\Education\Content\EducationLearningMaterial;
 use App\Model\Education\Foundation\EducationUserProfile;
 use App\Service\Education\Content\LessonMaterialUsageService;
 use App\Service\Education\Content\StudentWorkService;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use App\Service\Education\Foundation\MobileContextService;
 use Hyperf\HttpServer\Annotation\Middleware;
@@ -58,7 +59,7 @@ final class TeacherContentController extends AbstractController
         if ($courseId !== null && ! $this->teacherCanUseCourse($tenantId, $teacherId, $courseId)) {
             throw new BusinessException(ResultCode::FORBIDDEN, 'teacher is not authorized for this course', ['course_id' => $courseId]);
         }
-        $query = EducationLearningMaterial::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterial::query(), [], $context);
         if ($courseId !== null) {
             $query->where('course_id', $courseId);
         }
@@ -99,7 +100,7 @@ final class TeacherContentController extends AbstractController
             'tenant_id' => $tenantId,
             'campus_id' => $context->currentCampusId,
             'teacher_id' => $teacherId,
-        ], $studentIds));
+        ], $studentIds, $context));
     }
 
     private function tenantId(EducationUserContext $context): int

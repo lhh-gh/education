@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { OperationAlertRecord } from '../../api/workflow/alert.ts'
 import { convertAlertToTask, pageOperationAlerts } from '../../api/workflow/alert.ts'
-import { alertConvertState } from './workflowRules.ts'
+import { alertConvertState, workflowStatusLabel } from './workflowRules.ts'
 
 defineOptions({ name: 'EducationWorkflowOperationAlertList' })
 
@@ -34,13 +34,17 @@ onMounted(loadRows)
   <div class="mine-layout education-workflow-page pt-3">
     <el-card shadow="never">
       <template #header>
-        <span>Operation Alerts</span>
+        <span>运营告警</span>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="title" label="Title" min-width="180" />
-        <el-table-column prop="level" label="Level" width="120" />
-        <el-table-column prop="status" label="Status" width="130" />
-        <el-table-column label="Actions" width="120">
+        <el-table-column prop="title" label="告警标题" min-width="180" />
+        <el-table-column prop="level" label="级别" width="120" />
+        <el-table-column label="状态" width="130">
+          <template #default="{ row }">
+            {{ workflowStatusLabel(row.status) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120">
           <template #default="{ row }">
             <el-button link type="primary" :disabled="alertConvertState(row).disabled" @click="convert(row)">
               {{ alertConvertState(row).label }}
@@ -48,7 +52,7 @@ onMounted(loadRows)
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No alerts" />
+          <el-empty description="暂无运营告警" />
         </template>
       </el-table>
       <el-pagination class="page-pagination" layout="total" :total="total" />

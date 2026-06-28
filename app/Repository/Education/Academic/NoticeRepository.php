@@ -16,6 +16,7 @@ use App\Model\Education\Academic\EducationNotice;
 use App\Model\Enums\Education\Academic\NoticeStatus;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -126,33 +127,17 @@ final class NoticeRepository extends IRepository
 
     private function applyContext(Builder $query, EducationUserContext $context, array $filters): Builder
     {
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
-            }
-            if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-                $query->where('campus_id', (int) $filters['campus_id']);
-            }
-
-            return $query;
+        $scope = new EducationScopeQuery();
+        if ($context->platformAccess || $context->roleCode === EducationRoleCode::TenantAdmin) {
+            return $scope->applyTenantCampus($query, $filters, $context);
         }
 
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return $query;
+        $tenantId = $scope->tenantId($filters, $context);
+        if ($tenantId === null) {
+            return $this->emptyQuery($query);
         }
-
-        $query->where('tenant_id', $context->tenantId);
-        $campusId = isset($filters['campus_id']) && $filters['campus_id'] !== '' ? (int) $filters['campus_id'] : null;
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            if ($campusId !== null) {
-                $query->where('campus_id', $campusId);
-            }
-
-            return $query;
-        }
-
+        $query->where('tenant_id', $tenantId);
+        $campusId = $scope->campusId($filters, $context);
         if ($campusId !== null) {
             return $context->canAccessCampus($campusId)
                 ? $query->where('campus_id', $campusId)

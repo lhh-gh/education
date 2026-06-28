@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Admissions;
 
 use App\Model\Education\Admissions\EducationAdmissionMetricDaily;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class AdmissionMetricRepository
@@ -30,12 +31,7 @@ final class AdmissionMetricRepository
 
     public function summary(array $filters, EducationUserContext $context): array
     {
-        $query = EducationAdmissionMetricDaily::query()->where('tenant_id', $context->tenantId);
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-        } elseif ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationAdmissionMetricDaily::query(), $filters, $context);
         if (isset($filters['start_date']) && $filters['start_date'] !== '') {
             $query->where('metric_date', '>=', $filters['start_date']);
         }

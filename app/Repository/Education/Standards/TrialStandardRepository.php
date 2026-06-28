@@ -14,19 +14,46 @@ namespace App\Repository\Education\Standards;
 
 use App\Model\Education\Standards\EducationTrialLessonStandard;
 use App\Model\Education\Standards\EducationTrialLessonStandardItem;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class TrialStandardRepository
 {
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationTrialLessonStandard
+    public function save(array $data, ?EducationUserContext $context = null): EducationTrialLessonStandard
     {
-        return EducationTrialLessonStandard::query()->updateOrCreate([
-            'tenant_id' => $data['tenant_id'],
-            'standard_code' => $data['standard_code'],
-            'version_no' => $data['version_no'] ?? 1,
-        ], $data + ['version_no' => 1, 'status' => 'draft']);
+        $standard = EducationTrialLessonStandard::query()
+            ->where('tenant_id', $data['tenant_id'])
+            ->where('standard_code', $data['standard_code'])
+            ->where('version_no', $data['version_no'] ?? 1)
+            ->first();
+
+        if ($standard !== null) {
+            if ($context !== null) {
+                $standard = (new EducationScopeQuery())
+                    ->applyTenantCampus(EducationTrialLessonStandard::query(), [], $context)
+                    ->findOrFail((int) $standard->id);
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $standard->tenant_id,
+                    'campus_id' => $standard->campus_id === null ? null : (int) $standard->campus_id,
+                ]);
+            }
+            $standard->fill($data + ['version_no' => 1, 'status' => 'draft']);
+            $standard->save();
+
+            return $standard;
+        }
+
+        if ($context !== null) {
+            $data = array_merge($data, [
+                'tenant_id' => $this->tenantId($context, $data),
+                'campus_id' => $context->currentCampusId,
+            ]);
+        }
+
+        return EducationTrialLessonStandard::query()->create($data + ['version_no' => 1, 'status' => 'draft']);
     }
 
     /**
@@ -46,5 +73,20 @@ final class TrialStandardRepository
                 'trial_lesson_standard_id' => $standardId,
             ]);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function tenantId(EducationUserContext $context, array $data): int
+    {
+        if ($context->tenantId !== null) {
+            return $context->tenantId;
+        }
+        if (isset($data['tenant_id']) && $data['tenant_id'] !== '') {
+            return (int) $data['tenant_id'];
+        }
+
+        throw new \RuntimeException('education tenant context is missing', 403);
     }
 }

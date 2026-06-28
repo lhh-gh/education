@@ -18,22 +18,22 @@ export function auditPayloadSections(detail: AuditLogDetail | null): AuditPayloa
   return [
     {
       key: 'before_snapshot',
-      title: 'Before',
+      title: '变更前',
       value: detail?.before_snapshot ?? null,
     },
     {
       key: 'after_snapshot',
-      title: 'After',
+      title: '变更后',
       value: detail?.after_snapshot ?? null,
     },
     {
       key: 'diff',
-      title: 'Diff',
+      title: '差异',
       value: detail?.diff ?? null,
     },
     {
       key: 'metadata',
-      title: 'Metadata',
+      title: '元数据',
       value: detail?.metadata ?? null,
     },
   ]

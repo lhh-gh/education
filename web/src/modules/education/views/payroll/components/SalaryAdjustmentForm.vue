@@ -22,22 +22,22 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Salary Adjustment" width="460px">
-    <el-alert v-if="props.row" type="info" :closable="false" :title="`Current payable ${centsToYuan(props.row.payable_amount_cents)}`" />
+  <el-dialog v-model="visible" title="薪酬调整" width="460px">
+    <el-alert v-if="props.row" type="info" :closable="false" :title="`当前实发 ${centsToYuan(props.row.payable_amount_cents)}`" />
     <el-form class="mt-3" label-width="120px">
-      <el-form-item label="Amount">
+      <el-form-item label="金额">
         <el-input-number v-model="form.amount_cents" :step="1000" />
       </el-form-item>
-      <el-form-item label="Reason">
+      <el-form-item label="原因">
         <el-input v-model="form.reason" type="textarea" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>

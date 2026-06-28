@@ -3,7 +3,7 @@ import type { SalarySlipRecord } from '../../api/payroll/slip.ts'
 import { pageSalarySlips } from '../../api/payroll/slip.ts'
 import SalaryAdjustmentForm from './components/SalaryAdjustmentForm.vue'
 import SalarySlipDetailDrawer from './components/SalarySlipDetailDrawer.vue'
-import { centsToYuan, payrollTagType } from './payrollRules.ts'
+import { centsToYuan, payrollStatusLabel, payrollTagType } from './payrollRules.ts'
 
 defineOptions({ name: 'EducationPayrollSalarySlipList' })
 
@@ -45,55 +45,55 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Salary Slips</span>
+          <span>工资条</span>
           <el-button type="primary" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Month">
+        <el-form-item label="月份">
           <el-date-picker v-model="search.salary_month" type="month" value-format="YYYY-MM" />
         </el-form-item>
-        <el-form-item label="Teacher ID">
+        <el-form-item label="教师 ID">
           <el-input-number v-model="search.teacher_id" :min="1" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-input v-model="search.status" clearable />
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="teacher_name" label="Teacher" min-width="150" />
-        <el-table-column prop="salary_month" label="Month" width="120" />
-        <el-table-column label="Gross" width="130">
+        <el-table-column prop="teacher_name" label="教师" min-width="150" />
+        <el-table-column prop="salary_month" label="月份" width="120" />
+        <el-table-column label="应发" width="130">
           <template #default="{ row }">
             {{ centsToYuan(row.gross_amount_cents) }}
           </template>
         </el-table-column>
-        <el-table-column label="Payable" width="130">
+        <el-table-column label="实发" width="130">
           <template #default="{ row }">
             {{ centsToYuan(row.payable_amount_cents) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="120">
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="payrollTagType(row.status)">
-              {{ row.status }}
+              {{ payrollStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Actions" width="170" fixed="right">
+        <el-table-column label="操作" width="170" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="openDetail(row)">
-              Detail
+              详情
             </el-button>
             <el-button link type="primary" :disabled="row.status !== 'approved'" @click="openAdjustment(row)">
-              Adjust
+              调整
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No salary slips" />
+          <el-empty description="暂无工资条" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

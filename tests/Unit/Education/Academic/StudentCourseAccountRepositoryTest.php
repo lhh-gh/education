@@ -16,7 +16,9 @@ use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationEnrollment;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\StudentCourseAccountRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -24,6 +26,31 @@ use App\Repository\Education\Academic\StudentCourseAccountRepository;
  */
 final class StudentCourseAccountRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('account_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $studentA = $this->student((int) $tenant->id, (int) $campusA->id, 'S-A');
+        $studentB = $this->student((int) $tenant->id, (int) $campusB->id, 'S-B');
+        $courseA = $this->course((int) $tenant->id, (int) $campusA->id, 'COURSE-A');
+        $courseB = $this->course((int) $tenant->id, (int) $campusB->id, 'COURSE-B');
+        $visible = EducationStudentCourseAccount::query()->create($this->accountRow((int) $tenant->id, (int) $campusA->id, (int) $studentA->id, (int) $courseA->id));
+        EducationStudentCourseAccount::query()->create($this->accountRow((int) $tenant->id, (int) $campusB->id, (int) $studentB->id, (int) $courseB->id));
+
+        $result = make(StudentCourseAccountRepository::class)->pageByContext([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testFindByStudentCourseForUpdateReturnsAccount(): void
     {
         [$tenantId, $campusId, $studentId, $courseId] = $this->accountFixture();
@@ -109,5 +136,39 @@ final class StudentCourseAccountRepositoryTest extends AcademicTestCase
         ]);
 
         return [(int) $tenant->id, (int) $campus->id, (int) $student->id, (int) $course->id];
+    }
+
+    private function student(int $tenantId, int $campusId, string $studentNo): EducationStudent
+    {
+        return EducationStudent::query()->create([
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'student_no' => $studentNo,
+            'name' => 'Student ' . $studentNo,
+            'status' => 'enabled',
+        ]);
+    }
+
+    private function course(int $tenantId, int $campusId, string $code): EducationCourse
+    {
+        return EducationCourse::query()->create([
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'code' => $code,
+            'name' => 'Course ' . $code,
+            'status' => 'enabled',
+        ]);
+    }
+
+    private function accountRow(int $tenantId, int $campusId, int $studentId, int $courseId): array
+    {
+        return [
+            'tenant_id' => $tenantId,
+            'campus_id' => $campusId,
+            'student_id' => $studentId,
+            'course_id' => $courseId,
+            'available_units' => '12.00',
+            'status' => 'active',
+        ];
     }
 }

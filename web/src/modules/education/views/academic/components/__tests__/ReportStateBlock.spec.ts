@@ -9,7 +9,7 @@ describe('report state block', () => {
   })
 
   it('uses_default_and_custom_messages', () => {
-    expect(reportStateMessage('empty')).toBe('No report data')
+    expect(reportStateMessage('empty')).toBe('暂无报表数据')
     expect(reportStateMessage('error', 'Backend failed')).toBe('Backend failed')
   })
 })

@@ -22,7 +22,7 @@ function actorLabel(detail: AuditLogDetail): string {
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="Audit Payload" size="720px" class="audit-payload-drawer">
+  <el-drawer v-model="visible" title="审计详情" size="720px" class="audit-payload-drawer">
     <el-alert v-if="error" class="drawer-alert" type="error" show-icon :closable="false" :title="error" />
 
     <el-skeleton v-if="loading" :rows="8" animated />
@@ -32,22 +32,22 @@ function actorLabel(detail: AuditLogDetail): string {
         <el-descriptions-item label="ID">
           {{ detail.id }}
         </el-descriptions-item>
-        <el-descriptions-item label="Created">
+        <el-descriptions-item label="创建时间">
           {{ detail.created_at }}
         </el-descriptions-item>
-        <el-descriptions-item label="Actor">
+        <el-descriptions-item label="操作人">
           {{ actorLabel(detail) || '-' }}
         </el-descriptions-item>
-        <el-descriptions-item label="Request">
+        <el-descriptions-item label="请求ID">
           {{ detail.request_id || '-' }}
         </el-descriptions-item>
         <el-descriptions-item label="IP">
           {{ detail.ip_address || '-' }}
         </el-descriptions-item>
-        <el-descriptions-item label="Method">
+        <el-descriptions-item label="请求方法">
           {{ detail.method || '-' }}
         </el-descriptions-item>
-        <el-descriptions-item label="Path">
+        <el-descriptions-item label="请求路径">
           {{ detail.path || '-' }}
         </el-descriptions-item>
       </el-descriptions>
@@ -55,11 +55,11 @@ function actorLabel(detail: AuditLogDetail): string {
       <section v-for="section in sections" :key="section.key" class="payload-section">
         <h3>{{ section.title }}</h3>
         <pre v-if="section.value" class="payload-json">{{ formatAuditPayload(section.value) }}</pre>
-        <el-empty v-else :description="`${section.title} is empty`" :image-size="48" />
+        <el-empty v-else :description="`${section.title}为空`" :image-size="48" />
       </section>
     </template>
 
-    <el-empty v-else description="No payload selected" />
+    <el-empty v-else description="请选择审计日志" />
   </el-drawer>
 </template>
 

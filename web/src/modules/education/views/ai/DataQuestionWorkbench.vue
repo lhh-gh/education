@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { DataQuestionLogRecord, MetricCatalogRecord } from '../../api/ai/data-question.ts'
 import { askDataQuestion, pageDataQuestionLogs, pageMetricCatalogs } from '../../api/ai/data-question.ts'
-import { aiErrorTitle, aiTagType, containsRawSql } from './aiRules.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { aiErrorMessage, aiStatusLabel, aiTagType, containsRawSql } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiDataQuestionWorkbench' })
 
+const message = useMessage()
 const loading = ref(false)
 const logs = ref<DataQuestionLogRecord[]>([])
 const metrics = ref<MetricCatalogRecord[]>([])
@@ -13,6 +16,12 @@ const errorText = ref('')
 const answerText = ref('')
 const search = reactive({ page: 1, pageSize: 20 })
 const form = reactive({ question_text: '', metric_codes: [] as string[] })
+const canAsk = computed(() => hasAuth('education:ai:data-question:create'))
+
+function handleError(error: any, fallback: string) {
+  errorText.value = aiErrorMessage(error, fallback)
+  message.error(errorText.value)
+}
 
 async function loadRows() {
   loading.value = true
@@ -27,7 +36,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || 'Data questions loading failed'
+    handleError(error, '数据问答加载失败')
   }
   finally {
     loading.value = false
@@ -36,13 +45,20 @@ async function loadRows() {
 
 async function askQuestion() {
   if (containsRawSql(form.question_text)) {
-    errorText.value = 'Validation failed'
+    errorText.value = '问题内容不能包含原始 SQL'
+    message.error(errorText.value)
     return
   }
 
-  const response = await askDataQuestion({ ...form })
-  answerText.value = response.data.answer_text
-  await loadRows()
+  try {
+    const response = await askDataQuestion({ ...form })
+    answerText.value = response.data.answer_text
+    message.success('问题已提交')
+    await loadRows()
+  }
+  catch (error: any) {
+    handleError(error, '数据问答提交失败')
+  }
 }
 
 onMounted(loadRows)
@@ -53,18 +69,18 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Data Q&A</span>
-          <el-button type="primary" @click="askQuestion">
-            Ask
+          <span>数据问答</span>
+          <el-button v-if="canAsk" type="primary" @click="askQuestion">
+            提问
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form>
-        <el-form-item label="Question">
+        <el-form-item label="问题">
           <el-input v-model="form.question_text" type="textarea" :rows="3" />
         </el-form-item>
-        <el-form-item label="Metrics">
+        <el-form-item label="指标">
           <el-select v-model="form.metric_codes" multiple filterable style="width: 420px;">
             <el-option v-for="metric in metrics" :key="metric.metric_code" :label="metric.metric_name" :value="metric.metric_code" />
           </el-select>
@@ -72,17 +88,17 @@ onMounted(loadRows)
       </el-form>
       <el-alert v-if="answerText" class="page-alert" type="success" show-icon :closable="true" :title="answerText" @close="answerText = ''" />
       <el-table v-loading="loading" :data="logs" row-key="id">
-        <el-table-column prop="question_text" label="Question" min-width="240" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="question_text" label="问题" min-width="240" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="aiTagType(row.status)">
-              {{ row.status }}
+              {{ aiStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="answer_text" label="Answer" min-width="260" show-overflow-tooltip />
+        <el-table-column prop="answer_text" label="回答" min-width="260" show-overflow-tooltip />
         <template #empty>
-          <el-empty description="No data questions" />
+          <el-empty description="暂无数据问答记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

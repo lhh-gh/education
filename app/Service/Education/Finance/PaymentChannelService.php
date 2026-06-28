@@ -53,7 +53,7 @@ final class PaymentChannelService
             'sort_order' => (int) ($data['sort_order'] ?? 0),
             'created_by' => $context->userId,
             'updated_by' => $context->userId,
-        ]);
+        ], $context);
 
         return $channel->toArray();
     }

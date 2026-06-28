@@ -21,6 +21,8 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
 use App\Service\Education\Standards\CourseMaterialService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -38,13 +40,26 @@ final class CourseMaterialController extends AbstractController
 
     public function __construct(private readonly CourseMaterialService $service, private readonly EventDispatcherInterface $events) {}
 
+    #[Get(path: '/admin/education/standards/materials', operationId: 'educationStandardsMaterialPage', summary: 'Standards material page', tags: ['Education Standards'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:standards:material:page')]
+    public function page(RequestInterface $request): Result
+    {
+        return $this->success($this->service->page(
+            $request->all(),
+            $this->context(),
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
+    }
+
     #[Post(path: '/admin/education/standards/materials', operationId: 'educationStandardsMaterialSave', summary: 'Standards material save', tags: ['Education Standards'])]
     #[ResultResponse(instance: new Result())]
     #[Permission(code: 'education:standards:material:save')]
     public function save(CourseMaterialSaveRequest $request): Result
     {
         $context = $this->context();
-        $result = $this->service->save($request->validated() + ['tenant_id' => $this->tenantId($context), 'campus_id' => $context->currentCampusId]);
+        $result = $this->service->save($request->validated() + ['tenant_id' => $this->tenantId($context), 'campus_id' => $context->currentCampusId], $context);
         $this->audit($this->events, 'education.standards.material.saved', 'material', $result['material_id'], $context, $result);
 
         return $this->success($result);

@@ -26,7 +26,7 @@ const emit = defineEmits<{
     <div class="toolbar-actions">
       <slot name="export" />
       <el-button :loading="loading" @click="emit('refresh')">
-        Refresh
+        刷新
       </el-button>
     </div>
   </div>

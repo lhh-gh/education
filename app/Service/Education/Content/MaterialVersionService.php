@@ -14,6 +14,7 @@ namespace App\Service\Education\Content;
 
 use App\Repository\Education\Content\LearningMaterialRepository;
 use App\Repository\Education\Content\MaterialVersionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MaterialVersionService
 {
@@ -26,13 +27,15 @@ final class MaterialVersionService
      * @param array<string, mixed> $data
      * @return array{material_version_id: int, version_no: int, status: string}
      */
-    public function save(array $data): array
+    public function save(EducationUserContext $context, array $data): array
     {
-        $tenantId = (int) $data['tenant_id'];
         $materialId = (int) $data['material_id'];
+        $material = $this->materials->findInContext($context, $materialId);
+        $tenantId = (int) $material->tenant_id;
+        $campusId = $material->campus_id === null ? null : (int) $material->campus_id;
         $versionId = isset($data['material_version_id']) ? (int) $data['material_version_id'] : null;
         if ($versionId !== null) {
-            $existing = $this->versions->findInTenant($tenantId, $versionId);
+            $existing = $this->versions->findInContext($context, $versionId);
             if ($this->statusValue($existing->status) === 'published') {
                 unset($data['material_version_id'], $data['id']);
                 $data['version_no'] = $this->versions->nextVersionNo($tenantId, $materialId);
@@ -42,6 +45,8 @@ final class MaterialVersionService
                 $data['version_no'] = $existing->version_no;
             }
         }
+        $data['tenant_id'] = $tenantId;
+        $data['campus_id'] = $campusId;
 
         $version = $this->versions->save($data + [
             'version_no' => 1,
@@ -51,7 +56,6 @@ final class MaterialVersionService
                 'content' => $data['content'] ?? null,
             ],
         ]);
-        $material = $this->materials->findInTenant($tenantId, $materialId);
         $material->current_version_id = $version->id;
         $material->save();
 
@@ -65,17 +69,17 @@ final class MaterialVersionService
     /**
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, int $materialId, int $page = 1, int $pageSize = 20): array
+    public function page(int $materialId, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        return $this->versions->page($tenantId, $materialId, $page, $pageSize);
+        return $this->versions->page($materialId, $context, $page, $pageSize);
     }
 
     /**
      * @return array<string, mixed>
      */
-    public function detail(int $tenantId, int $versionId): array
+    public function detail(EducationUserContext $context, int $versionId): array
     {
-        return $this->versions->findInTenant($tenantId, $versionId)->toArray();
+        return $this->versions->findInContext($context, $versionId)->toArray();
     }
 
     private function statusValue(mixed $status): string

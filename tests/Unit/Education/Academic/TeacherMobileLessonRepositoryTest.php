@@ -15,8 +15,10 @@ namespace HyperfTests\Unit\Education\Academic;
 use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationLesson;
+use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\TeacherMobileLessonRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -47,6 +49,30 @@ final class TeacherMobileLessonRepositoryTest extends AcademicTestCase
             'start_at' => '2026-06-01 00:00:00',
             'end_at' => '2026-06-30 23:59:59',
         ], 1, 20, $this->context($tenantId, EducationRoleCode::Teacher, [$campusId]), 101);
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
+    public function testPlatformContextCurrentCampusFiltersAssignedPageWithoutLocalFilters(): void
+    {
+        [$tenantId, $campusId, $classId, $courseId] = $this->fixture();
+        $tenant = EducationTenant::query()->findOrFail($tenantId);
+        $otherCampus = $this->campus($tenant, 'platform_branch');
+        $visible = $this->lesson($tenantId, $campusId, $classId, $courseId, 101, '2026-06-12 09:00:00');
+        $this->lesson($tenantId, (int) $otherCampus->id, $classId, $courseId, 101, '2026-06-12 10:00:00');
+
+        $result = make(TeacherMobileLessonRepository::class)->pageAssigned([
+            'start_at' => '2026-06-01 00:00:00',
+            'end_at' => '2026-06-30 23:59:59',
+        ], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: $tenantId,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $campusId
+        ), 101);
 
         self::assertSame(1, $result['total']);
         self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);

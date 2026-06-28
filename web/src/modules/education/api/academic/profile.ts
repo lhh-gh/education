@@ -1,5 +1,6 @@
 import type { EducationRoleCode } from '../foundation/userProfile.ts'
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AcademicRecordStatus = 'enabled' | 'disabled'
 export type Gender = 'male' | 'female' | 'unknown'
@@ -109,100 +110,100 @@ export type GuardianSavePayload = Omit<Partial<GuardianRecord>, 'id' | 'updated_
 export type TeacherSavePayload = Omit<Partial<TeacherRecord>, 'id' | 'updated_at'> & Pick<TeacherRecord, 'campus_id' | 'teacher_no' | 'name' | 'gender' | 'status'>
 export type StudentGuardianPayload = Pick<StudentGuardianRecord, 'guardian_id' | 'relation'> & Partial<Omit<StudentGuardianRecord, 'guardian_id' | 'relation'>>
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(input)
 }
 
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function tenantScope(tenantId?: number): { tenant_id?: number } {
+  return { tenant_id: tenantId }
 }
 
 export function pageClassrooms(params: ClassroomPageParams): Promise<MineResult<MinePage<ClassroomRecord>>> {
-  return useHttp().get('/admin/education/academic/classrooms/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/classrooms/page', educationScopeGetOptions(params))
 }
 
 export function createClassroom(data: ClassroomSavePayload): Promise<MineResult<ClassroomRecord>> {
-  return useHttp().post('/admin/education/academic/classrooms', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/classrooms', data, scopeOptions(data))
 }
 
 export function updateClassroom(id: number, data: ClassroomSavePayload): Promise<MineResult<ClassroomRecord>> {
-  return useHttp().put(`/admin/education/academic/classrooms/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/classrooms/${id}`, data, scopeOptions(data))
 }
 
 export function updateClassroomStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<ClassroomRecord>> {
-  return useHttp().put(`/admin/education/academic/classrooms/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/classrooms/${id}/status`, { status }, scopeOptions(tenantScope(tenantId)))
 }
 
 export function deleteClassroom(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/classrooms/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/classrooms/${id}`, scopeOptions(tenantScope(tenantId)))
 }
 
 export function pageStudents(params: StudentPageParams): Promise<MineResult<MinePage<StudentRecord>>> {
-  return useHttp().get('/admin/education/academic/students/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/students/page', educationScopeGetOptions(params))
 }
 
 export function createStudent(data: StudentSavePayload): Promise<MineResult<StudentRecord>> {
-  return useHttp().post('/admin/education/academic/students', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/students', data, scopeOptions(data))
 }
 
 export function updateStudent(id: number, data: StudentSavePayload): Promise<MineResult<StudentRecord>> {
-  return useHttp().put(`/admin/education/academic/students/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/students/${id}`, data, scopeOptions(data))
 }
 
 export function updateStudentStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<StudentRecord>> {
-  return useHttp().put(`/admin/education/academic/students/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/students/${id}/status`, { status }, scopeOptions(tenantScope(tenantId)))
 }
 
 export function deleteStudent(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/students/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/students/${id}`, scopeOptions(tenantScope(tenantId)))
 }
 
 export function listStudentGuardians(id: number, tenantId?: number): Promise<MineResult<{ list: StudentGuardianRecord[] }>> {
-  return useHttp().get(`/admin/education/academic/students/${id}/guardians`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/students/${id}/guardians`, scopeOptions(tenantScope(tenantId)))
 }
 
 export function saveStudentGuardians(id: number, relations: StudentGuardianPayload[], tenantId?: number): Promise<MineResult<{ list: StudentGuardianRecord[] }>> {
-  return useHttp().put(`/admin/education/academic/students/${id}/guardians`, { relations }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/students/${id}/guardians`, { relations }, scopeOptions(tenantScope(tenantId)))
 }
 
 export function pageGuardians(params: GuardianPageParams): Promise<MineResult<MinePage<GuardianRecord>>> {
-  return useHttp().get('/admin/education/academic/guardians/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/guardians/page', educationScopeGetOptions(params))
 }
 
 export function createGuardian(data: GuardianSavePayload): Promise<MineResult<GuardianRecord>> {
-  return useHttp().post('/admin/education/academic/guardians', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/guardians', data, scopeOptions(data))
 }
 
 export function updateGuardian(id: number, data: GuardianSavePayload): Promise<MineResult<GuardianRecord>> {
-  return useHttp().put(`/admin/education/academic/guardians/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/guardians/${id}`, data, scopeOptions(data))
 }
 
 export function updateGuardianStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<GuardianRecord>> {
-  return useHttp().put(`/admin/education/academic/guardians/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/guardians/${id}/status`, { status }, scopeOptions(tenantScope(tenantId)))
 }
 
 export function deleteGuardian(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/guardians/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/guardians/${id}`, scopeOptions(tenantScope(tenantId)))
 }
 
 export function pageTeachers(params: TeacherPageParams): Promise<MineResult<MinePage<TeacherRecord>>> {
-  return useHttp().get('/admin/education/academic/teachers/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/teachers/page', educationScopeGetOptions(params))
 }
 
 export function createTeacher(data: TeacherSavePayload): Promise<MineResult<TeacherRecord>> {
-  return useHttp().post('/admin/education/academic/teachers', data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().post('/admin/education/academic/teachers', data, scopeOptions(data))
 }
 
 export function updateTeacher(id: number, data: TeacherSavePayload): Promise<MineResult<TeacherRecord>> {
-  return useHttp().put(`/admin/education/academic/teachers/${id}`, data, tenantHeaders(tenantIdFrom(data)))
+  return useHttp().put(`/admin/education/academic/teachers/${id}`, data, scopeOptions(data))
 }
 
 export function updateTeacherStatus(id: number, status: AcademicRecordStatus, tenantId?: number): Promise<MineResult<TeacherRecord>> {
-  return useHttp().put(`/admin/education/academic/teachers/${id}/status`, { status }, tenantHeaders(tenantId))
+  return useHttp().put(`/admin/education/academic/teachers/${id}/status`, { status }, scopeOptions(tenantScope(tenantId)))
 }
 
 export function deleteTeacher(id: number, tenantId?: number): Promise<MineResult<true>> {
-  return useHttp().delete(`/admin/education/academic/teachers/${id}`, tenantHeaders(tenantId))
+  return useHttp().delete(`/admin/education/academic/teachers/${id}`, scopeOptions(tenantScope(tenantId)))
 }
 
 export function teacherProfileSelectorParams(tenantId?: number): { tenant_id?: number, role_code: EducationRoleCode, status: 'enabled' } {

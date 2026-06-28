@@ -17,7 +17,10 @@ use App\Model\Education\Academic\EducationClassStudent;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
+use App\Model\Education\Foundation\EducationTenant;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\ClassStudentRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -25,6 +28,27 @@ use App\Repository\Education\Academic\ClassStudentRepository;
  */
 final class ClassStudentRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersListByClassWithoutLocalFilters(): void
+    {
+        [$tenantId, $campusId, $class, $studentA, $studentB, $accountA, $accountB] = $this->fixture();
+        $tenant = EducationTenant::query()->findOrFail($tenantId);
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = EducationClassStudent::query()->create($this->studentRow($tenantId, $campusId, $class, $studentA, $accountA));
+        EducationClassStudent::query()->create($this->studentRow($tenantId, (int) $campusB->id, $class, $studentB, $accountB));
+
+        $rows = make(ClassStudentRepository::class)->listByClass((int) $class->id, new EducationUserContext(
+            userId: 1,
+            tenantId: $tenantId,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $campusId
+        ));
+
+        self::assertCount(1, $rows);
+        self::assertSame((int) $visible->id, (int) $rows[0]['id']);
+    }
+
     public function testReplaceStudentsMarksRemovedStudentsLeft(): void
     {
         [$tenantId, $campusId, $class, $studentA, $studentB, $accountA, $accountB] = $this->fixture();

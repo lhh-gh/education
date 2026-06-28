@@ -25,7 +25,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || 'AI usage loading failed'
+    errorText.value = aiErrorTitle(error?.code) || error?.message || '用量统计加载失败'
   }
   finally {
     loading.value = false
@@ -40,36 +40,36 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Usage Dashboard</span>
+          <span>用量统计</span>
           <el-button type="primary" @click="loadRows">
-            Refresh
+            刷新
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form inline>
-        <el-form-item label="Start">
+        <el-form-item label="开始日期">
           <el-date-picker v-model="search.start_date" value-format="YYYY-MM-DD" type="date" />
         </el-form-item>
-        <el-form-item label="End">
+        <el-form-item label="结束日期">
           <el-date-picker v-model="search.end_date" value-format="YYYY-MM-DD" type="date" />
         </el-form-item>
-        <el-form-item label="Feature">
+        <el-form-item label="功能编码">
           <el-input v-model="search.feature_code" />
         </el-form-item>
       </el-form>
       <div class="metric-strip">
-        <el-statistic title="Tokens" :value="summary.total_tokens" />
-        <el-statistic title="Cost Cents" :value="summary.cost_cents" />
+        <el-statistic title="Token 总量" :value="summary.total_tokens" />
+        <el-statistic title="费用(分)" :value="summary.cost_cents" />
       </div>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="usage_date" label="Date" width="140" />
-        <el-table-column prop="provider" label="Provider" width="140" />
-        <el-table-column prop="model_name" label="Model" min-width="180" />
-        <el-table-column prop="total_tokens" label="Tokens" width="120" />
-        <el-table-column prop="cost_cents" label="Cost" width="120" />
+        <el-table-column prop="usage_date" label="日期" width="140" />
+        <el-table-column prop="provider" label="服务商" width="140" />
+        <el-table-column prop="model_name" label="模型名称" min-width="180" />
+        <el-table-column prop="total_tokens" label="Token 数" width="120" />
+        <el-table-column prop="cost_cents" label="费用" width="120" />
         <template #empty>
-          <el-empty description="No usage logs" />
+          <el-empty description="暂无用量日志" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

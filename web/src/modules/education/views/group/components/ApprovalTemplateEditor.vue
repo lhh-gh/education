@@ -23,7 +23,7 @@ async function submit() {
       template_code: form.template_code,
       template_name: form.template_name,
       business_type: form.business_type,
-      nodes: [{ node_code: 'manager', node_name: 'Manager', sort_order: 1, assignee_user_id: Number(form.assignee_user_id) }],
+      nodes: [{ node_code: 'manager', node_name: '负责人', sort_order: 1, assignee_user_id: Number(form.assignee_user_id) }],
     })
     visible.value = false
     emit('success')
@@ -35,27 +35,27 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Approval Template" width="600px">
+  <el-dialog v-model="visible" title="审批模板" width="600px">
     <el-form :model="form" label-width="128px">
-      <el-form-item label="Code">
+      <el-form-item label="模板编码">
         <el-input v-model="form.template_code" />
       </el-form-item>
-      <el-form-item label="Name">
+      <el-form-item label="模板名称">
         <el-input v-model="form.template_name" />
       </el-form-item>
-      <el-form-item label="Business">
+      <el-form-item label="业务类型">
         <el-input v-model="form.business_type" />
       </el-form-item>
-      <el-form-item label="Assignee User">
+      <el-form-item label="审批人">
         <el-input-number v-model="form.assignee_user_id" :min="1" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="saving" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>

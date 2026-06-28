@@ -13,18 +13,14 @@ declare(strict_types=1);
 namespace App\Repository\Education\Admissions;
 
 use App\Model\Education\Admissions\EducationTrialLesson;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class TrialLessonRepository
 {
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationTrialLesson::query()->where('tenant_id', $context->tenantId);
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-        } elseif ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationTrialLesson::query(), $filters, $context);
         foreach (['status', 'teacher_id', 'lead_id'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
@@ -66,10 +62,7 @@ final class TrialLessonRepository
 
     public function findScoped(int $id, EducationUserContext $context): ?EducationTrialLesson
     {
-        $query = EducationTrialLesson::query()->where('tenant_id', $context->tenantId)->whereKey($id);
-        if ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationTrialLesson::query()->whereKey($id), [], $context);
         $lesson = $query->first();
 
         return $lesson instanceof EducationTrialLesson ? $lesson : null;

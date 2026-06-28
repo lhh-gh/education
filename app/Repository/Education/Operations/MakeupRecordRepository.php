@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationMakeupRecord;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class MakeupRecordRepository
 {
@@ -26,9 +28,9 @@ final class MakeupRecordRepository
         return EducationMakeupRecord::query()->where('tenant_id', $tenantId)->whereKey($id)->lockForUpdate()->first();
     }
 
-    public function pageByStudent(array $params, int $tenantId): array
+    public function pageByStudent(array $params, EducationUserContext $context): array
     {
-        $query = EducationMakeupRecord::query()->where('tenant_id', $tenantId);
+        $query = $this->scopedQuery($params, $context);
         foreach (['campus_id', 'student_id', 'status'] as $field) {
             if (isset($params[$field]) && $params[$field] !== '') {
                 $query->where($field, $params[$field]);
@@ -38,5 +40,12 @@ final class MakeupRecordRepository
         $list = $query->orderByDesc('id')->forPage((int) ($params['page'] ?? 1), (int) ($params['pageSize'] ?? 20))->get()->map(static fn ($row): array => $row->toArray())->all();
 
         return ['list' => $list, 'total' => $total];
+    }
+
+    private function scopedQuery(array $params, EducationUserContext $context): mixed
+    {
+        $query = EducationMakeupRecord::query();
+
+        return (new EducationScopeQuery())->applyTenantCampus($query, $params, $context);
     }
 }

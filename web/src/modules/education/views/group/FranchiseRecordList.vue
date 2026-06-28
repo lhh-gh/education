@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FranchiseRecord } from '../../api/group/franchise.ts'
 import { pageFranchiseRecords, saveFranchiseRecord } from '../../api/group/franchise.ts'
-import { groupTagType } from './groupRules.ts'
+import { groupStatusLabel, groupTagType } from './groupRules.ts'
 
 defineOptions({ name: 'EducationGroupFranchiseRecordList' })
 
@@ -23,7 +23,7 @@ async function loadRows() {
 }
 
 async function createPotential() {
-  await saveFranchiseRecord({ franchise_code: `F${Date.now()}`, franchise_name: 'Potential Franchise' })
+  await saveFranchiseRecord({ franchise_code: `F${Date.now()}`, franchise_name: '潜在加盟商' })
   await loadRows()
 }
 
@@ -32,29 +32,29 @@ onMounted(loadRows)
 
 <template>
   <div class="mine-layout education-group-page pt-3">
-    <el-alert class="mb-3" type="info" title="Franchise reservations are group-admin only" show-icon />
+    <el-alert class="mb-3" type="info" title="加盟备案仅集团管理员可维护" show-icon />
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Franchise Records</span>
+          <span>加盟管理</span>
           <el-button type="primary" @click="createPotential">
-            New Record
+            新增记录
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="franchise_code" label="Code" width="160" />
-        <el-table-column prop="franchise_name" label="Name" min-width="180" />
-        <el-table-column prop="region" label="Region" width="140" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="franchise_code" label="编码" width="160" />
+        <el-table-column prop="franchise_name" label="名称" min-width="180" />
+        <el-table-column prop="region" label="区域" width="140" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="groupTagType(row.status)">
-              {{ row.status }}
+              {{ groupStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No franchise records" />
+          <el-empty description="暂无加盟记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

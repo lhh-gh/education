@@ -18,6 +18,7 @@ use App\Model\Education\Content\EducationStageAchievementShowcase;
 use App\Model\Education\Content\EducationStudentWork;
 use App\Model\Education\Content\EducationTeacherMaterialFavorite;
 use App\Repository\Education\Content\ContentMetricRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ContentMetricService
 {
@@ -28,9 +29,17 @@ final class ContentMetricService
      */
     public function aggregateMaterialDaily(int $tenantId, ?int $campusId, int $materialId, ?int $courseId, string $metricDate): array
     {
-        $teacherUseCount = (int) EducationLessonMaterialUsage::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereDate('used_at', $metricDate)->count();
-        $guardianReadCount = (int) EducationMaterialReadRecord::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereNotNull('guardian_user_id')->whereDate('read_at', $metricDate)->count();
-        $favoriteCount = (int) EducationTeacherMaterialFavorite::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->count();
+        $usageQuery = EducationLessonMaterialUsage::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereDate('used_at', $metricDate);
+        $readQuery = EducationMaterialReadRecord::query()->where('tenant_id', $tenantId)->where('material_id', $materialId)->whereNotNull('guardian_user_id')->whereDate('read_at', $metricDate);
+        $favoriteQuery = EducationTeacherMaterialFavorite::query()->where('tenant_id', $tenantId)->where('material_id', $materialId);
+        if ($campusId !== null) {
+            $usageQuery->where('campus_id', $campusId);
+            $readQuery->where('campus_id', $campusId);
+            $favoriteQuery->where('campus_id', $campusId);
+        }
+        $teacherUseCount = (int) $usageQuery->count();
+        $guardianReadCount = (int) $readQuery->count();
+        $favoriteCount = (int) $favoriteQuery->count();
         $metric = $this->metrics->saveMaterialDaily([
             'tenant_id' => $tenantId,
             'campus_id' => $campusId,
@@ -51,11 +60,25 @@ final class ContentMetricService
     }
 
     /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageMaterialUsage(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->metrics->pageMaterialUsage($filters, $context, $page, $pageSize);
+    }
+
+    /**
      * @return array{student_work_metric_id: int, created_count: int, published_count: int, showcase_count: int}
      */
     public function aggregateStudentWorkDaily(int $tenantId, ?int $campusId, ?int $studentId, ?int $teacherId, string $metricDate): array
     {
         $workQuery = EducationStudentWork::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate);
+        $showcaseQuery = EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate);
+        if ($campusId !== null) {
+            $workQuery->where('campus_id', $campusId);
+            $showcaseQuery->where('campus_id', $campusId);
+        }
         if ($studentId !== null) {
             $workQuery->where('student_id', $studentId);
         }
@@ -64,7 +87,7 @@ final class ContentMetricService
         }
         $createdCount = (int) (clone $workQuery)->count();
         $publishedCount = (int) (clone $workQuery)->where('status', 'published')->count();
-        $showcaseCount = (int) EducationStageAchievementShowcase::query()->where('tenant_id', $tenantId)->whereDate('created_at', $metricDate)->count();
+        $showcaseCount = (int) $showcaseQuery->count();
         $metric = $this->metrics->saveStudentWorkDaily([
             'tenant_id' => $tenantId,
             'campus_id' => $campusId,
@@ -83,5 +106,14 @@ final class ContentMetricService
             'published_count' => $publishedCount,
             'showcase_count' => $showcaseCount,
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function pageStudentWork(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->metrics->pageStudentWork($filters, $context, $page, $pageSize);
     }
 }

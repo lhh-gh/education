@@ -1,5 +1,27 @@
 export type PayrollTagType = '' | 'success' | 'warning' | 'danger' | 'info'
 
+const statusLabels: Record<string, string> = {
+  approved: '已通过',
+  calculated: '已计算',
+  cancelled: '已取消',
+  closed: '已关闭',
+  disabled: '停用',
+  draft: '草稿',
+  enabled: '启用',
+  failed: '失败',
+  paid: '已发放',
+  pending: '待处理',
+  processing: '处理中',
+  rejected: '已驳回',
+  submitted: '已提交',
+}
+
+const typeLabels: Record<string, string> = {
+  lesson: '课次',
+  performance: '绩效',
+  workload: '工作量',
+}
+
 export function centsToYuan(cents?: number | null): string {
   return `\u00A5${((cents ?? 0) / 100).toFixed(2)}`
 }
@@ -21,6 +43,14 @@ export function payrollTagType(value?: string | null): PayrollTagType {
   return 'info'
 }
 
+export function payrollStatusLabel(value?: string | null): string {
+  return value ? (statusLabels[value] ?? value) : ''
+}
+
+export function payrollTypeLabel(value?: string | null): string {
+  return value ? (typeLabels[value] ?? value) : ''
+}
+
 export function canSelectRuleForPreview(row: { status?: string | null }): boolean {
   return row.status === 'enabled'
 }
@@ -30,7 +60,7 @@ export function canRebuildBatch(row: { status?: string | null }): boolean {
 }
 
 export function payrollConflictText(message?: string): string {
-  return message === 'salary batch is not submitted' ? 'salary batch is not submitted' : (message ?? '')
+  return message === 'salary batch is not submitted' ? '薪酬批次未提交' : (message ?? '')
 }
 
 export function adjustmentDrawerState(response: { code: number, payable_amount_cents: number }): { open: boolean, payableAmountCents: number } {

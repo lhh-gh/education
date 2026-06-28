@@ -38,33 +38,33 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Learning Report" width="640px">
+  <el-dialog v-model="visible" title="学习报告" width="640px">
     <el-form label-width="110px">
-      <el-form-item label="Student ID">
+      <el-form-item label="学员ID">
         <el-input-number v-model="form.student_id" :min="1" />
       </el-form-item>
-      <el-form-item label="Title">
+      <el-form-item label="标题">
         <el-input v-model="form.report_title" />
       </el-form-item>
-      <el-form-item label="Period">
+      <el-form-item label="周期">
         <el-input v-model="form.report_period" placeholder="2026-06" />
       </el-form-item>
-      <el-form-item label="Summary">
+      <el-form-item label="摘要">
         <el-input v-model="form.summary" type="textarea" :rows="3" />
       </el-form-item>
-      <el-form-item label="Item Title">
+      <el-form-item label="条目标题">
         <el-input v-model="form.item_title" />
       </el-form-item>
-      <el-form-item label="Item Content">
+      <el-form-item label="条目内容">
         <el-input v-model="form.item_content" type="textarea" :rows="3" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="saving" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>

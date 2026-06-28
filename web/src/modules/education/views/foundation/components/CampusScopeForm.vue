@@ -4,6 +4,7 @@ import type { UserProfileRecord } from '../../../api/foundation/userProfile.ts'
 import { pageCampuses } from '../../../api/foundation/campus.ts'
 import { getCampusScopes, saveCampusScopes } from '../../../api/foundation/userProfile.ts'
 import { campusScopeSavePayload, campusScopeValidationError } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   profile: UserProfileRecord | null
@@ -39,7 +40,7 @@ async function loadScope() {
     campusOptions.value = campusResponse.data.list
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Campus scope loading failed')
+    message.error(error?.message ?? '校区范围加载失败')
   }
   finally {
     loading.value = false
@@ -51,7 +52,7 @@ async function submit() {
     return
   }
   if (!props.canSubmit) {
-    message.warning('No permission')
+    message.warning('暂无保存校区范围的权限')
     return
   }
   if (validationError.value) {
@@ -64,7 +65,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Campus scope save failed')
+    message.error(error?.message ?? '校区范围保存失败')
   }
   finally {
     submitting.value = false
@@ -77,17 +78,17 @@ defineExpose({ loadScope, submit })
 
 <template>
   <div v-loading="loading" class="campus-scope-form">
-    <el-empty v-if="!profile" description="No profile selected" />
+    <el-empty v-if="!profile" description="请选择教育用户档案" />
     <template v-else>
       <el-alert
         v-if="campusOptions.length === 0"
         class="scope-alert"
         type="info"
         :closable="false"
-        title="No campus options"
+        title="暂无可选校区"
       />
       <el-form label-width="112px">
-        <el-form-item label="Campuses" :error="validationError ?? undefined">
+        <el-form-item label="校区范围" :error="validationError ?? undefined">
           <el-select v-model="selectedCampusIds" class="scope-select" multiple filterable clearable>
             <el-option
               v-for="campus in campusOptions"
@@ -99,7 +100,7 @@ defineExpose({ loadScope, submit })
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="!canSubmit" :loading="submitting" @click="submit">
-            Save
+            保存
           </el-button>
         </el-form-item>
       </el-form>

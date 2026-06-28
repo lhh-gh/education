@@ -21,6 +21,8 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
 use App\Service\Education\Content\ContentReviewService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -38,6 +40,19 @@ final class ContentReviewController extends AbstractController
 
     public function __construct(private readonly ContentReviewService $service, private readonly EventDispatcherInterface $events) {}
 
+    #[Get(path: '/admin/education/content/reviews', operationId: 'educationContentReviewPage', summary: 'Content review page', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:review:page')]
+    public function page(RequestInterface $request): Result
+    {
+        return $this->success($this->service->page(
+            $request->all(),
+            $this->context(),
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
+    }
+
     #[Post(path: '/admin/education/content/reviews/{id}/review', operationId: 'educationContentReviewHandle', summary: 'Content review handle', tags: ['Education Content'])]
     #[ResultResponse(instance: new Result())]
     #[Permission(code: 'education:content:review:handle')]
@@ -46,7 +61,7 @@ final class ContentReviewController extends AbstractController
         $context = $this->context();
         $data = $request->validated();
         try {
-            $result = $this->service->reviewExisting($this->tenantId($context), $id, $context->userId, $data['status'], $data['review_note'] ?? null);
+            $result = $this->service->reviewExisting($context, $id, $context->userId, $data['status'], $data['review_note'] ?? null);
         } catch (\Throwable $exception) {
             throw $this->businessFailure($exception);
         }

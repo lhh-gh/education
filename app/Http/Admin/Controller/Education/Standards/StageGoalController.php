@@ -49,7 +49,7 @@ final class StageGoalController extends AbstractController
             'campus_id' => $this->campusId($context),
             'created_by' => $context->userId,
             'updated_by' => $context->userId,
-        ]);
+        ], $context);
         $this->audit($this->events, 'education.standards.stage_goal.saved', 'stage_goal', $result['stage_goal_id'], $context, $result);
 
         return $this->success($result);

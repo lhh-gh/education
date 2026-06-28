@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Operations;
 
 use App\Repository\Education\Operations\TeacherWorkloadRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
 final class TeacherWorkloadService
@@ -44,5 +45,23 @@ final class TeacherWorkloadService
     public function summaryByTeacher(int $tenantId, int $teacherId): array
     {
         return $this->repository->summaryByTeacher($tenantId, $teacherId);
+    }
+
+    public function report(array $params, EducationUserContext $context): array
+    {
+        $list = $this->repository->pageReport($params, $context);
+
+        return [
+            'list' => $list,
+            'total' => \count($list),
+            'summary' => isset($params['teacher_id']) && $params['teacher_id'] !== ''
+                ? $this->repository->summaryByTeacherContext($context, (int) $params['teacher_id'])
+                : [],
+        ];
+    }
+
+    public function summary(array $params, EducationUserContext $context): array
+    {
+        return $this->repository->summaryReport($params, $context);
     }
 }

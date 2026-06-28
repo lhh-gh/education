@@ -2,6 +2,7 @@
 import type { AccountAdjustmentRecord } from '../../../api/academic/attendanceConsumption.ts'
 import { createSupplementDeduction } from '../../../api/academic/attendanceConsumption.ts'
 import { buildSupplementDeductionPayload } from '../attendanceConsumptionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAccountAdjustmentForm' })
 

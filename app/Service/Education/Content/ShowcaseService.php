@@ -13,20 +13,30 @@ declare(strict_types=1);
 namespace App\Service\Education\Content;
 
 use App\Repository\Education\Content\ShowcaseRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ShowcaseService
 {
     public function __construct(private readonly ShowcaseRepository $showcases) {}
 
     /**
+     * @param array<string, mixed> $filters
+     * @return array{list: array<int, array<string, mixed>>, total: int}
+     */
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
+    {
+        return $this->showcases->page($filters, $context, $page, $pageSize);
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @return array{showcase_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
         $items = $data['items'] ?? [];
         unset($data['items']);
-        $showcase = $this->showcases->save($data + ['status' => 'draft']);
+        $showcase = $this->showcases->save($data + ['status' => 'draft'], $context);
         if (\is_array($items)) {
             $this->showcases->replaceItems((int) $showcase->tenant_id, $showcase->campus_id === null ? null : (int) $showcase->campus_id, (int) $showcase->id, $items);
         }
@@ -37,9 +47,9 @@ final class ShowcaseService
     /**
      * @return array{showcase_id: int, status: string}
      */
-    public function publish(int $tenantId, int $showcaseId): array
+    public function publish(EducationUserContext $context, int $showcaseId): array
     {
-        $showcase = $this->showcases->findInTenant($tenantId, $showcaseId);
+        $showcase = $this->showcases->findInContext($context, $showcaseId);
         $showcase->status = 'published';
         $showcase->published_at = date('Y-m-d H:i:s');
         $showcase->save();
@@ -50,9 +60,9 @@ final class ShowcaseService
     /**
      * @return array{showcase_id: int, status: string}
      */
-    public function withdraw(int $tenantId, int $showcaseId): array
+    public function withdraw(EducationUserContext $context, int $showcaseId): array
     {
-        $showcase = $this->showcases->findInTenant($tenantId, $showcaseId);
+        $showcase = $this->showcases->findInContext($context, $showcaseId);
         $showcase->status = 'withdrawn';
         $showcase->withdrawn_at = date('Y-m-d H:i:s');
         $showcase->save();

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { LearningReportRecord } from '../../api/family/report.ts'
 import { pageLearningReports, publishLearningReport, withdrawLearningReport } from '../../api/family/report.ts'
-import { familyTagType, guardianVisibleMarker } from './familyRules.ts'
+import hasAuth from '@/utils/permission/hasAuth.ts'
+import { familyStatusLabel, familyTagType, guardianVisibleMarker } from './familyRules.ts'
 import LearningReportEditor from './components/LearningReportEditor.vue'
 
 defineOptions({ name: 'EducationFamilyLearningReportList' })
@@ -11,6 +12,8 @@ const editorVisible = ref(false)
 const rows = ref<LearningReportRecord[]>([])
 const total = ref(0)
 const search = reactive({ page: 1, pageSize: 20, status: '' })
+const canCreate = computed(() => hasAuth('education:family:report:create'))
+const canPublish = computed(() => hasAuth('education:family:report:publish'))
 
 async function loadRows() {
   loading.value = true
@@ -42,39 +45,39 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Learning Reports</span>
-          <el-button type="primary" @click="editorVisible = true">
-            New Report
+          <span>学习报告</span>
+          <el-button v-if="canCreate" type="primary" @click="editorVisible = true">
+            新增报告
           </el-button>
         </div>
       </template>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="report_title" label="Title" min-width="220" />
-        <el-table-column prop="report_period" label="Period" width="130" />
-        <el-table-column label="Status" width="150">
+        <el-table-column prop="report_title" label="标题" min-width="220" />
+        <el-table-column prop="report_period" label="周期" width="130" />
+        <el-table-column label="状态" width="150">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="Visibility" width="150">
+        <el-table-column label="可见性" width="150">
           <template #default="{ row }">
             {{ guardianVisibleMarker(row) }}
           </template>
         </el-table-column>
-        <el-table-column label="Action" width="160">
+        <el-table-column label="操作" width="160">
           <template #default="{ row }">
-            <el-button link type="primary" @click="publish(row)">
-              Publish
+            <el-button v-if="canPublish" link type="primary" @click="publish(row)">
+              发布
             </el-button>
-            <el-button link type="danger" @click="withdraw(row)">
-              Withdraw
+            <el-button v-if="canPublish" link type="danger" @click="withdraw(row)">
+              撤回
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No reports" />
+          <el-empty description="暂无学习报告" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

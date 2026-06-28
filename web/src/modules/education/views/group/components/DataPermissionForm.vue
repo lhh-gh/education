@@ -6,6 +6,12 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean], 'success': [] 
 
 const saving = ref(false)
 const campusText = ref('')
+const scopeOptions = [
+  { label: '集团全部', value: 'group_all' },
+  { label: '组织树', value: 'org_tree' },
+  { label: '指定校区', value: 'campus_set' },
+  { label: '仅本人', value: 'self' },
+]
 const form = reactive({ user_id: undefined as number | undefined, scope_type: 'campus_set' as const, campus_ids: [] as number[] })
 const visible = computed({
   get: () => props.modelValue,
@@ -27,24 +33,24 @@ async function submit() {
 </script>
 
 <template>
-  <el-dialog v-model="visible" title="Data Permission" width="560px">
+  <el-dialog v-model="visible" title="数据权限" width="560px">
     <el-form :model="form" label-width="112px">
-      <el-form-item label="User ID">
+      <el-form-item label="用户ID">
         <el-input-number v-model="form.user_id" :min="1" />
       </el-form-item>
-      <el-form-item label="Scope">
-        <el-segmented v-model="form.scope_type" :options="['group_all', 'org_tree', 'campus_set', 'self']" />
+      <el-form-item label="权限范围">
+        <el-segmented v-model="form.scope_type" :options="scopeOptions" />
       </el-form-item>
-      <el-form-item label="Campus IDs">
+      <el-form-item label="校区ID">
         <el-input v-model="campusText" placeholder="2001, 2002" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="saving" @click="submit">
-        Save
+        保存
       </el-button>
     </template>
   </el-dialog>

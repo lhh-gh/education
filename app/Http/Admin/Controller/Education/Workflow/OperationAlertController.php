@@ -48,7 +48,7 @@ final class OperationAlertController extends AbstractController
     {
         $context = $this->context();
 
-        return $this->success($this->service->page($this->tenantId($context), $request->validated(), $this->getCurrentPage(), $this->getPageSize()));
+        return $this->success($this->service->page($context, $request->validated(), $this->getCurrentPage(), $this->getPageSize()));
     }
 
     #[Post(path: '/admin/education/workflow/alerts/{id}/convert-task', operationId: 'educationWorkflowAlertConvertTask', summary: 'Workflow alert convert task', tags: ['Education Workflow'])]
@@ -58,7 +58,7 @@ final class OperationAlertController extends AbstractController
     {
         $context = $this->context();
         $body = $request->all();
-        $result = $this->service->convertToTask($id, (int) $body['assignee_user_id'], $body['due_at'] ?? null);
+        $result = $this->service->convertToTask($id, (int) $body['assignee_user_id'], $body['due_at'] ?? null, $context);
         $this->audit($this->events, 'education.workflow.alert.converted', 'operation_alert', $id, $context, $result);
 
         return $this->success($result);
@@ -69,7 +69,7 @@ final class OperationAlertController extends AbstractController
     #[Permission(code: 'education:workflow:alert:convert')]
     public function ignore(int $id): Result
     {
-        return $this->success($this->service->setStatus($id, 'ignored'));
+        return $this->success($this->service->setStatus($id, 'ignored', $this->context()));
     }
 
     #[Post(path: '/admin/education/workflow/alerts/{id}/close', operationId: 'educationWorkflowAlertClose', summary: 'Workflow alert close', tags: ['Education Workflow'])]
@@ -77,6 +77,6 @@ final class OperationAlertController extends AbstractController
     #[Permission(code: 'education:workflow:alert:convert')]
     public function close(int $id): Result
     {
-        return $this->success($this->service->setStatus($id, 'closed'));
+        return $this->success($this->service->setStatus($id, 'closed', $this->context()));
     }
 }

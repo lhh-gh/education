@@ -13,6 +13,8 @@ declare(strict_types=1);
 namespace App\Repository\Education\Ai;
 
 use App\Model\Education\Ai\EducationAiRecommendationTask;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class AiRecommendationRepository
 {
@@ -24,8 +26,20 @@ final class AiRecommendationRepository
         return EducationAiRecommendationTask::query()->create($data);
     }
 
-    public function markHandled(int $id): void
+    public function markHandled(int $id, EducationUserContext $context): ?EducationAiRecommendationTask
     {
-        EducationAiRecommendationTask::query()->where('id', $id)->update(['status' => 'handled', 'handled_at' => date('Y-m-d H:i:s')]);
+        $task = (new EducationScopeQuery())->applyTenantCampus(
+            EducationAiRecommendationTask::query()->whereKey($id),
+            [],
+            $context
+        )->first();
+        if (! $task instanceof EducationAiRecommendationTask) {
+            return null;
+        }
+
+        $task->fill(['status' => 'handled', 'handled_at' => date('Y-m-d H:i:s'), 'updated_by' => $context->userId]);
+        $task->save();
+
+        return $task;
     }
 }

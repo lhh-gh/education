@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { pageMaterialAttachments } from '../../../api/content/attachment.ts'
 import { pageLearningMaterials, publishLearningMaterial, saveLearningMaterial, withdrawLearningMaterial } from '../../../api/content/material.ts'
 import { getMaterialUsageMetrics, getStudentWorkMetrics } from '../../../api/content/metric.ts'
 import { pageMaterialRelations, saveMaterialRelations } from '../../../api/content/relation.ts'
@@ -43,6 +44,7 @@ describe('education content api clients', () => {
     publishLearningMaterial(2, { ...scope, publish_note: 'ok' })
     withdrawLearningMaterial(2, scope)
     pageMaterialVersions({ ...scope, material_id: 2 })
+    pageMaterialAttachments({ ...scope, material_version_id: 3 })
     createMaterialVersion(2, { ...scope, title: 'V2' })
     getMaterialVersionDetail(3, scope)
     pageMaterialRelations({ ...scope, material_id: 2 })
@@ -65,6 +67,7 @@ describe('education content api clients', () => {
       ['POST', '/admin/education/content/materials/2/publish'],
       ['POST', '/admin/education/content/materials/2/withdraw'],
       ['GET', '/admin/education/content/material-versions'],
+      ['GET', '/admin/education/content/attachments'],
       ['POST', '/admin/education/content/materials/2/versions'],
       ['GET', '/admin/education/content/material-versions/3'],
       ['GET', '/admin/education/content/material-relations'],

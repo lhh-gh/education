@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationCourse;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\CourseRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,39 @@ use App\Repository\Education\Academic\CourseRepository;
  */
 final class CourseRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('course_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = EducationCourse::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusA->id,
+            'code' => 'COURSE-A',
+            'name' => 'Course A',
+            'status' => 'enabled',
+        ]);
+        EducationCourse::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusB->id,
+            'code' => 'COURSE-B',
+            'name' => 'Course B',
+            'status' => 'enabled',
+        ]);
+
+        $result = make(CourseRepository::class)->pageByContext([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByTenantCampusKeywordStatus(): void
     {
         $tenantA = $this->tenant('tenant_a');

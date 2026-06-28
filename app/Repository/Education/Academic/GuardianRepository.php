@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace App\Repository\Education\Academic;
 
 use App\Model\Education\Academic\EducationGuardian;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Database\Model\Builder;
 
@@ -86,16 +88,56 @@ final class GuardianRepository extends IRepository
 
     private function applyContext(Builder $query, EducationUserContext $context, array $filters): Builder
     {
-        if ($context->platformAccess) {
-            if (isset($filters['tenant_id']) && $filters['tenant_id'] !== '') {
-                $query->where('tenant_id', (int) $filters['tenant_id']);
+        $scope = new EducationScopeQuery();
+        $tenantId = $scope->tenantId($filters, $context);
+        if ($tenantId === null && ! $context->platformAccess) {
+            $query->whereRaw('1 = 0');
+
+            return $query;
+        }
+        if ($tenantId !== null) {
+            $query->where('tenant_id', $tenantId);
+        }
+
+        $campusId = $scope->campusId($filters, $context);
+        if ($campusId !== null) {
+            if (! $context->platformAccess && $context->roleCode !== EducationRoleCode::TenantAdmin && ! $context->canAccessCampus($campusId)) {
+                $query->whereRaw('1 = 0');
+
+                return $query;
             }
+
+            return $this->whereStudentCampus($query, $tenantId, [$campusId]);
+        }
+
+        if ($context->platformAccess || $context->roleCode === EducationRoleCode::TenantAdmin) {
+            return $query;
+        }
+
+        if ($context->campusIds === []) {
+            $query->whereRaw('1 = 0');
 
             return $query;
         }
 
-        return $context->tenantId === null
-            ? $query->whereRaw('1 = 0')
-            : $query->where('tenant_id', $context->tenantId);
+        return $this->whereStudentCampus($query, $tenantId, $context->campusIds);
+    }
+
+    /**
+     * @param int[] $campusIds
+     */
+    private function whereStudentCampus(Builder $query, ?int $tenantId, array $campusIds): Builder
+    {
+        return $query->whereHas('studentRelations', static function (Builder $relationQuery) use ($tenantId, $campusIds): void {
+            if ($tenantId !== null) {
+                $relationQuery->where('tenant_id', $tenantId);
+            }
+            $relationQuery->whereHas('student', static function (Builder $studentQuery) use ($tenantId, $campusIds): void {
+                if ($tenantId !== null) {
+                    $studentQuery->where('tenant_id', $tenantId);
+                }
+                $studentQuery->whereIn('campus_id', $campusIds);
+            });
+        });
     }
 }

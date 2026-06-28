@@ -4,6 +4,7 @@ const educationRoutes: RouteRecordRaw[] = [
   {
     path: '/education',
     name: 'EducationRoot',
+    component: () => import('~/education/views/EducationLayout.vue'),
     redirect: '/education/foundation/tenants',
     meta: {
       title: '教务 SaaS',
@@ -391,7 +392,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationAdmissions',
         redirect: '/education/admissions/leads',
         meta: {
-          title: 'Admissions CRM',
+          title: '招生获客',
           icon: 'material-symbols:hub-outline-rounded',
           type: 'M',
           auth: ['education:admissions:lead-source:page', 'education:admissions:lead:page', 'education:admissions:trial:page', 'education:admissions:lead:convert', 'education:admissions:task:page', 'education:admissions:dashboard:overview'],
@@ -402,7 +403,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadSourceList',
             component: () => import('~/education/views/admissions/LeadSourceList.vue'),
             meta: {
-              title: 'Lead Sources',
+              title: '线索来源',
               icon: 'material-symbols:source-environment-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead-source:page'],
@@ -414,7 +415,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadPool',
             component: () => import('~/education/views/admissions/LeadPool.vue'),
             meta: {
-              title: 'Lead Pool',
+              title: '线索池',
               icon: 'material-symbols:group-search-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead:page'],
@@ -426,7 +427,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionLeadDetail',
             component: () => import('~/education/views/admissions/LeadDetail.vue'),
             meta: {
-              title: 'Lead Detail',
+              title: '线索详情',
               icon: 'material-symbols:contact-page-outline-rounded',
               type: 'M',
               auth: ['education:admissions:lead:detail'],
@@ -438,7 +439,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTrialCalendar',
             component: () => import('~/education/views/admissions/TrialLessonCalendar.vue'),
             meta: {
-              title: 'Trial Calendar',
+              title: '试听日历',
               icon: 'material-symbols:event-available-outline-rounded',
               type: 'M',
               auth: ['education:admissions:trial:page'],
@@ -450,7 +451,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTrialFeedbackList',
             component: () => import('~/education/views/admissions/TrialFeedbackList.vue'),
             meta: {
-              title: 'Trial Feedback',
+              title: '试听反馈',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:admissions:trial-feedback:create'],
@@ -462,7 +463,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionConversionWorkbench',
             component: () => import('~/education/views/admissions/LeadConversionWorkbench.vue'),
             meta: {
-              title: 'Conversion',
+              title: '线索转化',
               icon: 'material-symbols:published-with-changes-rounded',
               type: 'M',
               auth: ['education:admissions:lead:convert'],
@@ -474,7 +475,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionTaskList',
             component: () => import('~/education/views/admissions/AdmissionTaskList.vue'),
             meta: {
-              title: 'Admission Tasks',
+              title: '招生任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:admissions:task:page'],
@@ -486,7 +487,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAdmissionDashboard',
             component: () => import('~/education/views/admissions/AdmissionDashboard.vue'),
             meta: {
-              title: 'Admissions Dashboard',
+              title: '招生看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:admissions:dashboard:overview'],
@@ -500,7 +501,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationOperations',
         redirect: '/education/operations/dashboard',
         meta: {
-          title: 'Academic Operations',
+          title: '运营中心',
           icon: 'material-symbols:monitoring-outline-rounded',
           type: 'M',
           auth: ['education:operations:lesson-change:page', 'education:operations:makeup:page', 'education:operations:consumption-review:page', 'education:operations:renewal-alert:page', 'education:operations:teacher-workload:report', 'education:operations:dashboard:overview'],
@@ -511,7 +512,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationLessonChangeCenter',
             component: () => import('~/education/views/operations/LessonChangeCenter.vue'),
             meta: {
-              title: 'Lesson Change Center',
+              title: '调课中心',
               icon: 'material-symbols:move-up-outline-rounded',
               type: 'M',
               auth: ['education:operations:lesson-change:page'],
@@ -523,7 +524,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationMakeupList',
             component: () => import('~/education/views/operations/LeaveMakeupList.vue'),
             meta: {
-              title: 'Leave Make-up Closure',
+              title: '补课闭环',
               icon: 'material-symbols:event-available-outline-rounded',
               type: 'M',
               auth: ['education:operations:makeup:page'],
@@ -535,7 +536,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationConsumptionReviewList',
             component: () => import('~/education/views/operations/ConsumptionReviewList.vue'),
             meta: {
-              title: 'Consumption Review',
+              title: '消课审核',
               icon: 'material-symbols:fact-check-outline-rounded',
               type: 'M',
               auth: ['education:operations:consumption-review:page'],
@@ -547,7 +548,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationRenewalAlertList',
             component: () => import('~/education/views/operations/RenewalAlertList.vue'),
             meta: {
-              title: 'Renewal Alerts',
+              title: '续费提醒',
               icon: 'material-symbols:notification-important-outline-rounded',
               type: 'M',
               auth: ['education:operations:renewal-alert:page'],
@@ -559,7 +560,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationTeacherWorkloadReport',
             component: () => import('~/education/views/operations/TeacherWorkloadReport.vue'),
             meta: {
-              title: 'Teacher Workloads',
+              title: '教师工作量',
               icon: 'material-symbols:bar-chart-outline-rounded',
               type: 'M',
               auth: ['education:operations:teacher-workload:report'],
@@ -571,7 +572,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationOperationDashboard',
             component: () => import('~/education/views/operations/OperationDashboard.vue'),
             meta: {
-              title: 'Operation Dashboard',
+              title: '运营看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:operations:dashboard:overview'],
@@ -682,8 +683,8 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationPayroll',
         redirect: '/education/payroll/rules',
         meta: {
-          title: 'Teacher Payroll',
-          icon: 'material-symbols:account-balance-wallet-outline-rounded',
+          title: '薪酬绩效',
+          icon: 'material-symbols:price-check-rounded',
           type: 'M',
           auth: ['education:payroll:rule:page', 'education:payroll:batch:page', 'education:payroll:slip:page', 'education:payroll:review:page', 'education:payroll:payment:page', 'education:payroll:dispute:page', 'education:payroll:performance:page'],
         },
@@ -693,7 +694,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryRuleList',
             component: () => import('~/education/views/payroll/SalaryRuleList.vue'),
             meta: {
-              title: 'Salary Rules',
+              title: '薪酬规则',
               icon: 'material-symbols:rule-outline-rounded',
               type: 'M',
               auth: ['education:payroll:rule:page'],
@@ -705,7 +706,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryBatchList',
             component: () => import('~/education/views/payroll/SalaryBatchList.vue'),
             meta: {
-              title: 'Salary Batches',
+              title: '薪酬批次',
               icon: 'material-symbols:calculate-outline-rounded',
               type: 'M',
               auth: ['education:payroll:batch:page'],
@@ -717,7 +718,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalarySlipList',
             component: () => import('~/education/views/payroll/SalarySlipList.vue'),
             meta: {
-              title: 'Salary Slips',
+              title: '工资条',
               icon: 'material-symbols:receipt-long-outline-rounded',
               type: 'M',
               auth: ['education:payroll:slip:page'],
@@ -729,7 +730,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryReviewList',
             component: () => import('~/education/views/payroll/SalaryReviewList.vue'),
             meta: {
-              title: 'Salary Reviews',
+              title: '薪酬复核',
               icon: 'material-symbols:approval-outline-rounded',
               type: 'M',
               auth: ['education:payroll:review:page'],
@@ -741,7 +742,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollSalaryPaymentList',
             component: () => import('~/education/views/payroll/SalaryPaymentList.vue'),
             meta: {
-              title: 'Salary Payments',
+              title: '薪酬发放',
               icon: 'material-symbols:payments-outline-rounded',
               type: 'M',
               auth: ['education:payroll:payment:page'],
@@ -753,7 +754,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollWorkloadDisputeList',
             component: () => import('~/education/views/payroll/WorkloadDisputeList.vue'),
             meta: {
-              title: 'Workload Disputes',
+              title: '工作量申诉',
               icon: 'material-symbols:gavel-outline-rounded',
               type: 'M',
               auth: ['education:payroll:dispute:page'],
@@ -765,7 +766,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationPayrollTeacherPerformanceDashboard',
             component: () => import('~/education/views/payroll/TeacherPerformanceDashboard.vue'),
             meta: {
-              title: 'Teacher Performance',
+              title: '教师绩效',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:payroll:performance:page'],
@@ -779,7 +780,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationFamily',
         redirect: '/education/family/homework',
         meta: {
-          title: 'Family Service',
+          title: '家校服务',
           icon: 'material-symbols:family-restroom-rounded',
           type: 'M',
           auth: ['education:family:comment-template:page', 'education:family:performance-tag:page', 'education:family:homework:page', 'education:family:report:page', 'education:family:growth:page', 'education:family:message:page', 'education:family:quality:page'],
@@ -790,7 +791,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyCommentTemplateList',
             component: () => import('~/education/views/family/CommentTemplateList.vue'),
             meta: {
-              title: 'Comment Templates',
+              title: '评语模板',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:family:comment-template:page'],
@@ -802,7 +803,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyPerformanceTagList',
             component: () => import('~/education/views/family/PerformanceTagList.vue'),
             meta: {
-              title: 'Performance Tags',
+              title: '表现标签',
               icon: 'material-symbols:label-outline-rounded',
               type: 'M',
               auth: ['education:family:performance-tag:page'],
@@ -814,7 +815,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyHomeworkAssignmentList',
             component: () => import('~/education/views/family/HomeworkAssignmentList.vue'),
             meta: {
-              title: 'Homework',
+              title: '课后作业',
               icon: 'material-symbols:assignment-outline-rounded',
               type: 'M',
               auth: ['education:family:homework:page'],
@@ -826,7 +827,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyLearningReportList',
             component: () => import('~/education/views/family/LearningReportList.vue'),
             meta: {
-              title: 'Learning Reports',
+              title: '学习报告',
               icon: 'material-symbols:summarize-outline-rounded',
               type: 'M',
               auth: ['education:family:report:page'],
@@ -838,7 +839,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyGrowthRecordList',
             component: () => import('~/education/views/family/GrowthRecordList.vue'),
             meta: {
-              title: 'Growth Records',
+              title: '成长记录',
               icon: 'material-symbols:trending-up-rounded',
               type: 'M',
               auth: ['education:family:growth:page'],
@@ -850,7 +851,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyMessageMonitor',
             component: () => import('~/education/views/family/FamilyMessageMonitor.vue'),
             meta: {
-              title: 'Family Messages',
+              title: '家校消息',
               icon: 'material-symbols:forum-outline-rounded',
               type: 'M',
               auth: ['education:family:message:page'],
@@ -862,7 +863,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationFamilyServiceQualityDashboard',
             component: () => import('~/education/views/family/ServiceQualityDashboard.vue'),
             meta: {
-              title: 'Service Quality',
+              title: '服务质量',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:family:quality:page'],
@@ -876,10 +877,10 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationAi',
         redirect: '/education/ai/model-configs',
         meta: {
-          title: 'AI Assistant',
+          title: 'AI 助手',
           icon: 'material-symbols:psychology-outline-rounded',
           type: 'M',
-          auth: ['education:ai:model-config:page', 'education:ai:prompt:page', 'education:ai:generation:page', 'education:ai:review:page', 'education:ai:risk-score:page', 'education:ai:data-question:create', 'education:ai:recommendation:page', 'education:ai:usage:summary', 'education:ai:safety:page'],
+          auth: ['education:ai:model-config:page', 'education:ai:prompt:page', 'education:ai:generation:page', 'education:ai:review:page', 'education:ai:risk-score:page', 'education:ai:data-question:page', 'education:ai:recommendation:page', 'education:ai:usage:summary', 'education:ai:safety:page'],
         },
         children: [
           {
@@ -887,7 +888,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiModelConfigList',
             component: () => import('~/education/views/ai/AiModelConfigList.vue'),
             meta: {
-              title: 'Model Configs',
+              title: '模型配置',
               icon: 'material-symbols:tune-outline-rounded',
               type: 'M',
               auth: ['education:ai:model-config:page'],
@@ -899,7 +900,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiPromptTemplateList',
             component: () => import('~/education/views/ai/PromptTemplateList.vue'),
             meta: {
-              title: 'Prompts',
+              title: '提示词模板',
               icon: 'material-symbols:prompt-suggestion-outline-rounded',
               type: 'M',
               auth: ['education:ai:prompt:page'],
@@ -911,7 +912,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiGenerationTaskList',
             component: () => import('~/education/views/ai/GenerationTaskList.vue'),
             meta: {
-              title: 'Generation Tasks',
+              title: '生成任务',
               icon: 'material-symbols:queue-play-next-outline-rounded',
               type: 'M',
               auth: ['education:ai:generation:page'],
@@ -923,7 +924,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiReviewList',
             component: () => import('~/education/views/ai/AiReviewList.vue'),
             meta: {
-              title: 'Reviews',
+              title: 'AI 审核',
               icon: 'material-symbols:rate-review-outline-rounded',
               type: 'M',
               auth: ['education:ai:review:page'],
@@ -935,7 +936,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiRiskScoreList',
             component: () => import('~/education/views/ai/RiskScoreList.vue'),
             meta: {
-              title: 'Risk Scores',
+              title: '风险评分',
               icon: 'material-symbols:warning-outline-rounded',
               type: 'M',
               auth: ['education:ai:risk-score:page'],
@@ -947,10 +948,10 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiDataQuestionWorkbench',
             component: () => import('~/education/views/ai/DataQuestionWorkbench.vue'),
             meta: {
-              title: 'Data Q&A',
+              title: '数据问答',
               icon: 'material-symbols:query-stats-outline-rounded',
               type: 'M',
-              auth: ['education:ai:data-question:create'],
+              auth: ['education:ai:data-question:page'],
               cache: true,
             },
           },
@@ -959,7 +960,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiRecommendationList',
             component: () => import('~/education/views/ai/AiRecommendationList.vue'),
             meta: {
-              title: 'Recommendations',
+              title: '智能推荐',
               icon: 'material-symbols:tips-and-updates-outline-rounded',
               type: 'M',
               auth: ['education:ai:recommendation:page'],
@@ -971,7 +972,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiUsageDashboard',
             component: () => import('~/education/views/ai/UsageDashboard.vue'),
             meta: {
-              title: 'Usage',
+              title: '用量统计',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:ai:usage:summary'],
@@ -983,7 +984,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationAiSafetyEventList',
             component: () => import('~/education/views/ai/SafetyEventList.vue'),
             meta: {
-              title: 'Safety Events',
+              title: '安全事件',
               icon: 'material-symbols:shield-outline-rounded',
               type: 'M',
               auth: ['education:ai:safety:page'],
@@ -997,7 +998,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationWorkflow',
         redirect: '/education/workflow/rules',
         meta: {
-          title: 'Workflow',
+          title: '工作流中心',
           icon: 'material-symbols:account-tree-outline-rounded',
           type: 'M',
           auth: ['education:workflow:rule:page', 'education:workflow:task:page', 'education:workflow:alert:page', 'education:workflow:sla:page', 'education:workflow:escalation:page', 'education:workflow:template:page', 'education:workflow:metric:page'],
@@ -1008,7 +1009,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowRuleList',
             component: () => import('~/education/views/workflow/WorkflowRuleList.vue'),
             meta: {
-              title: 'Rules',
+              title: '自动化规则',
               icon: 'material-symbols:rule-folder-outline-rounded',
               type: 'M',
               auth: ['education:workflow:rule:page'],
@@ -1020,7 +1021,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowTaskWorkbench',
             component: () => import('~/education/views/workflow/WorkflowTaskWorkbench.vue'),
             meta: {
-              title: 'Tasks',
+              title: '待办任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:workflow:task:page'],
@@ -1032,7 +1033,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowOperationAlertList',
             component: () => import('~/education/views/workflow/OperationAlertList.vue'),
             meta: {
-              title: 'Alerts',
+              title: '运营告警',
               icon: 'material-symbols:notification-important-outline-rounded',
               type: 'M',
               auth: ['education:workflow:alert:page'],
@@ -1044,7 +1045,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowSlaPolicyList',
             component: () => import('~/education/views/workflow/SlaPolicyList.vue'),
             meta: {
-              title: 'SLA Policies',
+              title: 'SLA 策略',
               icon: 'material-symbols:timer-outline-rounded',
               type: 'M',
               auth: ['education:workflow:sla:page'],
@@ -1056,7 +1057,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowEscalationPolicyList',
             component: () => import('~/education/views/workflow/EscalationPolicyList.vue'),
             meta: {
-              title: 'Escalation',
+              title: '升级策略',
               icon: 'material-symbols:upgrade-outline-rounded',
               type: 'M',
               auth: ['education:workflow:escalation:page'],
@@ -1068,7 +1069,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowTemplateList',
             component: () => import('~/education/views/workflow/WorkflowTemplateList.vue'),
             meta: {
-              title: 'Templates',
+              title: '流程模板',
               icon: 'material-symbols:article-outline-rounded',
               type: 'M',
               auth: ['education:workflow:template:page'],
@@ -1080,7 +1081,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationWorkflowMetricDashboard',
             component: () => import('~/education/views/workflow/WorkflowMetricDashboard.vue'),
             meta: {
-              title: 'Metrics',
+              title: '工作流看板',
               icon: 'material-symbols:monitoring-outline-rounded',
               type: 'M',
               auth: ['education:workflow:metric:page'],
@@ -1094,7 +1095,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationGrowth',
         redirect: '/education/growth/workbench',
         meta: {
-          title: 'Growth',
+          title: '增长转化',
           icon: 'material-symbols:trending-up-rounded',
           type: 'M',
           auth: ['education:growth:workbench:view', 'education:growth:score:recalculate', 'education:growth:ai-script:generate', 'education:growth:strategy:save', 'education:growth:trial-conversion:view', 'education:growth:channel-roi:page', 'education:growth:consultant-metric:page', 'education:growth:loss:create'],
@@ -1105,7 +1106,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthWorkbench',
             component: () => import('~/education/views/growth/GrowthWorkbench.vue'),
             meta: {
-              title: 'Workbench',
+                title: '增长工作台',
               icon: 'material-symbols:dashboard-customize-outline-rounded',
               type: 'M',
               auth: ['education:growth:workbench:view'],
@@ -1117,7 +1118,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthLeadScoreList',
             component: () => import('~/education/views/growth/LeadScoreList.vue'),
             meta: {
-              title: 'Lead Scores',
+                title: '线索评分',
               icon: 'material-symbols:scoreboard-outline-rounded',
               type: 'M',
               auth: ['education:growth:score:recalculate'],
@@ -1129,7 +1130,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthAiTalkScriptWorkbench',
             component: () => import('~/education/views/growth/AiTalkScriptWorkbench.vue'),
             meta: {
-              title: 'AI Scripts',
+                title: 'AI 话术',
               icon: 'material-symbols:smart-toy-outline-rounded',
               type: 'M',
               auth: ['education:growth:ai-script:generate'],
@@ -1141,7 +1142,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthFollowupStrategyList',
             component: () => import('~/education/views/growth/FollowupStrategyList.vue'),
             meta: {
-              title: 'Strategies',
+                title: '跟进策略',
               icon: 'material-symbols:low-priority-outline-rounded',
               type: 'M',
               auth: ['education:growth:strategy:save'],
@@ -1153,7 +1154,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthTrialConversionList',
             component: () => import('~/education/views/growth/TrialConversionList.vue'),
             meta: {
-              title: 'Trial Conversion',
+                title: '试听转化',
               icon: 'material-symbols:published-with-changes-rounded',
               type: 'M',
               auth: ['education:growth:trial-conversion:view'],
@@ -1165,7 +1166,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthChannelRoiDashboard',
             component: () => import('~/education/views/growth/ChannelRoiDashboard.vue'),
             meta: {
-              title: 'Channel ROI',
+                title: '渠道 ROI',
               icon: 'material-symbols:query-stats-rounded',
               type: 'M',
               auth: ['education:growth:channel-roi:page'],
@@ -1177,7 +1178,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthConsultantMetricDashboard',
             component: () => import('~/education/views/growth/ConsultantMetricDashboard.vue'),
             meta: {
-              title: 'Consultant Metrics',
+                title: '顾问指标',
               icon: 'material-symbols:groups-2-outline-rounded',
               type: 'M',
               auth: ['education:growth:consultant-metric:page'],
@@ -1189,7 +1190,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGrowthLossReasonReport',
             component: () => import('~/education/views/growth/LossReasonReport.vue'),
             meta: {
-              title: 'Loss Reasons',
+                title: '流失原因',
               icon: 'material-symbols:playlist-remove-rounded',
               type: 'M',
               auth: ['education:growth:loss:create'],
@@ -1203,77 +1204,77 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationStandards',
         redirect: '/education/standards/packages',
         meta: {
-          title: 'Standards',
+          title: '标准化管理',
           icon: 'material-symbols:rule-settings-outline-rounded',
           type: 'M',
-          auth: ['education:standards:package:page', 'education:standards:stage-goal:page', 'education:standards:ability:page', 'education:standards:trial:page', 'education:standards:delivery:page', 'education:standards:template:page', 'education:standards:material:page', 'education:standards:quality:page', 'education:standards:version:page'],
+          auth: ['education:standards:package:page', 'education:standards:stage-goal:page', 'education:standards:ability:page', 'education:standards:trial:page', 'education:standards:delivery:page', 'education:standards:template:page', 'education:standards:material:page', 'education:standards:quality:page', 'education:standards:quality-dashboard:page', 'education:standards:version:page', 'education:standards:review:page'],
         },
         children: [
           {
             path: '/education/standards/packages',
             name: 'EducationStandardsServicePackageList',
             component: () => import('~/education/views/standards/ServicePackageList.vue'),
-            meta: { title: 'Packages', icon: 'material-symbols:inventory-2-outline-rounded', type: 'M', auth: ['education:standards:package:page'], cache: true },
+            meta: { title: '服务包', icon: 'material-symbols:inventory-2-outline-rounded', type: 'M', auth: ['education:standards:package:page'], cache: true },
           },
           {
             path: '/education/standards/stage-goals',
             name: 'EducationStandardsStageGoalEditor',
             component: () => import('~/education/views/standards/StageGoalEditor.vue'),
-            meta: { title: 'Stage Goals', icon: 'material-symbols:flag-outline-rounded', type: 'M', auth: ['education:standards:stage-goal:page'], cache: true },
+            meta: { title: '阶段目标', icon: 'material-symbols:flag-outline-rounded', type: 'M', auth: ['education:standards:stage-goal:page'], cache: true },
           },
           {
             path: '/education/standards/ability-points',
             name: 'EducationStandardsAbilityPointList',
             component: () => import('~/education/views/standards/AbilityPointList.vue'),
-            meta: { title: 'Ability Points', icon: 'material-symbols:psychology-outline-rounded', type: 'M', auth: ['education:standards:ability:page'], cache: true },
+            meta: { title: '能力点', icon: 'material-symbols:psychology-outline-rounded', type: 'M', auth: ['education:standards:ability:page'], cache: true },
           },
           {
             path: '/education/standards/trial',
             name: 'EducationStandardsTrialStandardEditor',
             component: () => import('~/education/views/standards/TrialStandardEditor.vue'),
-            meta: { title: 'Trial Standards', icon: 'material-symbols:science-outline-rounded', type: 'M', auth: ['education:standards:trial:page'], cache: true },
+            meta: { title: '试听标准', icon: 'material-symbols:science-outline-rounded', type: 'M', auth: ['education:standards:trial:page'], cache: true },
           },
           {
             path: '/education/standards/delivery',
             name: 'EducationStandardsDeliveryStandardEditor',
             component: () => import('~/education/views/standards/DeliveryStandardEditor.vue'),
-            meta: { title: 'Delivery Standards', icon: 'material-symbols:fact-check-outline-rounded', type: 'M', auth: ['education:standards:delivery:page'], cache: true },
+            meta: { title: '交付标准', icon: 'material-symbols:fact-check-outline-rounded', type: 'M', auth: ['education:standards:delivery:page'], cache: true },
           },
           {
             path: '/education/standards/templates',
             name: 'EducationStandardsServiceTemplateList',
             component: () => import('~/education/views/standards/ServiceTemplateList.vue'),
-            meta: { title: 'Templates', icon: 'material-symbols:dynamic-form-outline-rounded', type: 'M', auth: ['education:standards:template:page'], cache: true },
+            meta: { title: '服务模板', icon: 'material-symbols:dynamic-form-outline-rounded', type: 'M', auth: ['education:standards:template:page'], cache: true },
           },
           {
             path: '/education/standards/materials',
             name: 'EducationStandardsCourseMaterialList',
             component: () => import('~/education/views/standards/CourseMaterialList.vue'),
-            meta: { title: 'Materials', icon: 'material-symbols:folder-open-outline-rounded', type: 'M', auth: ['education:standards:material:page'], cache: true },
+            meta: { title: '课程资料', icon: 'material-symbols:folder-open-outline-rounded', type: 'M', auth: ['education:standards:material:page'], cache: true },
           },
           {
             path: '/education/standards/feedback',
             name: 'EducationStandardsCourseFeedbackList',
             component: () => import('~/education/views/standards/CourseFeedbackList.vue'),
-            meta: { title: 'Feedback', icon: 'material-symbols:rate-review-outline-rounded', type: 'M', auth: ['education:standards:quality:page'], cache: true },
+            meta: { title: '课程反馈', icon: 'material-symbols:rate-review-outline-rounded', type: 'M', auth: ['education:standards:quality:page'], cache: true },
           },
           {
             path: '/education/standards/quality',
             name: 'EducationStandardsCourseQualityDashboard',
             component: () => import('~/education/views/standards/CourseQualityDashboard.vue'),
-            meta: { title: 'Quality', icon: 'material-symbols:monitoring-outline-rounded', type: 'M', auth: ['education:standards:quality:page'], cache: true },
+            meta: { title: '质量看板', icon: 'material-symbols:monitoring-outline-rounded', type: 'M', auth: ['education:standards:quality-dashboard:page'], cache: true },
           },
           {
             path: '/education/standards/versions',
             name: 'EducationStandardsStandardVersionList',
             component: () => import('~/education/views/standards/StandardVersionList.vue'),
-            meta: { title: 'Versions', icon: 'material-symbols:published-with-changes-rounded', type: 'M', auth: ['education:standards:version:page'], cache: true },
+            meta: { title: '标准版本', icon: 'material-symbols:published-with-changes-rounded', type: 'M', auth: ['education:standards:version:page'], cache: true },
           },
           {
             path: '/education/standards/reviews',
             name: 'EducationStandardsStandardReviewList',
             component: () => import('~/education/views/standards/StandardReviewList.vue'),
-            meta: { title: 'Reviews', icon: 'material-symbols:approval-delegation-outline-rounded', type: 'M', auth: ['education:standards:review:page'], cache: true },
+            meta: { title: '标准评审', icon: 'material-symbols:approval-delegation-outline-rounded', type: 'M', auth: ['education:standards:review:page'], cache: true },
           },
         ],
       },
@@ -1282,7 +1283,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationContent',
         redirect: '/education/content/materials',
         meta: {
-          title: 'Content Center',
+          title: '内容教研',
           icon: 'material-symbols:folder-managed-outline-rounded',
           type: 'M',
           auth: ['education:content:material:page', 'education:content:version:page', 'education:content:attachment:page', 'education:content:relation:page', 'education:content:student-work:page', 'education:content:showcase:page', 'education:content:review:page', 'education:content:metric:page'],
@@ -1292,49 +1293,49 @@ const educationRoutes: RouteRecordRaw[] = [
             path: '/education/content/materials',
             name: 'EducationContentLearningMaterialList',
             component: () => import('~/education/views/content/LearningMaterialList.vue'),
-            meta: { title: 'Materials', icon: 'material-symbols:folder-open-outline-rounded', type: 'M', auth: ['education:content:material:page'], cache: true },
+            meta: { title: '学习资料', icon: 'material-symbols:folder-open-outline-rounded', type: 'M', auth: ['education:content:material:page'], cache: true },
           },
           {
             path: '/education/content/material-versions',
             name: 'EducationContentMaterialVersionList',
             component: () => import('~/education/views/content/MaterialVersionList.vue'),
-            meta: { title: 'Versions', icon: 'material-symbols:published-with-changes-rounded', type: 'M', auth: ['education:content:version:page'], cache: true },
+            meta: { title: '资料版本', icon: 'material-symbols:published-with-changes-rounded', type: 'M', auth: ['education:content:version:page'], cache: true },
           },
           {
             path: '/education/content/attachments',
             name: 'EducationContentMaterialAttachmentList',
             component: () => import('~/education/views/content/MaterialAttachmentList.vue'),
-            meta: { title: 'Attachments', icon: 'material-symbols:attach-file-rounded', type: 'M', auth: ['education:content:attachment:page'], cache: true },
+            meta: { title: '资料附件', icon: 'material-symbols:attach-file-rounded', type: 'M', auth: ['education:content:attachment:page'], cache: true },
           },
           {
             path: '/education/content/relations',
             name: 'EducationContentMaterialRelationEditor',
             component: () => import('~/education/views/content/MaterialRelationEditor.vue'),
-            meta: { title: 'Relations', icon: 'material-symbols:account-tree-outline-rounded', type: 'M', auth: ['education:content:relation:page'], cache: true },
+            meta: { title: '资料关联', icon: 'material-symbols:account-tree-outline-rounded', type: 'M', auth: ['education:content:relation:page'], cache: true },
           },
           {
             path: '/education/content/student-works',
             name: 'EducationContentStudentWorkList',
             component: () => import('~/education/views/content/StudentWorkList.vue'),
-            meta: { title: 'Student Works', icon: 'material-symbols:assignment-outline-rounded', type: 'M', auth: ['education:content:student-work:page'], cache: true },
+            meta: { title: '学生作品', icon: 'material-symbols:assignment-outline-rounded', type: 'M', auth: ['education:content:student-work:page'], cache: true },
           },
           {
             path: '/education/content/showcases',
             name: 'EducationContentShowcaseList',
             component: () => import('~/education/views/content/ShowcaseList.vue'),
-            meta: { title: 'Showcases', icon: 'material-symbols:workspace-premium-outline-rounded', type: 'M', auth: ['education:content:showcase:page'], cache: true },
+            meta: { title: '成果展陈', icon: 'material-symbols:workspace-premium-outline-rounded', type: 'M', auth: ['education:content:showcase:page'], cache: true },
           },
           {
             path: '/education/content/reviews',
             name: 'EducationContentContentReviewList',
             component: () => import('~/education/views/content/ContentReviewList.vue'),
-            meta: { title: 'Reviews', icon: 'material-symbols:approval-delegation-outline-rounded', type: 'M', auth: ['education:content:review:page'], cache: true },
+            meta: { title: '内容审核', icon: 'material-symbols:approval-delegation-outline-rounded', type: 'M', auth: ['education:content:review:page'], cache: true },
           },
           {
             path: '/education/content/metrics',
             name: 'EducationContentMaterialUsageDashboard',
             component: () => import('~/education/views/content/MaterialUsageDashboard.vue'),
-            meta: { title: 'Usage Metrics', icon: 'material-symbols:monitoring-outline-rounded', type: 'M', auth: ['education:content:metric:page'], cache: true },
+            meta: { title: '使用看板', icon: 'material-symbols:monitoring-outline-rounded', type: 'M', auth: ['education:content:metric:page'], cache: true },
           },
         ],
       },
@@ -1343,7 +1344,7 @@ const educationRoutes: RouteRecordRaw[] = [
         name: 'EducationGroup',
         redirect: '/education/group/dashboard',
         meta: {
-          title: 'Group Governance',
+          title: '集团管控',
           icon: 'material-symbols:account-tree-outline-rounded',
           type: 'M',
           auth: ['education:group:org:tree', 'education:group:data-permission:page', 'education:group:approval-template:page', 'education:group:approval-task:page', 'education:group:contract:page', 'education:group:contract-renewal:page', 'education:group:metric:page', 'education:group:franchise:page', 'education:group:risk-audit:page'],
@@ -1354,7 +1355,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupOperationDashboard',
             component: () => import('~/education/views/group/GroupOperationDashboard.vue'),
             meta: {
-              title: 'Group Dashboard',
+              title: '集团看板',
               icon: 'material-symbols:dashboard-outline-rounded',
               type: 'M',
               auth: ['education:group:metric:page'],
@@ -1366,7 +1367,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupOrgUnitTree',
             component: () => import('~/education/views/group/OrgUnitTree.vue'),
             meta: {
-              title: 'Org Units',
+              title: '组织架构',
               icon: 'material-symbols:account-tree-outline-rounded',
               type: 'M',
               auth: ['education:group:org:tree'],
@@ -1378,7 +1379,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupDataPermissionList',
             component: () => import('~/education/views/group/DataPermissionList.vue'),
             meta: {
-              title: 'Data Permissions',
+              title: '数据权限',
               icon: 'material-symbols:admin-panel-settings-outline-rounded',
               type: 'M',
               auth: ['education:group:data-permission:page'],
@@ -1390,7 +1391,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupApprovalTemplateList',
             component: () => import('~/education/views/group/ApprovalTemplateList.vue'),
             meta: {
-              title: 'Approval Templates',
+              title: '审批模板',
               icon: 'material-symbols:approval-outline-rounded',
               type: 'M',
               auth: ['education:group:approval-template:page'],
@@ -1402,7 +1403,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupApprovalTaskList',
             component: () => import('~/education/views/group/ApprovalTaskList.vue'),
             meta: {
-              title: 'Approval Tasks',
+              title: '审批任务',
               icon: 'material-symbols:task-alt-outline-rounded',
               type: 'M',
               auth: ['education:group:approval-task:page'],
@@ -1414,7 +1415,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupContractList',
             component: () => import('~/education/views/group/ContractList.vue'),
             meta: {
-              title: 'Contracts',
+              title: '合同管理',
               icon: 'material-symbols:contract-outline-rounded',
               type: 'M',
               auth: ['education:group:contract:page'],
@@ -1426,7 +1427,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupContractRenewalList',
             component: () => import('~/education/views/group/ContractRenewalList.vue'),
             meta: {
-              title: 'Contract Renewals',
+              title: '合同续签',
               icon: 'material-symbols:event-repeat-outline-rounded',
               type: 'M',
               auth: ['education:group:contract-renewal:page'],
@@ -1438,7 +1439,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupFranchiseRecordList',
             component: () => import('~/education/views/group/FranchiseRecordList.vue'),
             meta: {
-              title: 'Franchises',
+              title: '加盟管理',
               icon: 'material-symbols:storefront-outline-rounded',
               type: 'M',
               auth: ['education:group:franchise:page'],
@@ -1450,7 +1451,7 @@ const educationRoutes: RouteRecordRaw[] = [
             name: 'EducationGroupRiskAuditEventList',
             component: () => import('~/education/views/group/RiskAuditEventList.vue'),
             meta: {
-              title: 'Risk Audits',
+              title: '风控审计',
               icon: 'material-symbols:warning-outline-rounded',
               type: 'M',
               auth: ['education:group:risk-audit:page'],

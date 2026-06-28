@@ -14,6 +14,7 @@ namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationCampusOrgRelation;
 use App\Model\Education\Group\EducationOrgUnit;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class OrgUnitRepository
@@ -52,12 +53,17 @@ final class OrgUnitRepository
     }
 
     /**
+     * @param array<string, mixed> $filters
      * @return array<int, array<string, mixed>>
      */
-    public function tree(EducationUserContext $context): array
+    public function tree(EducationUserContext $context, array $filters = []): array
     {
-        return EducationOrgUnit::query()
-            ->where('tenant_id', $context->tenantId)
+        return (new EducationScopeQuery())->applyTenantCampusColumns(
+            EducationOrgUnit::query(),
+            $filters,
+            $context,
+            campusScoped: false
+        )
             ->orderBy('level')
             ->orderBy('sort_order')
             ->orderBy('id')

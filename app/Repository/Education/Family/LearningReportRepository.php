@@ -14,6 +14,7 @@ namespace App\Repository\Education\Family;
 
 use App\Model\Education\Family\EducationLearningReport;
 use App\Model\Education\Family\EducationLearningReportItem;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class LearningReportRepository
@@ -37,9 +38,9 @@ final class LearningReportRepository
         return $report;
     }
 
-    public function find(int $id, int $tenantId): ?EducationLearningReport
+    public function find(int $id, EducationUserContext $context): ?EducationLearningReport
     {
-        $row = EducationLearningReport::query()->where('tenant_id', $tenantId)->whereKey($id)->first();
+        $row = (new EducationScopeQuery())->applyTenantCampus(EducationLearningReport::query()->whereKey($id), [], $context)->first();
 
         return $row instanceof EducationLearningReport ? $row : null;
     }
@@ -83,8 +84,7 @@ final class LearningReportRepository
      */
     public function visibleForGuardian(int $studentId, array $filters, EducationUserContext $context): array
     {
-        $query = EducationLearningReport::query()
-            ->where('tenant_id', $context->tenantId)
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningReport::query(), $filters, $context)
             ->where('student_id', $studentId)
             ->where('status', 'published');
         $total = (clone $query)->count();

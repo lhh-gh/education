@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SalaryPaymentPayload, SalaryPaymentRecord } from '../../api/payroll/payment.ts'
 import { createSalaryPayment, pageSalaryPayments } from '../../api/payroll/payment.ts'
-import { centsToYuan, payrollTagType } from './payrollRules.ts'
+import { centsToYuan, payrollStatusLabel, payrollTagType } from './payrollRules.ts'
 
 defineOptions({ name: 'EducationPayrollSalaryPaymentList' })
 
@@ -38,59 +38,62 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Salary Payments</span>
+          <span>薪酬发放</span>
           <el-button type="primary" @click="formVisible = true">
-            Mark Paid
+            标记发放
           </el-button>
         </div>
       </template>
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-input v-model="search.status" clearable />
         </el-form-item>
         <el-form-item>
           <el-button @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="payment_no" label="Payment No" min-width="180" />
-        <el-table-column prop="teacher_id" label="Teacher" width="120" />
-        <el-table-column label="Amount" width="130">
+        <el-table-column prop="payment_no" label="发放单号" min-width="180" />
+        <el-table-column prop="teacher_id" label="教师" width="120" />
+        <el-table-column label="金额" width="130">
           <template #default="{ row }">
             {{ centsToYuan(row.amount_cents) }}
           </template>
         </el-table-column>
-        <el-table-column label="Status" width="130">
+        <el-table-column label="状态" width="130">
           <template #default="{ row }">
             <el-tag :type="payrollTagType(row.status)">
-              {{ row.status }}
+              {{ payrollStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="paid_at" label="Paid At" min-width="160" />
+        <el-table-column prop="paid_at" label="发放时间" min-width="160" />
+        <template #empty>
+          <el-empty description="暂无薪酬发放记录" />
+        </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <el-dialog v-model="formVisible" title="Mark Salary Paid" width="460px">
+    <el-dialog v-model="formVisible" title="标记薪酬已发放" width="460px">
       <el-form label-width="120px">
-        <el-form-item label="Slip ID">
+        <el-form-item label="工资条 ID">
           <el-input-number v-model="form.slip_id" :min="1" />
         </el-form-item>
-        <el-form-item label="Amount">
+        <el-form-item label="金额">
           <el-input-number v-model="form.amount_cents" :min="1" :step="1000" />
         </el-form-item>
-        <el-form-item label="Payment No">
+        <el-form-item label="发放单号">
           <el-input v-model="form.payment_no" />
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="formVisible = false">
-          Cancel
+          取消
         </el-button>
         <el-button type="primary" @click="submit">
-          Save
+          保存
         </el-button>
       </template>
     </el-dialog>

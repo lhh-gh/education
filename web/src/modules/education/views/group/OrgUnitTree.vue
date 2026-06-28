@@ -9,7 +9,7 @@ defineOptions({ name: 'EducationGroupOrgUnitTree' })
 const loading = ref(false)
 const formVisible = ref(false)
 const rows = ref<OrgUnitRecord[]>([])
-const scopeText = ref('Current user data scope')
+const scopeText = ref('当前用户数据范围')
 const errorText = ref('')
 
 async function loadRows() {
@@ -22,7 +22,7 @@ async function loadRows() {
   catch (error: any) {
     const result = keepOrgTreeAfterCycleError(rows.value, error)
     rows.value = result.rows
-    errorText.value = result.errorText || (error?.message ?? 'Load failed')
+    errorText.value = result.errorText || (error?.message ?? '加载失败')
   }
   finally {
     loading.value = false
@@ -39,15 +39,15 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Org Units</span>
+          <span>组织架构</span>
           <el-button type="primary" @click="formVisible = true">
-            New Org
+            新增组织
           </el-button>
         </div>
       </template>
       <el-tree v-loading="loading" :data="rows" node-key="id" :props="{ label: 'name', children: 'children' }" default-expand-all>
         <template #empty>
-          <el-empty description="No org units" />
+          <el-empty description="暂无组织" />
         </template>
       </el-tree>
     </el-card>

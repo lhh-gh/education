@@ -18,6 +18,8 @@ use App\Model\Education\Workflow\EducationWorkflowTask;
 use App\Model\Education\Workflow\EducationWorkflowTaskAssignee;
 use App\Repository\Education\Workflow\WorkflowTaskLogRepository;
 use App\Repository\Education\Workflow\WorkflowTaskRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
 final class WorkflowTaskService
@@ -72,9 +74,10 @@ final class WorkflowTaskService
     /**
      * @return array{task_id: int, status: string}
      */
-    public function completeTask(int $taskId, int $userId, string $result, string $content): array
+    public function completeTask(int $taskId, EducationUserContext $context, string $result, string $content): array
     {
-        $task = $this->taskRepository->task($taskId);
+        $userId = $context->userId;
+        $task = $this->taskInContext($taskId, $context);
         $assignee = $this->taskRepository->assignee($taskId, $userId);
         if ($assignee === null) {
             throw new BusinessException(ResultCode::FORBIDDEN, 'workflow task is assigned to another user', ['task_id' => $taskId]);
@@ -98,9 +101,10 @@ final class WorkflowTaskService
         return ['task_id' => $taskId, 'status' => 'completed'];
     }
 
-    public function addComment(int $taskId, int $userId, string $content): void
+    public function addComment(int $taskId, EducationUserContext $context, string $content): void
     {
-        $task = $this->taskRepository->task($taskId);
+        $task = $this->taskInContext($taskId, $context);
+        $userId = $context->userId;
         $this->taskRepository->addComment([
             'tenant_id' => (int) $task->tenant_id,
             'campus_id' => $task->campus_id,
@@ -117,13 +121,13 @@ final class WorkflowTaskService
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function pageTasks(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function pageTasks(EducationUserContext $context, array $filters = [], int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationWorkflowTask::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationWorkflowTask::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', $filters['status']);
         }
-        $total = (int) $query->count();
+        $total = (int) (clone $query)->count();
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];
@@ -187,5 +191,19 @@ final class WorkflowTaskService
     private function statusValue(mixed $status): string
     {
         return \is_object($status) && property_exists($status, 'value') ? (string) $status->value : (string) $status;
+    }
+
+    private function taskInContext(int $taskId, EducationUserContext $context): EducationWorkflowTask
+    {
+        $task = (new EducationScopeQuery())->applyTenantCampus(
+            EducationWorkflowTask::query()->whereKey($taskId),
+            [],
+            $context
+        )->first();
+        if (! $task instanceof EducationWorkflowTask) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'workflow task not found in current context', ['task_id' => $taskId]);
+        }
+
+        return $task;
     }
 }

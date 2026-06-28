@@ -4,6 +4,7 @@ import { getClassStudents, saveClassStudents } from '../../../api/academic/class
 import { pageStudents } from '../../../api/academic/profile.ts'
 import type { StudentRecord } from '../../../api/academic/profile.ts'
 import { classStudentSavePayload } from '../classScheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

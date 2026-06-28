@@ -17,6 +17,7 @@ use App\Http\Common\ResultCode;
 use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -83,36 +84,19 @@ final class TeacherMobileLeaveRepository extends IRepository
     private function assignedLeaveQuery(EducationUserContext $context, int $teacherId, array $params): Builder
     {
         $query = $this->getQuery();
+        $scope = new EducationScopeQuery();
+        $scope->applyTenantCampusColumns(
+            $query,
+            $params,
+            $context,
+            'edu_leave_requests.tenant_id',
+            'edu_leave_requests.campus_id'
+        );
 
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return $query;
-        }
-
-        $query->where('edu_leave_requests.tenant_id', $context->tenantId);
         $lessonQuery = EducationLesson::query()
             ->select('id')
-            ->where('tenant_id', $context->tenantId)
             ->where('teacher_id', $teacherId);
-
-        $campusId = \array_key_exists('campus_id', $params) && $params['campus_id'] !== null && $params['campus_id'] !== ''
-            ? (int) $params['campus_id']
-            : null;
-
-        if ($campusId !== null) {
-            $context->canAccessCampus($campusId)
-                ? $lessonQuery->where('campus_id', $campusId)
-                : $lessonQuery->whereRaw('1 = 0');
-
-            $query->whereIn('edu_leave_requests.lesson_id', $lessonQuery);
-
-            return $query;
-        }
-
-        $context->campusIds === []
-            ? $lessonQuery->whereRaw('1 = 0')
-            : $lessonQuery->whereIn('campus_id', $context->campusIds);
+        $scope->applyTenantCampus($lessonQuery, $params, $context);
 
         $query->whereIn('edu_leave_requests.lesson_id', $lessonQuery);
 

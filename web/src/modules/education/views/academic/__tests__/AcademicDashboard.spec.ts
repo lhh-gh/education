@@ -13,11 +13,11 @@ describe('academic dashboard report page', () => {
       unread_notice_receipt_count: 5,
     })
 
-    expect(metrics.map(item => item.title)).toContain('Active Students')
-    expect(metrics.find(item => item.title === 'Net Consumed')).toMatchObject({ value: '108.00', unit: 'units' })
+    expect(metrics.map(item => item.title)).toContain('在读学员')
+    expect(metrics.find(item => item.title === '净课消')).toMatchObject({ value: '108.00', unit: '课时' })
   })
 
   it('dashboard_forbidden_state', () => {
-    expect(dashboardMetricItems({}).find(item => item.title === 'Active Students')?.value).toBe(0)
+    expect(dashboardMetricItems({}).find(item => item.title === '在读学员')?.value).toBe(0)
   })
 })

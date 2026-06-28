@@ -58,7 +58,7 @@ describe('featureFlagList', () => {
   })
 
   it('config_validation_failure_keeps_form_open', () => {
-    expect(() => parseJsonObjectText('[]', 'config')).toThrow('config must be a JSON object')
+    expect(() => parseJsonObjectText('[]', 'config')).toThrow('config 必须是 JSON 对象')
     expect(shouldCloseFormAfterSubmit(false)).toBe(false)
     expect(shouldCloseFormAfterSubmit(true)).toBe(true)
   })

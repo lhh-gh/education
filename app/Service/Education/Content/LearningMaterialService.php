@@ -16,6 +16,7 @@ use App\Model\Education\Content\EducationMaterialPublishLog;
 use App\Repository\Education\Content\ContentReviewRepository;
 use App\Repository\Education\Content\LearningMaterialRepository;
 use App\Repository\Education\Content\MaterialVersionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class LearningMaterialService
 {
@@ -29,9 +30,9 @@ final class LearningMaterialService
      * @param array<string, mixed> $data
      * @return array{material_id: int, current_version_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
-        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false]);
+        $material = $this->materials->save($data + ['status' => 'draft', 'guardian_visible' => false], $context);
         $version = $this->versions->save([
             'tenant_id' => $material->tenant_id,
             'campus_id' => $material->campus_id,
@@ -55,13 +56,15 @@ final class LearningMaterialService
     /**
      * @return array{material_id: int, current_version_id: int, status: string}
      */
-    public function publish(int $tenantId, int $materialId, int $operatorId, bool $requiresApprovedReview = true): array
+    public function publish(EducationUserContext $context, int $materialId, int $operatorId, bool $requiresApprovedReview = true): array
     {
-        $material = $this->materials->findInTenant($tenantId, $materialId);
-        if ($requiresApprovedReview && ! $this->reviews->hasApprovedReview($tenantId, 'learning_material', $materialId)) {
+        $tenantId = $this->tenantId($context);
+        $material = $this->materials->findInContext($context, $materialId);
+        $campusId = $material->campus_id === null ? null : (int) $material->campus_id;
+        if ($requiresApprovedReview && ! $this->reviews->hasApprovedReview($tenantId, $campusId, 'learning_material', $materialId)) {
             throw new \RuntimeException('material requires approved review before publish', 409);
         }
-        $version = $this->versions->findInTenant($tenantId, (int) $material->current_version_id);
+        $version = $this->versions->findInContext($context, (int) $material->current_version_id);
         $fromStatus = $this->statusValue($material->status);
         $material->status = 'published';
         $material->save();
@@ -88,9 +91,10 @@ final class LearningMaterialService
     /**
      * @return array{material_id: int, status: string}
      */
-    public function withdraw(int $tenantId, int $materialId, int $operatorId = 0): array
+    public function withdraw(EducationUserContext $context, int $materialId, int $operatorId = 0): array
     {
-        $material = $this->materials->findInTenant($tenantId, $materialId);
+        $tenantId = $this->tenantId($context);
+        $material = $this->materials->findInContext($context, $materialId);
         $fromStatus = $this->statusValue($material->status);
         $material->status = 'withdrawn';
         $material->save();
@@ -108,15 +112,25 @@ final class LearningMaterialService
     }
 
     /**
+     * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        return $this->materials->page($tenantId, $filters, $page, $pageSize);
+        return $this->materials->page($filters, $context, $page, $pageSize);
     }
 
     private function statusValue(mixed $status): string
     {
         return $status instanceof \BackedEnum ? (string) $status->value : (string) $status;
+    }
+
+    private function tenantId(EducationUserContext $context): int
+    {
+        if ($context->tenantId === null) {
+            throw new \RuntimeException('education tenant context is missing', 403);
+        }
+
+        return $context->tenantId;
     }
 }

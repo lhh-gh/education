@@ -4,6 +4,7 @@ import { deleteCampus, pageCampuses, updateCampusStatus } from '../../api/founda
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import { tenantRequired } from './actionRules.ts'
 import CampusForm from './components/CampusForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationCampusList' })
 
@@ -46,8 +47,8 @@ async function loadCampuses() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Campus list loading failed'
-    message.error(error?.message ?? '校区列表加载失败')
+    errorText.value = error?.message ?? '校区列表加载失败'
+    message.error(errorText.value)
   }
   finally {
     loading.value = false
@@ -146,7 +147,7 @@ function onFormSuccess() {
             查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>

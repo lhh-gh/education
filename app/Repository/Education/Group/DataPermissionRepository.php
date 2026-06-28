@@ -14,6 +14,7 @@ namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationDataPermissionScope;
 use App\Model\Education\Group\EducationUserDataPermission;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\DbConnection\Db;
 
@@ -80,7 +81,12 @@ final class DataPermissionRepository
      */
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationUserDataPermission::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampusColumns(
+            EducationUserDataPermission::query(),
+            $filters,
+            $context,
+            campusScoped: false
+        );
         if (isset($filters['user_id']) && $filters['user_id'] !== '') {
             $query->where('user_id', (int) $filters['user_id']);
         }

@@ -19,7 +19,9 @@ use App\Model\Education\Academic\EducationGuardian;
 use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Academic\AcademicRecordStatus;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\GuardianRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\DbConnection\Db;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -37,12 +39,7 @@ final class GuardianService
 
         $result = $this->repository->pageByContext($filters, $page, $pageSize, $context);
         $ids = array_map(static fn (array $row): int => (int) $row['id'], $result['list']);
-        $counts = $ids === [] ? [] : EducationStudentGuardian::query()
-            ->selectRaw('guardian_id, COUNT(*) as aggregate')
-            ->whereIn('guardian_id', $ids)
-            ->groupBy('guardian_id')
-            ->pluck('aggregate', 'guardian_id')
-            ->all();
+        $counts = $this->studentCounts($ids, $filters, $context);
         foreach ($result['list'] as &$row) {
             $row['student_count'] = (int) ($counts[$row['id']] ?? 0);
         }
@@ -126,6 +123,49 @@ final class GuardianService
 
             return $deleted;
         });
+    }
+
+    /**
+     * @param int[] $guardianIds
+     * @return array<int, int|string>
+     */
+    private function studentCounts(array $guardianIds, array $filters, EducationUserContext $context): array
+    {
+        if ($guardianIds === []) {
+            return [];
+        }
+
+        $query = EducationStudentGuardian::query()
+            ->selectRaw('edu_student_guardians.guardian_id, COUNT(*) as aggregate')
+            ->join('edu_students', 'edu_students.id', '=', 'edu_student_guardians.student_id')
+            ->whereIn('edu_student_guardians.guardian_id', $guardianIds)
+            ->whereNull('edu_students.deleted_at')
+            ->groupBy('edu_student_guardians.guardian_id');
+
+        $scope = new EducationScopeQuery();
+        $tenantId = $scope->tenantId($filters, $context);
+        if ($tenantId === null && ! $context->platformAccess) {
+            $query->whereRaw('1 = 0');
+        }
+        if ($tenantId !== null) {
+            $query->where('edu_student_guardians.tenant_id', $tenantId)
+                ->where('edu_students.tenant_id', $tenantId);
+        }
+
+        $campusId = $scope->campusId($filters, $context);
+        if ($campusId !== null) {
+            if (! $context->platformAccess && $context->roleCode !== EducationRoleCode::TenantAdmin && ! $context->canAccessCampus($campusId)) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->where('edu_students.campus_id', $campusId);
+            }
+        } elseif (! $context->platformAccess && $context->roleCode !== EducationRoleCode::TenantAdmin) {
+            $context->campusIds === []
+                ? $query->whereRaw('1 = 0')
+                : $query->whereIn('edu_students.campus_id', $context->campusIds);
+        }
+
+        return $query->pluck('aggregate', 'guardian_id')->all();
     }
 
     private function findForWrite(int $id, EducationUserContext $context): EducationGuardian

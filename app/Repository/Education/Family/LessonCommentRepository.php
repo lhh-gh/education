@@ -18,6 +18,7 @@ use App\Model\Education\Family\EducationLessonComment;
 use App\Model\Education\Family\EducationLessonCommentTagRelation;
 use App\Model\Education\Family\EducationLessonCommentTemplate;
 use App\Model\Education\Family\EducationStudentPerformanceTag;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class LessonCommentRepository
@@ -78,7 +79,7 @@ final class LessonCommentRepository
      */
     public function pageTemplates(array $filters, EducationUserContext $context): array
     {
-        $query = EducationLessonCommentTemplate::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLessonCommentTemplate::query(), $filters, $context);
         if (($filters['course_id'] ?? '') !== '') {
             $query->where('course_id', (int) $filters['course_id']);
         }
@@ -92,10 +93,10 @@ final class LessonCommentRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function saveTemplate(array $data): EducationLessonCommentTemplate
+    public function saveTemplate(array $data, EducationUserContext $context): EducationLessonCommentTemplate
     {
         if (isset($data['id']) && $data['id'] !== '') {
-            $template = EducationLessonCommentTemplate::query()->findOrFail((int) $data['id']);
+            $template = (new EducationScopeQuery())->applyTenantCampus(EducationLessonCommentTemplate::query(), [], $context)->findOrFail((int) $data['id']);
             $template->fill($data);
             $template->save();
 
@@ -111,7 +112,7 @@ final class LessonCommentRepository
      */
     public function pageTags(array $filters, EducationUserContext $context): array
     {
-        $query = EducationStudentPerformanceTag::query()->where('tenant_id', $context->tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationStudentPerformanceTag::query(), $filters, $context);
         if (($filters['tag_type'] ?? '') !== '') {
             $query->where('tag_type', (string) $filters['tag_type']);
         }
@@ -125,10 +126,10 @@ final class LessonCommentRepository
     /**
      * @param array<string, mixed> $data
      */
-    public function saveTag(array $data): EducationStudentPerformanceTag
+    public function saveTag(array $data, EducationUserContext $context): EducationStudentPerformanceTag
     {
         if (isset($data['id']) && $data['id'] !== '') {
-            $tag = EducationStudentPerformanceTag::query()->findOrFail((int) $data['id']);
+            $tag = (new EducationScopeQuery())->applyTenantCampus(EducationStudentPerformanceTag::query(), [], $context)->findOrFail((int) $data['id']);
             $tag->fill($data);
             $tag->save();
 

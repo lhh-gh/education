@@ -6,6 +6,7 @@ import ReportDateRangeFilter from './components/ReportDateRangeFilter.vue'
 import ReportMetricCard from './components/ReportMetricCard.vue'
 import ReportStateBlock from './components/ReportStateBlock.vue'
 import ReportTableToolbar from './components/ReportTableToolbar.vue'
+import { consumptionSourceLabel, ledgerDirectionLabel, ledgerStatusLabel } from './attendanceConsumptionRules.ts'
 import { canShowReportDrillLink, quickReportRange, reportHasRows, reportTagType, summaryMetricItems } from './reportRules.ts'
 
 defineOptions({ name: 'EducationConsumptionReport' })
@@ -30,7 +31,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Consumption report loading failed'
+    errorText.value = error?.message ?? '课消报表加载失败'
   }
   finally {
     loading.value = false
@@ -43,7 +44,7 @@ function handleFilter(value: ConsumptionReportParams) {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, campus_id: undefined, course_id: undefined, class_id: undefined, student_id: undefined, account_id: undefined, source_type: undefined, status: undefined, group_by: undefined, ...quickReportRange('this_month') })
+  Object.assign(search, { page: 1, pageSize: 20, course_id: undefined, class_id: undefined, student_id: undefined, account_id: undefined, source_type: undefined, status: undefined, group_by: undefined, ...quickReportRange('this_month') })
   loadRows()
 }
 
@@ -53,37 +54,37 @@ onMounted(loadRows)
 <template>
   <div class="mine-layout education-report-page pt-3">
     <el-card shadow="never">
-      <template #header>Consumption Report</template>
+      <template #header>课消报表</template>
       <ReportDateRangeFilter v-model="search" require-range @submit="handleFilter" @reset="handleReset" />
       <el-form :inline="true" :model="search" class="report-extra-filters">
-        <el-form-item label="Course ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Class ID"><el-input-number v-model="search.class_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Student ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Account ID"><el-input-number v-model="search.account_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="课程ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="班级ID"><el-input-number v-model="search.class_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="学员ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="账户ID"><el-input-number v-model="search.account_id" :min="1" :controls="false" /></el-form-item>
       </el-form>
       <ReportStateBlock v-if="state" :state="state" :message="errorText" @retry="loadRows" />
       <template v-else>
         <div class="metric-grid"><ReportMetricCard v-for="item in summaryItems" :key="item.title" :title="item.title" :value="item.value" /></div>
-        <ReportTableToolbar title="Consumption Rows" :total="total" :loading="loading" @refresh="loadRows" />
+        <ReportTableToolbar title="课消明细" :total="total" :loading="loading" @refresh="loadRows" />
         <el-table :data="rows" row-key="consumption_no">
-          <el-table-column prop="date" label="Date" width="130" />
-          <el-table-column prop="consumption_no" label="Consumption No" width="190" />
-          <el-table-column prop="student_name" label="Student" min-width="130" />
-          <el-table-column prop="course_name" label="Course" min-width="130" />
-          <el-table-column prop="class_name" label="Class" min-width="130" />
-          <el-table-column prop="teacher_name" label="Teacher" min-width="130" />
-          <el-table-column prop="lesson_title" label="Lesson" min-width="160" />
-          <el-table-column prop="source_type" label="Source" width="120" />
-          <el-table-column prop="direction" label="Direction" width="120" />
-          <el-table-column prop="units" label="Units" width="90" />
-          <el-table-column prop="before_available_units" label="Before" width="100" />
-          <el-table-column prop="after_available_units" label="After" width="100" />
-          <el-table-column label="Status" width="110">
-            <template #default="{ row }"><el-tag :type="reportTagType(row.status)">{{ row.status }}</el-tag></template>
+          <el-table-column prop="date" label="日期" width="130" />
+          <el-table-column prop="consumption_no" label="课消编号" width="190" />
+          <el-table-column prop="student_name" label="学员" min-width="130" />
+          <el-table-column prop="course_name" label="课程" min-width="130" />
+          <el-table-column prop="class_name" label="班级" min-width="130" />
+          <el-table-column prop="teacher_name" label="教师" min-width="130" />
+          <el-table-column prop="lesson_title" label="课次" min-width="160" />
+          <el-table-column label="来源" width="120"><template #default="{ row }">{{ consumptionSourceLabel(row.source_type) }}</template></el-table-column>
+          <el-table-column label="方向" width="120"><template #default="{ row }">{{ ledgerDirectionLabel(row.direction) }}</template></el-table-column>
+          <el-table-column prop="units" label="课时" width="90" />
+          <el-table-column prop="before_available_units" label="变更前" width="100" />
+          <el-table-column prop="after_available_units" label="变更后" width="100" />
+          <el-table-column label="状态" width="110">
+            <template #default="{ row }"><el-tag :type="reportTagType(row.status)">{{ ledgerStatusLabel(row.status) }}</el-tag></template>
           </el-table-column>
-          <el-table-column label="Actions" width="110" fixed="right">
+          <el-table-column label="操作" width="110" fixed="right">
             <template #default="{ row }">
-              <router-link v-if="canShowReportDrillLink(canDrill, row.account_id)" :to="`/education/academic/consumptions?account_id=${row.account_id}`">Detail</router-link>
+              <router-link v-if="canShowReportDrillLink(canDrill, row.account_id)" :to="`/education/academic/consumptions?account_id=${row.account_id}`">详情</router-link>
             </template>
           </el-table-column>
         </el-table>

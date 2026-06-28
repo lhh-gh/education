@@ -5,6 +5,7 @@ import hasAuth from '@/utils/permission/hasAuth.ts'
 import ReportMetricCard from './components/ReportMetricCard.vue'
 import ReportStateBlock from './components/ReportStateBlock.vue'
 import ReportTableToolbar from './components/ReportTableToolbar.vue'
+import { accountStatusLabel, balanceLevelLabel } from './courseAccountRules.ts'
 import { canShowReportDrillLink, reportHasRows, reportTagType, summaryMetricItems } from './reportRules.ts'
 
 defineOptions({ name: 'EducationAccountBalanceReport' })
@@ -29,7 +30,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Account balance report loading failed'
+    errorText.value = error?.message ?? '课时账户报表加载失败'
   }
   finally {
     loading.value = false
@@ -42,7 +43,7 @@ function handleSearch() {
 }
 
 function handleReset() {
-  Object.assign(search, { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, course_id: undefined, student_id: undefined, status: undefined, balance_level: undefined })
+  Object.assign(search, { page: 1, pageSize: 20, course_id: undefined, student_id: undefined, status: undefined, balance_level: undefined })
   loadRows()
 }
 
@@ -52,54 +53,52 @@ onMounted(loadRows)
 <template>
   <div class="mine-layout education-report-page pt-3">
     <el-card shadow="never">
-      <template #header>Account Balance Report</template>
+      <template #header>课时账户报表</template>
       <el-form :inline="true" :model="search" class="report-extra-filters">
-        <el-form-item label="Tenant ID"><el-input-number v-model="search.tenant_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Campus ID"><el-input-number v-model="search.campus_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Course ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Student ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="课程ID"><el-input-number v-model="search.course_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="学员ID"><el-input-number v-model="search.student_id" :min="1" :controls="false" /></el-form-item>
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 130px;">
-            <el-option label="Active" value="active" />
-            <el-option label="Frozen" value="frozen" />
-            <el-option label="Closed" value="closed" />
+            <el-option label="正常" value="active" />
+            <el-option label="冻结" value="frozen" />
+            <el-option label="已关闭" value="closed" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Balance">
+        <el-form-item label="余额">
           <el-select v-model="search.balance_level" clearable style="width: 150px;">
-            <el-option label="Zero" value="zero" />
-            <el-option label="Low" value="low" />
-            <el-option label="Normal" value="normal" />
-            <el-option label="Expired" value="expired" />
-            <el-option label="Expiring Soon" value="expiring_soon" />
+            <el-option label="已耗尽" value="zero" />
+            <el-option label="低课时" value="low" />
+            <el-option label="正常" value="normal" />
+            <el-option label="已过期" value="expired" />
+            <el-option label="即将过期" value="expiring_soon" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">Search</el-button>
-          <el-button @click="handleReset">Reset</el-button>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
       <ReportStateBlock v-if="state" :state="state" :message="errorText" @retry="loadRows" />
       <template v-else>
         <div class="metric-grid"><ReportMetricCard v-for="item in summaryItems" :key="item.title" :title="item.title" :value="item.value" /></div>
-        <ReportTableToolbar title="Account Rows" :total="total" :loading="loading" @refresh="loadRows" />
+        <ReportTableToolbar title="账户明细" :total="total" :loading="loading" @refresh="loadRows" />
         <el-table :data="rows" row-key="account_id">
-          <el-table-column prop="student_name" label="Student" min-width="130" />
-          <el-table-column prop="student_no" label="Student No" width="130" />
-          <el-table-column prop="course_name" label="Course" min-width="130" />
-          <el-table-column prop="purchased_units" label="Purchased" width="110" />
-          <el-table-column prop="bonus_units" label="Bonus" width="90" />
-          <el-table-column prop="consumed_units" label="Consumed" width="110" />
-          <el-table-column prop="adjusted_units" label="Adjusted" width="110" />
-          <el-table-column prop="refunded_units" label="Refunded" width="110" />
-          <el-table-column prop="frozen_units" label="Frozen" width="90" />
-          <el-table-column prop="available_units" label="Available" width="110" />
-          <el-table-column label="Status" width="100"><template #default="{ row }"><el-tag :type="reportTagType(row.status)">{{ row.status }}</el-tag></template></el-table-column>
-          <el-table-column label="Balance" width="130"><template #default="{ row }"><el-tag :type="reportTagType(row.balance_level)">{{ row.balance_level }}</el-tag></template></el-table-column>
-          <el-table-column prop="expires_at" label="Expires At" width="180" />
-          <el-table-column label="Actions" width="110" fixed="right">
+          <el-table-column prop="student_name" label="学员" min-width="130" />
+          <el-table-column prop="student_no" label="学员编号" width="130" />
+          <el-table-column prop="course_name" label="课程" min-width="130" />
+          <el-table-column prop="purchased_units" label="购买课时" width="110" />
+          <el-table-column prop="bonus_units" label="赠送" width="90" />
+          <el-table-column prop="consumed_units" label="已消课时" width="110" />
+          <el-table-column prop="adjusted_units" label="调整课时" width="110" />
+          <el-table-column prop="refunded_units" label="退费课时" width="110" />
+          <el-table-column prop="frozen_units" label="冻结" width="90" />
+          <el-table-column prop="available_units" label="可用课时" width="110" />
+          <el-table-column label="状态" width="100"><template #default="{ row }"><el-tag :type="reportTagType(row.status)">{{ accountStatusLabel(row.status) }}</el-tag></template></el-table-column>
+          <el-table-column label="余额" width="130"><template #default="{ row }"><el-tag :type="reportTagType(row.balance_level)">{{ balanceLevelLabel(row.balance_level) }}</el-tag></template></el-table-column>
+          <el-table-column prop="expires_at" label="到期时间" width="180" />
+          <el-table-column label="操作" width="110" fixed="right">
             <template #default="{ row }">
-              <router-link v-if="canShowReportDrillLink(canDrill, row.account_id)" :to="`/education/academic/course-accounts?account_id=${row.account_id}`">Ledger</router-link>
+              <router-link v-if="canShowReportDrillLink(canDrill, row.account_id)" :to="`/education/academic/course-accounts?account_id=${row.account_id}`">流水</router-link>
             </template>
           </el-table-column>
         </el-table>

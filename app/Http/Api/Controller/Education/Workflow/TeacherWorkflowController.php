@@ -54,7 +54,7 @@ class TeacherWorkflowController extends AbstractController
     {
         $context = $this->mobileContext->mobile();
         $data = $request->validated();
-        $result = $this->taskService->completeTask($id, $context->userId, (string) $data['result'], (string) $data['content']);
+        $result = $this->taskService->completeTask($id, $context, (string) $data['result'], (string) $data['content']);
         $this->events->dispatch(new EducationAuditEvent(
             module: 'workflow',
             resource: 'workflow_task',
@@ -77,7 +77,7 @@ class TeacherWorkflowController extends AbstractController
     public function comment(int $id, MobileTaskCommentRequest $request): Result
     {
         $context = $this->mobileContext->mobile();
-        $this->taskService->addComment($id, $context->userId, (string) $request->validated()['content']);
+        $this->taskService->addComment($id, $context, (string) $request->validated()['content']);
 
         return $this->success(['task_id' => $id, 'commented' => true]);
     }

@@ -18,6 +18,7 @@ use App\Http\Admin\Middleware\Education\Foundation\ResolveEducationContextMiddle
 use App\Http\Common\ResultCode;
 use App\Service\Education\Foundation\EducationUserContext;
 use Hyperf\Context\Context;
+use Hyperf\HttpServer\Contract\RequestInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 trait ContentControllerTrait
@@ -39,6 +40,16 @@ trait ContentControllerTrait
         }
 
         return (int) $context->tenantId;
+    }
+
+    private function pageNumber(RequestInterface $request): int
+    {
+        return max(1, (int) $request->input('page', 1));
+    }
+
+    private function pageSize(RequestInterface $request): int
+    {
+        return min(100, max(1, (int) $request->input('pageSize', 20)));
     }
 
     private function businessFailure(\Throwable $exception): BusinessException

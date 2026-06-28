@@ -16,8 +16,10 @@ use App\Model\Education\Academic\EducationClass;
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationLeaveRequest;
 use App\Model\Education\Academic\EducationLesson;
+use App\Model\Education\Foundation\EducationTenant;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\TeacherMobileLeaveRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -36,6 +38,31 @@ final class TeacherMobileLeaveRepositoryTest extends AcademicTestCase
         $result = make(TeacherMobileLeaveRepository::class)->pageAssignedLeave([
             'status' => 'pending',
         ], 1, 20, $this->context($tenantId, EducationRoleCode::Teacher, [$campusId]), 101);
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
+    public function testPlatformContextCurrentCampusFiltersAssignedLeavePageWithoutLocalFilters(): void
+    {
+        [$tenantId, $campusId, $classId, $courseId] = $this->fixture();
+        $tenant = EducationTenant::query()->findOrFail($tenantId);
+        $otherCampus = $this->campus($tenant, 'platform_branch');
+        $assignedLesson = $this->lesson($tenantId, $campusId, $classId, $courseId, 101, '2026-06-12 09:00:00');
+        $otherLesson = $this->lesson($tenantId, (int) $otherCampus->id, $classId, $courseId, 101, '2026-06-12 10:00:00');
+        $visible = $this->leave($tenantId, $campusId, (int) $assignedLesson->id, $classId, $courseId, 10001, 'LEA001');
+        $this->leave($tenantId, (int) $otherCampus->id, (int) $otherLesson->id, $classId, $courseId, 10002, 'LEA002');
+
+        $result = make(TeacherMobileLeaveRepository::class)->pageAssignedLeave([
+            'status' => 'pending',
+        ], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: $tenantId,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $campusId
+        ), 101);
 
         self::assertSame(1, $result['total']);
         self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);

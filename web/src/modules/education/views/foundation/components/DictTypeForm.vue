@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { DictTypeRecord, DictTypeSavePayload } from '../../../api/foundation/dictionary.ts'
 import { createDictType, updateDictType } from '../../../api/foundation/dictionary.ts'
 import { dictionaryOwnerTypeOptions, extractApiErrorMessage, isSubmitDisabled } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', data = null, platformContext = false } = defineProps<{
   mode?: 'create' | 'edit'
@@ -35,7 +36,7 @@ const rules: FormRules = {
   tenant_id: [{
     validator: (_rule, value, callback) => {
       if (model.owner_type === 'tenant' && (!value || Number(value) <= 0)) {
-        callback(new Error('请输入租户 ID'))
+        callback(new Error('请输入机构ID'))
         return
       }
       callback()
@@ -80,7 +81,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary save failed'))
+    message.error(extractApiErrorMessage(error, '字典类型保存失败'))
   }
   finally {
     submitting.value = false
@@ -97,7 +98,7 @@ defineExpose({ submit })
         <el-option v-for="option in ownerOptions" :key="option.value" :label="option.label" :value="option.value" />
       </el-select>
     </el-form-item>
-    <el-form-item v-if="model.owner_type === 'tenant'" label="租户 ID" prop="tenant_id">
+    <el-form-item v-if="model.owner_type === 'tenant'" label="机构ID" prop="tenant_id">
       <el-input-number v-model="model.tenant_id" :min="1" :controls="false" style="width: 100%;" />
     </el-form-item>
     <el-form-item label="字典编码" prop="code">

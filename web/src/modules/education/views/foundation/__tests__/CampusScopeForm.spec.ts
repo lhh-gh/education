@@ -14,7 +14,7 @@ describe('campus scope form', () => {
   })
 
   it('prevents submit when required teacher scope is empty', () => {
-    expect(campusScopeValidationError('teacher', [])).toBe('campus scope is required')
+    expect(campusScopeValidationError('teacher', [])).toBe('请选择校区范围')
     expect(campusScopeValidationError('guardian', [])).toBeNull()
   })
 })

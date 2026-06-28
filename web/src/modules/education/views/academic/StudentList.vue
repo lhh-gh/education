@@ -4,8 +4,13 @@ import { deleteStudent, pageStudents, updateStudentStatus } from '../../api/acad
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import StudentForm from './components/StudentForm.vue'
 import StudentGuardianDrawer from './components/StudentGuardianDrawer.vue'
+import { academicActionText, academicGenderLabel, academicStatusLabel, academicStatusTagType } from './actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicStudentList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -25,7 +30,7 @@ const canDelete = computed(() => hasAuth('education:academic:student:delete'))
 const canGuardians = computed(() => hasAuth('education:academic:student-guardian:save'))
 
 function defaultSearch(): StudentPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, keyword: '', gender: undefined, status: undefined }
+  return { page: 1, page_size: 20, keyword: '', gender: undefined, status: undefined }
 }
 
 async function loadRows() {
@@ -37,7 +42,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Student list loading failed'
+    errorText.value = error?.message ?? '学员列表加载失败'
   }
   finally {
     loading.value = false
@@ -72,13 +77,13 @@ function openGuardians(row: StudentRecord) {
 }
 
 async function changeStatus(row: StudentRecord) {
-  await updateStudentStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', search.tenant_id)
+  await updateStudentStatus(row.id, row.status === 'enabled' ? 'disabled' : 'enabled', scope.tenant_id)
   await loadRows()
 }
 
 async function removeRow(row: StudentRecord) {
-  await message.confirm('Delete this student?')
-  await deleteStudent(row.id, search.tenant_id)
+  await message.confirm('确认删除该学员？')
+  await deleteStudent(row.id, scope.tenant_id)
   await loadRows()
 }
 
@@ -95,82 +100,86 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Students</span>
+          <span>学员管理</span>
           <el-button v-if="canCreate" type="primary" @click="openCreate">
-            New
+            新增
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Campus ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Keyword">
+        <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
-        <el-form-item label="Gender">
+        <el-form-item label="性别">
           <el-select v-model="search.gender" clearable style="width: 130px;">
-            <el-option label="Male" value="male" />
-            <el-option label="Female" value="female" />
-            <el-option label="Unknown" value="unknown" />
+            <el-option label="男" value="male" />
+            <el-option label="女" value="female" />
+            <el-option label="未知" value="unknown" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 130px;">
-            <el-option label="Enabled" value="enabled" />
-            <el-option label="Disabled" value="disabled" />
+            <el-option label="启用" value="enabled" />
+            <el-option label="停用" value="disabled" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="student_no" label="Student No" width="140" />
-        <el-table-column prop="name" label="Name" min-width="150" />
-        <el-table-column prop="gender" label="Gender" width="100" />
-        <el-table-column prop="campus_id" label="Campus" width="100" />
-        <el-table-column prop="mobile" label="Mobile" width="140" />
-        <el-table-column prop="school" label="School" min-width="150" />
-        <el-table-column prop="grade" label="Grade" width="120" />
-        <el-table-column prop="guardian_count" label="Guardians" width="110" />
-        <el-table-column prop="status" label="Status" width="100" />
-        <el-table-column prop="updated_at" label="Updated" width="180" />
-        <el-table-column label="Actions" fixed="right" width="280">
+        <el-table-column prop="student_no" label="学员编号" width="140" />
+        <el-table-column prop="name" label="姓名" min-width="150" />
+        <el-table-column label="性别" width="100">
+          <template #default="{ row }">
+            {{ academicGenderLabel(row.gender) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="campus_id" label="校区" width="100" />
+        <el-table-column prop="mobile" label="手机号" width="140" />
+        <el-table-column prop="school" label="学校" min-width="150" />
+        <el-table-column prop="grade" label="年级" width="120" />
+        <el-table-column prop="guardian_count" label="监护人" width="110" />
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="academicStatusTagType(row.status)">
+              {{ academicStatusLabel(row.status) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="updated_at" label="更新时间" width="180" />
+        <el-table-column label="操作" fixed="right" width="280">
           <template #default="{ row }">
             <el-button v-if="canEdit" link type="primary" @click="openEdit(row)">
-              Edit
+              编辑
             </el-button>
             <el-button v-if="canGuardians" link type="primary" @click="openGuardians(row)">
-              Guardians
+              监护人
             </el-button>
             <el-button v-if="canStatus" link type="primary" @click="changeStatus(row)">
-              {{ row.status === 'enabled' ? 'Disable' : 'Enable' }}
+              {{ academicActionText(row.status) }}
             </el-button>
             <el-button v-if="canDelete" link type="danger" @click="removeRow(row)">
-              Delete
+              删除
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No students" />
+          <el-empty description="暂无学员" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? 'New Student' : 'Edit Student'" width="600px">
-      <StudentForm :mode="dialogMode" :tenant-id="search.tenant_id" :data="current" @success="onFormSuccess" />
+    <el-dialog v-model="dialogVisible" :title="dialogMode === 'create' ? '新增学员' : '编辑学员'" width="600px">
+      <StudentForm :mode="dialogMode" :tenant-id="scope.tenant_id" :data="current" @success="onFormSuccess" />
     </el-dialog>
-    <StudentGuardianDrawer v-model="drawerVisible" :student-id="current?.id" :tenant-id="search.tenant_id" @success="loadRows" />
+    <StudentGuardianDrawer v-model="drawerVisible" :student-id="current?.id" :tenant-id="scope.tenant_id" @success="loadRows" />
   </div>
 </template>
 

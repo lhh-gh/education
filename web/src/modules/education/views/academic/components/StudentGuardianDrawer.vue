@@ -2,6 +2,7 @@
 import type { GuardianRecord, GuardianRelation, StudentGuardianPayload, StudentGuardianRecord } from '../../../api/academic/profile.ts'
 import { listStudentGuardians, pageGuardians, saveStudentGuardians } from '../../../api/academic/profile.ts'
 import { normalizePrimaryRelations, relationLabel } from '../actionRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean

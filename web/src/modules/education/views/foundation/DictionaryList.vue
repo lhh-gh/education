@@ -17,16 +17,19 @@ import {
 import useUserStore from '@/store/modules/useUserStore.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import {
+  configOwnerTypeLabel,
   defaultDictItemSearch,
   defaultDictTypeSearch,
   dictionaryActionsByPermission,
   dictionaryItemParamsForType,
   dictionaryOwnerTypeOptions,
   extractApiErrorMessage,
+  foundationStatusLabel,
   normalizeDictTypeSearch,
 } from './actionRules.ts'
 import DictItemForm from './components/DictItemForm.vue'
 import DictTypeForm from './components/DictTypeForm.vue'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationFoundationDictionaryList' })
 
@@ -81,11 +84,11 @@ function normalizeTypeSearch(): DictTypePageParams {
 }
 
 function ownerTypeLabel(ownerType: ConfigOwnerType): string {
-  return ownerType === 'system' ? '系统' : '租户'
+  return configOwnerTypeLabel(ownerType)
 }
 
 function statusLabel(status: string): string {
-  return status === 'enabled' ? '启用' : '停用'
+  return foundationStatusLabel(status as 'enabled' | 'disabled')
 }
 
 function typeActions(row: DictTypeRecord) {
@@ -202,7 +205,7 @@ async function changeTypeStatus(row: DictTypeRecord) {
     await loadTypes()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary status update failed'))
+    message.error(extractApiErrorMessage(error, '字典状态更新失败'))
   }
 }
 
@@ -213,7 +216,7 @@ async function changeItemStatus(row: DictItemRecord) {
     await loadItems()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary item status update failed'))
+    message.error(extractApiErrorMessage(error, '字典项状态更新失败'))
   }
 }
 
@@ -224,7 +227,7 @@ async function removeType(row: DictTypeRecord) {
     await loadTypes()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary delete failed'))
+    message.error(extractApiErrorMessage(error, '字典删除失败'))
   }
 }
 
@@ -235,7 +238,7 @@ async function removeItem(row: DictItemRecord) {
     await loadItems()
   }
   catch (error: any) {
-    message.error(extractApiErrorMessage(error, 'dictionary item delete failed'))
+    message.error(extractApiErrorMessage(error, '字典项删除失败'))
   }
 }
 
@@ -272,8 +275,8 @@ onMounted(loadTypes)
             <el-option v-for="option in ownerOptions" :key="option.value" :label="option.label" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isPlatformContext && typeSearch.owner_type === 'tenant'" label="租户 ID">
-          <el-input-number v-model="typeSearch.tenant_id" :min="1" :controls="false" placeholder="tenant_id" />
+        <el-form-item v-if="isPlatformContext && typeSearch.owner_type === 'tenant'" label="机构ID">
+          <el-input-number v-model="typeSearch.tenant_id" :min="1" :controls="false" placeholder="机构ID" />
         </el-form-item>
         <el-form-item label="关键字">
           <el-input v-model="typeSearch.keyword" clearable placeholder="字典编码/名称" />
@@ -308,7 +311,7 @@ onMounted(loadTypes)
             {{ ownerTypeLabel(row.owner_type) }}
           </template>
         </el-table-column>
-        <el-table-column prop="tenant_id" label="租户 ID" width="100" />
+        <el-table-column prop="tenant_id" label="机构ID" width="100" />
         <el-table-column prop="code" label="编码" min-width="160" />
         <el-table-column prop="name" label="名称" min-width="150" />
         <el-table-column prop="status" label="状态" width="90">

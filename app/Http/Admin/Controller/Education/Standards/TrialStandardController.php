@@ -47,7 +47,7 @@ final class TrialStandardController extends AbstractController
         $data = $request->validated();
         $items = $data['items'] ?? [];
         unset($data['items']);
-        $result = $this->service->save($data + ['tenant_id' => $this->tenantId($context), 'campus_id' => $this->campusId($context)]);
+        $result = $this->service->save($data + ['tenant_id' => $this->tenantId($context), 'campus_id' => $this->campusId($context)], $context);
         if ($items !== []) {
             $this->service->saveItems($this->tenantId($context), $this->campusId($context), $result['trial_standard_id'], $items);
         }

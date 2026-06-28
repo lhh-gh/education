@@ -4,6 +4,7 @@ import { pageStudents } from '../../../api/academic/profile.ts'
 import type { CourseRecord, EnrollmentCreatePayload, EnrollmentCreateResult, LessonPackageRecord } from '../../../api/academic/courseAccount.ts'
 import { createEnrollment, pageCourses, pageLessonPackages } from '../../../api/academic/courseAccount.ts'
 import { computePackageTotal, enrollmentSuccessSummary } from '../courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const props = defineProps<{
   modelValue: boolean
@@ -37,10 +38,10 @@ const model = reactive<EnrollmentCreatePayload>({
 const selectedPackage = computed(() => packages.value.find(item => item.id === model.lesson_package_id))
 const packageSummary = computed(() => {
   if (!selectedPackage.value) {
-    return 'No package selected'
+    return '请选择课包'
   }
 
-  return `${selectedPackage.value.name}: ${computePackageTotal(selectedPackage.value.lesson_units, selectedPackage.value.bonus_units)} units / ${selectedPackage.value.sale_price}`
+  return `${selectedPackage.value.name}: ${computePackageTotal(selectedPackage.value.lesson_units, selectedPackage.value.bonus_units)} 课时 / ${selectedPackage.value.sale_price}`
 })
 
 watch(() => props.modelValue, (visible) => {
@@ -69,7 +70,7 @@ async function loadOptions() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Enrollment options loading failed'
+    errorText.value = error?.message ?? '报名选项加载失败'
   }
   finally {
     loading.value = false
@@ -99,7 +100,7 @@ async function submit() {
     close()
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Enrollment create failed'
+    errorText.value = error?.message ?? '报名创建失败'
     message.error(errorText.value)
   }
   finally {
@@ -111,48 +112,48 @@ defineExpose({ loadOptions, submit, model, packageSummary })
 </script>
 
 <template>
-  <el-drawer :model-value="modelValue" title="Create Enrollment" size="620px" @close="close">
+  <el-drawer :model-value="modelValue" title="创建报名" size="620px" @close="close">
     <el-alert v-if="errorText" class="drawer-alert" type="error" show-icon :closable="false" :title="errorText" />
     <el-alert v-if="successText" class="drawer-alert" type="success" show-icon :closable="false" :title="successText" />
     <el-skeleton v-if="loading" :rows="6" animated />
     <el-form v-else :model="model" label-width="140px">
-      <el-form-item label="Campus ID">
+      <el-form-item label="校区 ID">
         <el-input-number v-model="model.campus_id" :min="1" :controls="false" />
       </el-form-item>
-      <el-form-item label="Student">
+      <el-form-item label="学员">
         <el-select v-model="model.student_id" filterable>
           <el-option v-for="student in students" :key="student.id" :label="`${student.name} ${student.student_no}`" :value="student.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Course">
+      <el-form-item label="课程">
         <el-select v-model="model.course_id" filterable>
           <el-option v-for="course in courses" :key="course.id" :label="`${course.name} ${course.code}`" :value="course.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Package">
+      <el-form-item label="课包">
         <el-select v-model="model.lesson_package_id" filterable>
-          <el-option v-for="item in packages" :key="item.id" :label="`${item.name} ${item.total_units} units`" :value="item.id" />
+          <el-option v-for="item in packages" :key="item.id" :label="`${item.name} ${item.total_units} 课时`" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="Package Summary">
+      <el-form-item label="课包摘要">
         <el-tag>{{ packageSummary }}</el-tag>
       </el-form-item>
-      <el-form-item label="Deal Amount">
-        <el-input v-model="model.deal_amount" inputmode="decimal" placeholder="Use package sale price when empty" />
+      <el-form-item label="成交金额">
+        <el-input v-model="model.deal_amount" inputmode="decimal" placeholder="不填则使用课包售价" />
       </el-form-item>
-      <el-form-item label="Enrolled At">
+      <el-form-item label="报名时间">
         <el-date-picker v-model="model.enrolled_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
       </el-form-item>
-      <el-form-item label="Remark">
+      <el-form-item label="备注">
         <el-input v-model="model.remark" type="textarea" maxlength="500" />
       </el-form-item>
     </el-form>
     <div class="drawer-actions">
       <el-button @click="close">
-        Close
+        关闭
       </el-button>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Create
+        创建
       </el-button>
     </div>
   </el-drawer>

@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { TenantRecord, TenantSavePayload } from '../../../api/foundation/tenant.ts'
 import { createTenant, updateTenant } from '../../../api/foundation/tenant.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 const { mode = 'create', data = null } = defineProps<{
   mode?: 'create' | 'edit'
@@ -52,7 +53,7 @@ async function submit() {
     emit('success')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Tenant save failed')
+    message.error(error?.message ?? '机构保存失败')
   }
   finally {
     submitting.value = false

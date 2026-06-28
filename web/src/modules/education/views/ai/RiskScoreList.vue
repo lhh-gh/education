@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RiskScoreRecord } from '../../api/ai/risk.ts'
 import { pageRiskScores } from '../../api/ai/risk.ts'
-import { aiErrorTitle, aiTagType } from './aiRules.ts'
+import { aiErrorTitle, aiStatusLabel, aiTagType } from './aiRules.ts'
 
 defineOptions({ name: 'EducationAiRiskScoreList' })
 
@@ -20,7 +20,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = aiErrorTitle(error?.code) || error?.message || 'Risk scores loading failed'
+    errorText.value = aiErrorTitle(error?.code) || error?.message || '风险评分加载失败'
   }
   finally {
     loading.value = false
@@ -35,38 +35,38 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Risk Scores</span>
+          <span>风险评分</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form inline>
-        <el-form-item label="Level">
+        <el-form-item label="风险等级">
           <el-select v-model="search.risk_level" clearable style="width: 140px;">
-            <el-option label="high" value="high" />
-            <el-option label="warning" value="warning" />
-            <el-option label="normal" value="normal" />
+            <el-option :label="aiStatusLabel('high')" value="high" />
+            <el-option :label="aiStatusLabel('warning')" value="warning" />
+            <el-option :label="aiStatusLabel('normal')" value="normal" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="loadRows">
-            Search
+            查询
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="student_id" label="Student" width="110" />
-        <el-table-column prop="risk_score" label="Score" width="100" />
-        <el-table-column label="Level" width="120">
+        <el-table-column prop="student_id" label="学员ID" width="110" />
+        <el-table-column prop="risk_score" label="风险分" width="100" />
+        <el-table-column label="风险等级" width="120">
           <template #default="{ row }">
             <el-tag :type="aiTagType(row.risk_level)">
-              {{ row.risk_level }}
+              {{ aiStatusLabel(row.risk_level) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="score_date" label="Date" width="150" />
-        <el-table-column prop="summary" label="Summary" min-width="240" />
+        <el-table-column prop="score_date" label="评分日期" width="150" />
+        <el-table-column prop="summary" label="摘要" min-width="240" />
         <template #empty>
-          <el-empty description="No risk scores" />
+          <el-empty description="暂无风险评分" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

@@ -4,9 +4,13 @@ import { cancelLeaveRequest, pageLeaveRequests } from '../../api/academic/lesson
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import LeaveRequestForm from './components/LeaveRequestForm.vue'
 import LeaveReviewDialog from './components/LeaveReviewDialog.vue'
-import { applyLeaveReviewSuccess, canApproveLeave, canCancelLeave, canRejectLeave, leaveStatusType } from './leaveMakeupRescheduleRules.ts'
+import { applyLeaveReviewSuccess, canApproveLeave, canCancelLeave, canRejectLeave, leaveSourceLabel, leaveStatusLabel, leaveStatusType, leaveTypeLabel } from './leaveMakeupRescheduleRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicLeaveRequestList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -25,7 +29,7 @@ const canReject = computed(() => hasAuth('education:academic:leave-request:rejec
 const canCancel = computed(() => hasAuth('education:academic:leave-request:cancel'))
 
 function defaultSearch(): LeaveRequestPageParams {
-  return { page: 1, pageSize: 20, tenant_id: undefined, campus_id: undefined, student_id: undefined, class_id: undefined, lesson_id: undefined, source: undefined, status: undefined, keyword: '' }
+  return { page: 1, pageSize: 20, student_id: undefined, class_id: undefined, lesson_id: undefined, source: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -37,7 +41,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Leave request list loading failed'
+    errorText.value = error?.message ?? '请假列表加载失败'
   }
   finally {
     loading.value = false
@@ -67,12 +71,12 @@ function onReviewSuccess(row: LeaveRequestRecord) {
 
 async function handleCancel(row: LeaveRequestRecord) {
   try {
-    const response = await cancelLeaveRequest(row.id, 'Cancelled from PC', search.tenant_id)
+    const response = await cancelLeaveRequest(row.id, '后台取消', scope.tenant_id)
     rows.value = rows.value.map(item => item.id === row.id ? response.data : item)
-    message.success('Cancelled')
+    message.success('已取消')
   }
   catch (error: any) {
-    message.error(error?.message ?? 'Leave cancellation failed')
+    message.error(error?.message ?? '请假取消失败')
   }
 }
 
@@ -84,82 +88,76 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Leave Requests</span>
+          <span>请假管理</span>
           <el-button v-if="canCreate" type="primary" @click="formVisible = true">
-            Create
+            新增
           </el-button>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Campus ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Student ID">
+        <el-form-item label="学员ID">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 180px;">
-            <el-option label="Pending" value="pending" />
-            <el-option label="Approved" value="approved" />
-            <el-option label="Rejected" value="rejected" />
-            <el-option label="Cancelled" value="cancelled" />
-            <el-option label="Make-up Scheduled" value="makeup_scheduled" />
-            <el-option label="Closed" value="closed" />
+            <el-option label="待审批" value="pending" />
+            <el-option label="已通过" value="approved" />
+            <el-option label="已拒绝" value="rejected" />
+            <el-option label="已取消" value="cancelled" />
+            <el-option label="已安排补课" value="makeup_scheduled" />
+            <el-option label="已关闭" value="closed" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Keyword">
+        <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="leave_no" label="Leave No" width="190" />
-        <el-table-column prop="source" label="Source" width="110" />
-        <el-table-column prop="leave_type" label="Type" width="110" />
-        <el-table-column prop="student_name" label="Student" min-width="140" />
-        <el-table-column prop="lesson_id" label="Lesson ID" width="110" />
-        <el-table-column prop="reason" label="Reason" min-width="180" show-overflow-tooltip />
-        <el-table-column label="Status" width="150">
+        <el-table-column prop="leave_no" label="请假编号" width="190" />
+        <el-table-column label="来源" width="110"><template #default="{ row }">{{ leaveSourceLabel(row.source) }}</template></el-table-column>
+        <el-table-column label="类型" width="110"><template #default="{ row }">{{ leaveTypeLabel(row.leave_type) }}</template></el-table-column>
+        <el-table-column prop="student_name" label="学员" min-width="140" />
+        <el-table-column prop="lesson_id" label="课次ID" width="110" />
+        <el-table-column prop="reason" label="原因" min-width="180" show-overflow-tooltip />
+        <el-table-column label="状态" width="150">
           <template #default="{ row }">
             <el-tag :type="leaveStatusType(row.status)">
-              {{ row.status }}
+              {{ leaveStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="makeup_lesson_id" label="Make-up Lesson" width="140" />
-        <el-table-column prop="requested_at" label="Requested At" width="180" />
-        <el-table-column label="Actions" fixed="right" width="210">
+        <el-table-column prop="makeup_lesson_id" label="补课课次" width="140" />
+        <el-table-column prop="requested_at" label="申请时间" width="180" />
+        <el-table-column label="操作" fixed="right" width="210">
           <template #default="{ row }">
             <el-button v-if="canApproveLeave(row.status, canApprove)" link type="primary" @click="openReview(row, 'approve')">
-              Approve
+              通过
             </el-button>
             <el-button v-if="canRejectLeave(row.status, canReject)" link type="danger" @click="openReview(row, 'reject')">
-              Reject
+              拒绝
             </el-button>
             <el-button v-if="canCancelLeave(row.status, canCancel)" link @click="handleCancel(row)">
-              Cancel
+              取消
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No leave requests" />
+          <el-empty description="暂无请假记录" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <LeaveRequestForm v-model="formVisible" :tenant-id="search.tenant_id" @created="loadRows" />
-    <LeaveReviewDialog v-model="reviewVisible" :action="reviewAction" :row="current" :tenant-id="search.tenant_id" @success="onReviewSuccess" />
+    <LeaveRequestForm v-model="formVisible" :tenant-id="scope.tenant_id" @created="loadRows" />
+    <LeaveReviewDialog v-model="reviewVisible" :action="reviewAction" :row="current" :tenant-id="scope.tenant_id" @success="onReviewSuccess" />
   </div>
 </template>
 

@@ -21,6 +21,8 @@ use App\Http\Common\Middleware\OperationMiddleware;
 use App\Http\Common\Result;
 use App\Service\Education\Content\MaterialRelationService;
 use Hyperf\HttpServer\Annotation\Middleware;
+use Hyperf\HttpServer\Contract\RequestInterface;
+use Hyperf\Swagger\Annotation\Get;
 use Hyperf\Swagger\Annotation\HyperfServer;
 use Hyperf\Swagger\Annotation\Post;
 use Mine\Access\Attribute\Permission;
@@ -37,13 +39,28 @@ final class MaterialRelationController extends AbstractController
 
     public function __construct(private readonly MaterialRelationService $service) {}
 
+    #[Get(path: '/admin/education/content/material-relations', operationId: 'educationContentMaterialRelationPage', summary: 'Content material relation page', tags: ['Education Content'])]
+    #[ResultResponse(instance: new Result())]
+    #[Permission(code: 'education:content:relation:page')]
+    public function page(RequestInterface $request): Result
+    {
+        $context = $this->context();
+
+        return $this->success($this->service->page(
+            $request->all(),
+            $context,
+            $this->pageNumber($request),
+            $this->pageSize($request)
+        ));
+    }
+
     #[Post(path: '/admin/education/content/materials/{id}/relations', operationId: 'educationContentMaterialRelationSave', summary: 'Content material relation save', tags: ['Education Content'])]
     #[ResultResponse(instance: new Result())]
     #[Permission(code: 'education:content:relation:save')]
     public function save(int $id, MaterialRelationSaveRequest $request): Result
     {
         $context = $this->context();
-        $this->service->saveMaterialRelations($this->tenantId($context), $context->currentCampusId, $id, $request->validated()['relations'] ?? []);
+        $this->service->saveMaterialRelations($context, $id, $request->validated()['relations'] ?? []);
 
         return $this->success(['material_id' => $id, 'status' => 'saved']);
     }

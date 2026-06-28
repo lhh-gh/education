@@ -3,9 +3,13 @@ import type { StudentCourseAccountPageParams, StudentCourseAccountRecord, Studen
 import { changeStudentCourseAccountStatus, pageStudentCourseAccounts } from '../../api/academic/courseAccount.ts'
 import hasAuth from '@/utils/permission/hasAuth.ts'
 import AccountLedgerDrawer from './components/AccountLedgerDrawer.vue'
-import { accountStatusAction } from './courseAccountRules.ts'
+import { accountStatusAction, accountStatusActionLabel, accountStatusLabel } from './courseAccountRules.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
+import { useEducationScope } from '@/composables/education/useEducationScope.ts'
 
 defineOptions({ name: 'EducationAcademicAccountLedgerList' })
+
+const { scope } = useEducationScope()
 
 const message = useMessage()
 const loading = ref(false)
@@ -20,7 +24,7 @@ const canLedger = computed(() => hasAuth('education:academic:student-course-acco
 const canStatus = computed(() => hasAuth('education:academic:student-course-account:status'))
 
 function defaultSearch(): StudentCourseAccountPageParams {
-  return { page: 1, page_size: 20, tenant_id: undefined, campus_id: undefined, student_id: undefined, course_id: undefined, status: undefined, keyword: '' }
+  return { page: 1, page_size: 20, student_id: undefined, course_id: undefined, status: undefined, keyword: '' }
 }
 
 async function loadRows() {
@@ -32,7 +36,7 @@ async function loadRows() {
     errorText.value = ''
   }
   catch (error: any) {
-    errorText.value = error?.message ?? 'Student course account list loading failed'
+    errorText.value = error?.message ?? '课时账户列表加载失败'
   }
   finally {
     loading.value = false
@@ -55,7 +59,7 @@ function openLedger(row: StudentCourseAccountRecord) {
 }
 
 async function changeStatus(row: StudentCourseAccountRecord, status: StudentCourseAccountStatus) {
-  await changeStudentCourseAccountStatus(row.id, status, search.tenant_id)
+  await changeStudentCourseAccountStatus(row.id, status, scope.tenant_id)
   await loadRows()
 }
 
@@ -68,7 +72,7 @@ async function toggleFreeze(row: StudentCourseAccountRecord) {
 }
 
 async function closeAccount(row: StudentCourseAccountRecord) {
-  await message.confirm('Close this account?')
+  await message.confirm('确认关闭该课时账户？')
   await changeStatus(row, 'closed')
 }
 
@@ -80,74 +84,72 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Course Accounts</span>
+          <span>课时账户</span>
         </div>
       </template>
       <el-alert v-if="errorText" class="page-alert" type="error" show-icon :closable="false" :title="errorText" />
       <el-form :inline="true" :model="search" class="search-form">
-        <el-form-item label="Tenant ID">
-          <el-input-number v-model="search.tenant_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Campus ID">
-          <el-input-number v-model="search.campus_id" :min="1" :controls="false" />
-        </el-form-item>
-        <el-form-item label="Student ID">
+        <el-form-item label="学员ID">
           <el-input-number v-model="search.student_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Course ID">
+        <el-form-item label="课程ID">
           <el-input-number v-model="search.course_id" :min="1" :controls="false" />
         </el-form-item>
-        <el-form-item label="Status">
+        <el-form-item label="状态">
           <el-select v-model="search.status" clearable style="width: 130px;">
-            <el-option label="Active" value="active" />
-            <el-option label="Frozen" value="frozen" />
-            <el-option label="Closed" value="closed" />
+            <el-option label="正常" value="active" />
+            <el-option label="冻结" value="frozen" />
+            <el-option label="已关闭" value="closed" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Keyword">
+        <el-form-item label="关键字">
           <el-input v-model="search.keyword" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            Search
+            查询
           </el-button>
           <el-button @click="handleReset">
-            Reset
+            重置
           </el-button>
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="student_no" label="Student No" width="140" />
-        <el-table-column prop="student_name" label="Student" min-width="140" />
-        <el-table-column prop="course_name" label="Course" min-width="160" />
-        <el-table-column prop="purchased_units" label="Purchased" width="110" />
-        <el-table-column prop="bonus_units" label="Bonus" width="100" />
-        <el-table-column prop="consumed_units" label="Consumed" width="110" />
-        <el-table-column prop="refunded_units" label="Refunded" width="110" />
-        <el-table-column prop="frozen_units" label="Frozen Units" width="120" />
-        <el-table-column prop="available_units" label="Available" width="110" />
-        <el-table-column prop="status" label="Status" width="100" />
-        <el-table-column prop="expires_at" label="Expires" width="140" />
-        <el-table-column label="Actions" fixed="right" width="260">
+        <el-table-column prop="student_no" label="学员编号" width="140" />
+        <el-table-column prop="student_name" label="学员" min-width="140" />
+        <el-table-column prop="course_name" label="课程" min-width="160" />
+        <el-table-column prop="purchased_units" label="购买课时" width="110" />
+        <el-table-column prop="bonus_units" label="赠送课时" width="100" />
+        <el-table-column prop="consumed_units" label="已消课时" width="110" />
+        <el-table-column prop="refunded_units" label="退费课时" width="110" />
+        <el-table-column prop="frozen_units" label="冻结课时" width="120" />
+        <el-table-column prop="available_units" label="可用课时" width="110" />
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            {{ accountStatusLabel(row.status) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="expires_at" label="到期日" width="140" />
+        <el-table-column label="操作" fixed="right" width="260">
           <template #default="{ row }">
             <el-button v-if="canLedger" link type="primary" @click="openLedger(row)">
-              Ledger
+              流水
             </el-button>
             <el-button v-if="canStatus && row.status !== 'closed'" link type="primary" @click="toggleFreeze(row)">
-              {{ accountStatusAction(row.status) === 'freeze' ? 'Freeze' : 'Unfreeze' }}
+              {{ accountStatusActionLabel(row.status) }}
             </el-button>
             <el-button v-if="canStatus && row.status !== 'closed' && Number(row.available_units) === 0" link type="danger" @click="closeAccount(row)">
-              Close
+              关闭
             </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No course accounts" />
+          <el-empty description="暂无课时账户" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.page_size" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />
     </el-card>
-    <AccountLedgerDrawer v-model="drawerVisible" :account-id="current?.id" :tenant-id="search.tenant_id" />
+    <AccountLedgerDrawer v-model="drawerVisible" :account-id="current?.id" :tenant-id="scope.tenant_id" />
   </div>
 </template>
 

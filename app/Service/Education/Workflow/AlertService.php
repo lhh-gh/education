@@ -12,8 +12,12 @@ declare(strict_types=1);
 
 namespace App\Service\Education\Workflow;
 
+use App\Exception\BusinessException;
+use App\Http\Common\ResultCode;
 use App\Model\Education\Workflow\EducationOperationAlert;
 use App\Repository\Education\Workflow\OperationAlertRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class AlertService
 {
@@ -59,9 +63,9 @@ final class AlertService
     /**
      * @return array{alert_id: int, converted_task_id: int, status: string}
      */
-    public function convertToTask(int $alertId, int $assigneeUserId, ?string $dueAt = null): array
+    public function convertToTask(int $alertId, int $assigneeUserId, ?string $dueAt, EducationUserContext $context): array
     {
-        $alert = EducationOperationAlert::query()->findOrFail($alertId);
+        $alert = $this->alertInContext($alertId, $context);
         if ($alert->converted_task_id !== null) {
             return ['alert_id' => $alertId, 'converted_task_id' => (int) $alert->converted_task_id, 'status' => 'converted'];
         }
@@ -79,6 +83,7 @@ final class AlertService
         ]);
         $alert->status = 'converted';
         $alert->converted_task_id = $task['task_id'];
+        $alert->updated_by = $context->userId;
         $alert->save();
 
         return ['alert_id' => $alertId, 'converted_task_id' => $task['task_id'], 'status' => 'converted'];
@@ -88,13 +93,13 @@ final class AlertService
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(EducationUserContext $context, array $filters = [], int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationOperationAlert::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationOperationAlert::query(), $filters, $context);
         if (($filters['status'] ?? '') !== '') {
             $query->where('status', $filters['status']);
         }
-        $total = (int) $query->count();
+        $total = (int) (clone $query)->count();
         $list = $query->orderByDesc('id')->forPage($page, $pageSize)->get()->toArray();
 
         return ['list' => $list, 'total' => $total];
@@ -103,12 +108,27 @@ final class AlertService
     /**
      * @return array{alert_id: int, status: string}
      */
-    public function setStatus(int $alertId, string $status): array
+    public function setStatus(int $alertId, string $status, EducationUserContext $context): array
     {
-        $alert = EducationOperationAlert::query()->findOrFail($alertId);
+        $alert = $this->alertInContext($alertId, $context);
         $alert->status = $status;
+        $alert->updated_by = $context->userId;
         $alert->save();
 
         return ['alert_id' => $alertId, 'status' => $status];
+    }
+
+    private function alertInContext(int $alertId, EducationUserContext $context): EducationOperationAlert
+    {
+        $alert = (new EducationScopeQuery())->applyTenantCampus(
+            EducationOperationAlert::query()->whereKey($alertId),
+            [],
+            $context
+        )->first();
+        if (! $alert instanceof EducationOperationAlert) {
+            throw new BusinessException(ResultCode::NOT_FOUND, 'workflow alert not found in current context', ['alert_id' => $alertId]);
+        }
+
+        return $alert;
     }
 }

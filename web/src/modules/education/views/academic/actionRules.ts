@@ -1,4 +1,4 @@
-import type { AcademicRecordStatus, GuardianRelation, StudentGuardianPayload } from '../../api/academic/profile.ts'
+import type { AcademicRecordStatus, Gender, GuardianRelation, StudentGuardianPayload } from '../../api/academic/profile.ts'
 
 export interface AcademicActionState {
   canCreate: boolean
@@ -38,13 +38,43 @@ export function normalizePrimaryRelations(relations: StudentGuardianPayload[]): 
 
 export function relationLabel(relation: GuardianRelation): string {
   return {
-    father: 'Father',
-    mother: 'Mother',
-    grandfather: 'Grandfather',
-    grandmother: 'Grandmother',
-    guardian: 'Guardian',
-    other: 'Other',
+    father: '父亲',
+    mother: '母亲',
+    grandfather: '祖父/外祖父',
+    grandmother: '祖母/外祖母',
+    guardian: '监护人',
+    other: '其他',
   }[relation]
+}
+
+export function academicStatusLabel(status?: AcademicRecordStatus | string | null): string {
+  if (status === 'enabled') {
+    return '启用'
+  }
+  if (status === 'disabled') {
+    return '停用'
+  }
+
+  return '未知'
+}
+
+export function academicStatusTagType(status?: AcademicRecordStatus | string | null): 'success' | 'info' {
+  return status === 'enabled' ? 'success' : 'info'
+}
+
+export function academicGenderLabel(gender?: Gender | string | null): string {
+  if (gender === 'male') {
+    return '男'
+  }
+  if (gender === 'female') {
+    return '女'
+  }
+
+  return '未知'
+}
+
+export function academicActionText(status: AcademicRecordStatus): string {
+  return status === 'enabled' ? '停用' : '启用'
 }
 
 export function classroomQuery(search: Record<string, unknown>): Record<string, unknown> {

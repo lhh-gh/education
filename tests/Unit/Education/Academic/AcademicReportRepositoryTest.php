@@ -20,6 +20,7 @@ use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentCourseAccount;
 use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\AcademicReportRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 
 /**
@@ -28,6 +29,55 @@ use Carbon\Carbon;
  */
 final class AcademicReportRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersDashboardWithoutLocalFilters(): void
+    {
+        $fixture = $this->fixture('report_platform_scope');
+        $otherCampus = $this->campus($fixture['tenant'], 'west');
+        $this->student($fixture, 'S001');
+        EducationStudent::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $otherCampus->id,
+            'student_no' => 'S002',
+            'name' => 'Other Campus',
+            'status' => 'enabled',
+        ]);
+        $this->lesson($fixture, 'scheduled');
+        EducationLesson::query()->create([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $otherCampus->id,
+            'lesson_no' => 'LES-OTHER',
+            'class_id' => $fixture['class_id'],
+            'course_id' => $fixture['course_id'],
+            'teacher_id' => 1,
+            'title' => 'Other campus lesson',
+            'start_at' => '2026-06-12 10:00:00',
+            'end_at' => '2026-06-12 11:00:00',
+            'duration_minutes' => 60,
+            'lesson_units' => '1.00',
+            'student_count' => 1,
+            'status' => 'scheduled',
+            'source_type' => 'manual',
+            'class_name_snapshot' => 'Class',
+            'course_name_snapshot' => 'Art',
+            'teacher_name_snapshot' => 'Teacher',
+        ]);
+
+        $dashboard = make(AcademicReportRepository::class)->dashboard([
+            'start_at' => '2026-06-01 00:00:00',
+            'end_at' => '2026-06-30 23:59:59',
+        ], new EducationUserContext(
+            userId: 1,
+            tenantId: $fixture['tenant_id'],
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: $fixture['campus_id']
+        ));
+
+        self::assertSame(1, $dashboard['metrics']['active_student_count']);
+        self::assertSame(1, $dashboard['metrics']['scheduled_lesson_count']);
+    }
+
     public function testDashboardCountsUseTenantAndCampusScope(): void
     {
         $fixture = $this->fixture('report_dashboard');

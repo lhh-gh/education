@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { RenewalAlertRecord } from '../../../api/operations/renewal.ts'
 import { assignRenewalTask } from '../../../api/operations/renewal.ts'
+import { operationStatusLabel } from '../operationRules.ts'
 
 const props = defineProps<{ row: RenewalAlertRecord | null }>()
 const emit = defineEmits<{ success: [] }>()
@@ -25,32 +26,32 @@ async function submit() {
 </script>
 
 <template>
-  <el-drawer v-model="model" title="Renewal Follow-up" size="420px">
+  <el-drawer v-model="model" title="续费跟进" size="420px">
     <el-descriptions v-if="row" :column="1" border>
-      <el-descriptions-item label="Student">
+      <el-descriptions-item label="学员">
         {{ row.student_id }}
       </el-descriptions-item>
-      <el-descriptions-item label="Level">
-        {{ row.alert_level }}
+      <el-descriptions-item label="级别">
+        {{ operationStatusLabel(row.alert_level) }}
       </el-descriptions-item>
-      <el-descriptions-item label="Due">
+      <el-descriptions-item label="到期日期">
         {{ row.due_date }}
       </el-descriptions-item>
     </el-descriptions>
     <el-form class="mt-3" label-width="110px">
-      <el-form-item label="Assignee">
+      <el-form-item label="负责人">
         <el-input-number v-model="form.assignee_id" :min="1" :controls="false" />
       </el-form-item>
-      <el-form-item label="Next Follow">
+      <el-form-item label="下次跟进">
         <el-date-picker v-model="form.next_follow_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="model = false">
-        Cancel
+        取消
       </el-button>
       <el-button type="primary" :loading="submitting" @click="submit">
-        Assign
+        分配
       </el-button>
     </template>
   </el-drawer>

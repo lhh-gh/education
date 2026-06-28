@@ -27,7 +27,7 @@ describe('attendance submit drawer', () => {
       account_available_units: '0.50',
     }, 2)
 
-    expect(warning).toBe('Insufficient available units')
+    expect(warning).toBe('可用课时不足')
   })
 
   it('idempotent_success_does_not_duplicate_result_rows', () => {

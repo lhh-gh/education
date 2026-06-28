@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Service\Education\Standards;
 
 use App\Repository\Education\Standards\TrialStandardRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class TrialStandardService
 {
@@ -22,9 +23,9 @@ final class TrialStandardService
      * @param array<string, mixed> $data
      * @return array{trial_standard_id: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
-        $standard = $this->standards->save($data + ['version_no' => 1, 'status' => 'draft', 'guardian_visible' => false]);
+        $standard = $this->standards->save($data + ['version_no' => 1, 'status' => 'draft', 'guardian_visible' => false], $context);
 
         return ['trial_standard_id' => (int) $standard->id, 'status' => $this->statusValue($standard->status)];
     }

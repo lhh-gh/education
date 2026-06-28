@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace App\Repository\Education\Group;
 
 use App\Model\Education\Group\EducationRiskAuditEvent;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class RiskAuditRepository
@@ -32,10 +33,7 @@ final class RiskAuditRepository
      */
     public function page(array $filters, EducationUserContext $context, array $campusIds): array
     {
-        $query = EducationRiskAuditEvent::query()->where('tenant_id', $context->tenantId);
-        if ($campusIds !== []) {
-            $query->whereIn('campus_id', $campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationRiskAuditEvent::query(), $filters, $context);
         if (($filters['risk_level'] ?? '') !== '') {
             $query->where('risk_level', $filters['risk_level']);
         }
@@ -52,7 +50,7 @@ final class RiskAuditRepository
 
     public function markHandled(int $id, EducationUserContext $context): ?EducationRiskAuditEvent
     {
-        $row = EducationRiskAuditEvent::query()->where('tenant_id', $context->tenantId)->whereKey($id)->first();
+        $row = (new EducationScopeQuery())->applyTenantCampus(EducationRiskAuditEvent::query()->whereKey($id), [], $context)->first();
         if (! $row instanceof EducationRiskAuditEvent) {
             return null;
         }

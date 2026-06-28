@@ -17,8 +17,8 @@ use App\Model\Education\Academic\EducationNoticeReceipt;
 use App\Model\Education\Academic\EducationStudentGuardian;
 use App\Model\Enums\Education\Academic\NoticeReceiptStatus;
 use App\Model\Enums\Education\Academic\NoticeTargetType;
-use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\IRepository;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 use Carbon\Carbon;
 use Hyperf\Database\Model\Builder;
@@ -199,32 +199,13 @@ final class NoticeReceiptRepository extends IRepository
 
     private function applyContext(mixed $query, EducationUserContext $context, array $params): void
     {
-        if ($context->platformAccess) {
-            if (isset($params['tenant_id']) && $params['tenant_id'] !== '') {
-                $query->where('edu_notice_receipts.tenant_id', (int) $params['tenant_id']);
-            }
-            if (isset($params['campus_id']) && $params['campus_id'] !== '') {
-                $query->where('edu_notice_receipts.campus_id', (int) $params['campus_id']);
-            }
-
-            return;
-        }
-        if ($context->tenantId === null) {
-            $query->whereRaw('1 = 0');
-
-            return;
-        }
-        $query->where('edu_notice_receipts.tenant_id', $context->tenantId);
-        if (isset($params['campus_id']) && $params['campus_id'] !== '') {
-            $campusId = (int) $params['campus_id'];
-            $context->canAccessCampus($campusId) ? $query->where('edu_notice_receipts.campus_id', $campusId) : $query->whereRaw('1 = 0');
-
-            return;
-        }
-        if ($context->roleCode === EducationRoleCode::TenantAdmin) {
-            return;
-        }
-        $context->campusIds === [] ? $query->whereRaw('1 = 0') : $query->whereIn('edu_notice_receipts.campus_id', $context->campusIds);
+        (new EducationScopeQuery())->applyTenantCampusColumns(
+            $query,
+            $params,
+            $context,
+            'edu_notice_receipts.tenant_id',
+            'edu_notice_receipts.campus_id'
+        );
     }
 
     private function applyReceiptFilters(mixed $query, array $params): void

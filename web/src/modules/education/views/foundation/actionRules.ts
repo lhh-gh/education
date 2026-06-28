@@ -46,7 +46,7 @@ export function parseJsonObjectText(text: string, fieldName: string): Record<str
 
   const parsed = JSON.parse(trimmed)
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new Error(`${fieldName} must be a JSON object`)
+    throw new Error(`${fieldName} 必须是 JSON 对象`)
   }
 
   return parsed as Record<string, unknown>
@@ -82,6 +82,53 @@ export function isPlatformRole(roleCode: EducationRoleCode): boolean {
   return roleCode === 'platform_super_admin' || roleCode === 'platform_operator'
 }
 
+const educationRoleLabels: Record<EducationRoleCode, string> = {
+  platform_super_admin: '平台超级管理员',
+  platform_operator: '平台运营',
+  tenant_admin: '机构管理员',
+  principal: '校长',
+  academic_staff: '教务',
+  front_desk: '前台',
+  teacher: '教师',
+  finance: '财务',
+  guardian: '家长',
+}
+
+const foundationStatusLabels: Record<EducationStatus | FoundationStatus, string> = {
+  enabled: '启用',
+  disabled: '停用',
+}
+
+export function educationRoleLabel(roleCode: EducationRoleCode): string {
+  return educationRoleLabels[roleCode] ?? roleCode
+}
+
+export function educationRoleOptions(): Array<{ label: string, value: EducationRoleCode }> {
+  return Object.entries(educationRoleLabels).map(([value, label]) => ({
+    label,
+    value: value as EducationRoleCode,
+  }))
+}
+
+export function foundationStatusLabel(status: EducationStatus | FoundationStatus): string {
+  return foundationStatusLabels[status] ?? status
+}
+
+export function foundationStatusOptions(): Array<{ label: string, value: FoundationStatus }> {
+  return [
+    { label: foundationStatusLabel('enabled'), value: 'enabled' },
+    { label: foundationStatusLabel('disabled'), value: 'disabled' },
+  ]
+}
+
+export function configOwnerTypeLabel(ownerType: ConfigOwnerType): string {
+  return ownerType === 'system' ? '系统' : '机构'
+}
+
+export function enabledFlagLabel(enabled: boolean): string {
+  return enabled ? '开启' : '关闭'
+}
+
 export function userProfileActionsByPermission(permissions: string[], status: EducationStatus, roleCode: EducationRoleCode) {
   return {
     canCreate: hasPermission(permissions, 'education:foundation:user-profile:create'),
@@ -103,7 +150,7 @@ export function campusScopeValidationError(roleCode: EducationRoleCode, campusId
   const requiresScope = ['principal', 'academic_staff', 'front_desk', 'teacher', 'finance'].includes(roleCode)
 
   return requiresScope && campusScopeSavePayload(campusIds).length === 0
-    ? 'campus scope is required'
+    ? '请选择校区范围'
     : null
 }
 
@@ -127,10 +174,10 @@ export function dictionaryActionsByPermission(permissions: string[], isLocked: b
 }
 
 export function dictionaryOwnerTypeOptions(isPlatformContext: boolean): Array<{ label: string, value: ConfigOwnerType }> {
-  const tenantOption = { label: '租户', value: 'tenant' as const }
+  const tenantOption = { label: configOwnerTypeLabel('tenant'), value: 'tenant' as const }
 
   return isPlatformContext
-    ? [{ label: '系统', value: 'system' as const }, tenantOption]
+    ? [{ label: configOwnerTypeLabel('system'), value: 'system' as const }, tenantOption]
     : [tenantOption]
 }
 

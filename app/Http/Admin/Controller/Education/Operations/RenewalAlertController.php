@@ -50,7 +50,7 @@ final class RenewalAlertController extends AbstractController
     #[Permission(code: 'education:operations:renewal-alert:page')]
     public function page(RenewalAlertPageRequest $request): Result
     {
-        return $this->success($this->repository->pageOpen($request->validated(), $this->context()->tenantId));
+        return $this->success($this->repository->pageOpen($request->validated(), $this->context()));
     }
 
     #[Post(path: '/admin/education/operations/renewal-alerts/{id}/assign', operationId: 'educationOperationRenewalAlertAssign', summary: 'Assign renewal task', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]

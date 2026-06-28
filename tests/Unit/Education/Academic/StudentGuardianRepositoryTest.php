@@ -15,7 +15,9 @@ namespace HyperfTests\Unit\Education\Academic;
 use App\Model\Education\Academic\EducationGuardian;
 use App\Model\Education\Academic\EducationStudent;
 use App\Model\Education\Academic\EducationStudentGuardian;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\StudentGuardianRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -23,6 +25,41 @@ use App\Repository\Education\Academic\StudentGuardianRepository;
  */
 final class StudentGuardianRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersListByStudentThroughStudentRecord(): void
+    {
+        $tenant = $this->tenant('student_guardian_platform_scope');
+        $campusA = $this->campus($tenant, 'main_a');
+        $campusB = $this->campus($tenant, 'main_b');
+        $student = EducationStudent::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusB->id,
+            'student_no' => 'S-SG-B',
+            'name' => 'Student B',
+        ]);
+        $guardian = EducationGuardian::query()->create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Guardian B',
+            'mobile' => '13800002001',
+        ]);
+        EducationStudentGuardian::query()->create([
+            'tenant_id' => $tenant->id,
+            'student_id' => $student->id,
+            'guardian_id' => $guardian->id,
+            'relation' => 'father',
+        ]);
+
+        $relations = make(StudentGuardianRepository::class)->listByStudent((int) $student->id, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame([], $relations);
+    }
+
     public function testListByStudentReturnsOnlySameTenantRelations(): void
     {
         $tenantA = $this->tenant('tenant_a');

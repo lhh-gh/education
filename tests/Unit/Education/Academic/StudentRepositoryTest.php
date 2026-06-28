@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationStudent;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\StudentRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,37 @@ use App\Repository\Education\Academic\StudentRepository;
  */
 final class StudentRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('student_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = EducationStudent::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusA->id,
+            'student_no' => 'S-A',
+            'name' => 'Student A',
+        ]);
+        EducationStudent::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campusB->id,
+            'student_no' => 'S-B',
+            'name' => 'Student B',
+        ]);
+
+        $result = make(StudentRepository::class)->pageByContext([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testStudentNoUniquenessIsTenantScoped(): void
     {
         $tenantA = $this->tenant('tenant_a');

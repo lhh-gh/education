@@ -13,20 +13,37 @@ declare(strict_types=1);
 namespace App\Repository\Education\Content;
 
 use App\Model\Education\Content\EducationLearningMaterial;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class LearningMaterialRepository
 {
     /**
      * @param array<string, mixed> $data
      */
-    public function save(array $data): EducationLearningMaterial
+    public function save(array $data, ?EducationUserContext $context = null): EducationLearningMaterial
     {
         if (isset($data['id'])) {
-            $material = EducationLearningMaterial::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id']);
+            $material = $context === null
+                ? EducationLearningMaterial::query()->where('tenant_id', $data['tenant_id'])->findOrFail($data['id'])
+                : $this->findInContext($context, (int) $data['id']);
+            if ($context !== null) {
+                $data = array_merge($data, [
+                    'tenant_id' => (int) $material->tenant_id,
+                    'campus_id' => $material->campus_id === null ? null : (int) $material->campus_id,
+                ]);
+            }
             $material->fill($data);
             $material->save();
 
             return $material;
+        }
+
+        if ($context !== null) {
+            $data = array_merge($data, [
+                'tenant_id' => $this->tenantId($context, $data),
+                'campus_id' => $context->currentCampusId,
+            ]);
         }
 
         return EducationLearningMaterial::query()->create($data);
@@ -37,13 +54,20 @@ final class LearningMaterialRepository
         return EducationLearningMaterial::query()->where('tenant_id', $tenantId)->findOrFail($id);
     }
 
+    public function findInContext(EducationUserContext $context, int $id): EducationLearningMaterial
+    {
+        return (new EducationScopeQuery())
+            ->applyTenantCampus(EducationLearningMaterial::query(), [], $context)
+            ->findOrFail($id);
+    }
+
     /**
      * @param array<string, mixed> $filters
      * @return array{list: array<int, array<string, mixed>>, total: int}
      */
-    public function page(int $tenantId, array $filters = [], int $page = 1, int $pageSize = 20): array
+    public function page(array $filters, EducationUserContext $context, int $page = 1, int $pageSize = 20): array
     {
-        $query = EducationLearningMaterial::query()->where('tenant_id', $tenantId);
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationLearningMaterial::query(), $filters, $context);
         foreach (['course_id', 'status', 'material_type'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);
@@ -61,5 +85,20 @@ final class LearningMaterialRepository
             ->all();
 
         return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function tenantId(EducationUserContext $context, array $data): int
+    {
+        if ($context->tenantId !== null) {
+            return $context->tenantId;
+        }
+        if (isset($data['tenant_id']) && $data['tenant_id'] !== '') {
+            return (int) $data['tenant_id'];
+        }
+
+        throw new \RuntimeException('education tenant context is missing', 403);
     }
 }

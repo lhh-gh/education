@@ -50,7 +50,7 @@ final class ConsumptionReviewController extends AbstractController
     #[Permission(code: 'education:operations:consumption-review:page')]
     public function page(ConsumptionReviewPageRequest $request): Result
     {
-        return $this->success($this->repository->pagePending($request->validated(), $this->context()->tenantId));
+        return $this->success($this->repository->pagePending($request->validated(), $this->context()));
     }
 
     #[Post(path: '/admin/education/operations/consumption-reviews/{id}/approve', operationId: 'educationOperationConsumptionReviewApprove', summary: 'Approve consumption review', security: [['Bearer' => [], 'ApiKey' => []]], tags: ['Education Operations'])]

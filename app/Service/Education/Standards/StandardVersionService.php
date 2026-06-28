@@ -21,9 +21,9 @@ final class StandardVersionService
     /**
      * @return array{standard_version_id: int, status: string}
      */
-    public function publish(int $tenantId, int $versionId, int $operatorId, bool $requiresApprovedReview = true): array
+    public function publish(int $tenantId, int $campusId, int $versionId, int $operatorId, bool $requiresApprovedReview = true): array
     {
-        $version = $this->versions->findInTenant($tenantId, $versionId);
+        $version = $this->versions->findInCampus($tenantId, $campusId, $versionId);
         if ($requiresApprovedReview && ! $this->versions->hasApprovedReview($version)) {
             throw new \RuntimeException('standard version requires approved review before publish', 409);
         }

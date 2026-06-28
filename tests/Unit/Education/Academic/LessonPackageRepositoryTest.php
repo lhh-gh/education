@@ -14,7 +14,9 @@ namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationCourse;
 use App\Model\Education\Academic\EducationLessonPackage;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LessonPackageRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -22,6 +24,29 @@ use App\Repository\Education\Academic\LessonPackageRepository;
  */
 final class LessonPackageRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('package_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $courseA = $this->course((int) $tenant->id, (int) $campusA->id, 'COURSE-A');
+        $courseB = $this->course((int) $tenant->id, (int) $campusB->id, 'COURSE-B');
+        $visible = $this->package((int) $tenant->id, (int) $campusA->id, (int) $courseA->id, 'PACKAGE-A', 'enabled');
+        $this->package((int) $tenant->id, (int) $campusB->id, (int) $courseB->id, 'PACKAGE-B', 'enabled');
+
+        $result = make(LessonPackageRepository::class)->pageByContext([], 1, 20, new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByCourseAndStatus(): void
     {
         $tenant = $this->tenant('tenant');

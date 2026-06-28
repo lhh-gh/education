@@ -13,12 +13,14 @@ declare(strict_types=1);
 namespace App\Repository\Education\Operations;
 
 use App\Model\Education\Operations\EducationLessonConsumptionReview;
+use App\Service\Education\Foundation\EducationScopeQuery;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ConsumptionReviewRepository
 {
-    public function pagePending(array $params, int $tenantId): array
+    public function pagePending(array $params, EducationUserContext $context): array
     {
-        $query = EducationLessonConsumptionReview::query()->where('tenant_id', $tenantId);
+        $query = $this->scopedQuery($params, $context);
         foreach (['campus_id', 'status', 'submitted_by'] as $field) {
             if (isset($params[$field]) && $params[$field] !== '') {
                 $query->where($field, $params[$field]);
@@ -55,5 +57,12 @@ final class ConsumptionReviewRepository
         $review->update(['status' => 'rejected', 'reviewed_by' => $reviewerId, 'reviewed_at' => date('Y-m-d H:i:s'), 'review_note' => $note]);
 
         return $review->refresh();
+    }
+
+    private function scopedQuery(array $params, EducationUserContext $context): mixed
+    {
+        $query = EducationLessonConsumptionReview::query();
+
+        return (new EducationScopeQuery())->applyTenantCampus($query, $params, $context);
     }
 }

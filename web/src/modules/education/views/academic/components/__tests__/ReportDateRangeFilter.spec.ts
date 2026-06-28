@@ -6,7 +6,7 @@ describe('report date range filter', () => {
     expect(validateReportDateRange({
       start_at: '2026-01-01 00:00:00',
       end_at: '2027-01-03 00:00:00',
-    }, true, 366)).toBe('Date range cannot exceed 366 days')
+    }, true, 366)).toBe('日期范围不能超过 366 天')
   })
 
   it('builds_this_month_quick_range', () => {

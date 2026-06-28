@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        php-version: [ '8.3' ]
+        php-version: [ '8.1', '8.2' ]
         sw-version: [ 'master' ]
     env:
       PHP_EXTENSIONS: redis, pdo, pdo_mysql, sqlsrv, pdo_sqlsrv, pdo_odbc, bcmath, swoole-${{ matrix.sw-version }}
@@ -37,7 +37,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php-version }}
           tools: php-cs-fixer
           extensions: ${{ env.PHP_EXTENSIONS }}
       - name: Get Composer Cache Directory
@@ -61,11 +61,8 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        php-version: [ '8.3', '8.2', '8.1' ]
+        php-version: [ '8.1', '8.2' ]
         sw-version: [ 'v5.0.3', 'v5.1.8', 'v6.0.2', 'master' ]
-        exclude:
-          - php-version: '8.3'
-            sw-version: 'v5.0.3'
       max-parallel: 20
       fail-fast: false
     env:
@@ -137,6 +134,7 @@ jobs:
           DB_DRIVER: mysql
           DB_HOST: 127.0.0.1
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: ./.github/ci/run.test.sh
       - name: Clear Redis Cache
         run: |
@@ -151,6 +149,7 @@ jobs:
           DB_PASSWORD: postgres
           DB_CHARSET: utf8
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: ./.github/ci/run.test.sh
   tests-swow:
     needs: cs-fix
@@ -159,11 +158,8 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        php-version: [ '8.3', '8.2', '8.1' ]
+        php-version: [ '8.1', '8.2' ]
         sw-version: [ 'develop' ]
-        exclude:
-          - php-version: '8.3'
-            sw-version: 'v5.0.3'
       max-parallel: 20
       fail-fast: false
     env:
@@ -241,6 +237,7 @@ jobs:
           DB_DRIVER: mysql
           DB_HOST: 127.0.0.1
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: |
           vendor/bin/phpunit --group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
           vendor/bin/phpunit --exclude-group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
@@ -257,6 +254,7 @@ jobs:
           DB_PASSWORD: postgres
           DB_CHARSET: utf8
           DB_DATABASE: mineadmin
+          DB_TEST_DATABASE: mineadmin_test
         run: |
           vendor/bin/phpunit --group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always
           vendor/bin/phpunit --exclude-group=migrations --bootstrap tests/bootstrap.php --configuration phpunit.xml.dist --colors=always

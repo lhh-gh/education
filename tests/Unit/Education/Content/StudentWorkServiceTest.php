@@ -12,7 +12,10 @@ declare(strict_types=1);
 
 namespace HyperfTests\Unit\Education\Content;
 
+use App\Model\Education\Content\EducationStudentWork;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Content\StudentWorkService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -20,6 +23,37 @@ use App\Service\Education\Content\StudentWorkService;
  */
 final class StudentWorkServiceTest extends ContentTestCase
 {
+    public function testPageUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work');
+        $service = make(StudentWorkService::class);
+        $visible = $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $campus->id,
+            'student_id' => 1201,
+            'lesson_id' => 8801,
+            'teacher_id' => 701,
+            'title' => 'Visible work',
+            'description' => 'current campus work',
+        ], [1201]);
+        $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'description' => 'other campus work',
+        ], [1202]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $page = $service->page([], $context, 1, 20);
+
+        self::assertSame(1, $page['total']);
+        self::assertSame($visible['student_work_id'], (int) $page['list'][0]['id']);
+    }
+
     public function testTeacherUploadsWorkForAssignedStudentOnly(): void
     {
         [$tenant, $campus] = $this->tenantCampus('content_student_work');
@@ -49,5 +83,75 @@ final class StudentWorkServiceTest extends ContentTestCase
             'teacher_id' => 701,
             'title' => 'Hidden work',
         ], [1201]);
+    }
+
+    public function testSaveForTeacherUsesCurrentCampusScopeForExistingWork(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-save');
+        $service = make(StudentWorkService::class);
+        $created = $service->saveForTeacher([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'description' => 'other campus work',
+        ], [1202]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $service->saveForTeacher([
+            'id' => $created['student_work_id'],
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work updated',
+            'description' => 'other campus work updated',
+        ], [1202], $context);
+    }
+
+    public function testPublishUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_publish_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-publish');
+        $hidden = EducationStudentWork::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'status' => 'draft',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(StudentWorkService::class)->publish($context, (int) $hidden->id);
+    }
+
+    public function testWithdrawUsesCurrentCampusScope(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('content_student_work_withdraw_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-content-student-work-withdraw');
+        $hidden = EducationStudentWork::query()->create([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'student_id' => 1202,
+            'lesson_id' => 8802,
+            'teacher_id' => 702,
+            'title' => 'Hidden work',
+            'status' => 'published',
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9907);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        make(StudentWorkService::class)->withdraw($context, (int) $hidden->id);
     }
 }

@@ -50,7 +50,7 @@ final class ServicePackageController extends AbstractController
                 'campus_id' => $context->currentCampusId,
                 'created_by' => $context->userId,
                 'updated_by' => $context->userId,
-            ]);
+            ], $context);
         } catch (\RuntimeException $exception) {
             throw $this->businessFailure($exception);
         }

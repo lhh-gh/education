@@ -13,7 +13,9 @@ declare(strict_types=1);
 namespace HyperfTests\Unit\Education\Academic;
 
 use App\Model\Education\Academic\EducationLeaveRequest;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Repository\Education\Academic\LeaveRequestRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 /**
  * @internal
@@ -21,6 +23,27 @@ use App\Repository\Education\Academic\LeaveRequestRepository;
  */
 final class LeaveRequestRepositoryTest extends AcademicTestCase
 {
+    public function testPlatformContextCampusFiltersPageWithoutLocalFilters(): void
+    {
+        $tenant = $this->tenant('leave_platform_scope');
+        $campusA = $this->campus($tenant, 'scope_a');
+        $campusB = $this->campus($tenant, 'scope_b');
+        $visible = $this->leaveRequest((int) $tenant->id, (int) $campusA->id, 'LEA-A', 101, 'pending', 'sick', 7001);
+        $this->leaveRequest((int) $tenant->id, (int) $campusB->id, 'LEA-B', 102, 'pending', 'sick', 7002);
+
+        $result = make(LeaveRequestRepository::class)->page([], new EducationUserContext(
+            userId: 1,
+            tenantId: (int) $tenant->id,
+            roleCode: EducationRoleCode::PlatformSuperAdmin,
+            platformAccess: true,
+            campusIds: [],
+            currentCampusId: (int) $campusA->id
+        ));
+
+        self::assertSame(1, $result['total']);
+        self::assertSame((int) $visible->id, (int) $result['list'][0]['id']);
+    }
+
     public function testPageFiltersByTenantCampusStudentStatusAndKeyword(): void
     {
         $tenantA = $this->tenant('tenant_a');

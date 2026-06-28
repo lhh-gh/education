@@ -21,6 +21,34 @@ use App\Service\Education\Content\LearningMaterialService;
  */
 final class TeacherContentMobileApiTest extends ContentApiCase
 {
+    public function testTeacherMaterialsUseCurrentCampusScope(): void
+    {
+        $fixture = $this->contentFixture('content_teacher_mobile_scope', 'teacher');
+        $hiddenCampus = $this->campus($fixture['tenant'], 'hidden-content-teacher-mobile');
+        $visible = make(LearningMaterialService::class)->save([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $fixture['campus_id'],
+            'material_code' => 'ART-TEACHER-SCOPE-001',
+            'material_name' => 'Visible Teacher Material',
+            'course_id' => $fixture['course_id'],
+            'material_type' => 'worksheet',
+        ]);
+        make(LearningMaterialService::class)->save([
+            'tenant_id' => $fixture['tenant_id'],
+            'campus_id' => $hiddenCampus->id,
+            'material_code' => 'ART-TEACHER-SCOPE-HIDDEN',
+            'material_name' => 'Hidden Teacher Material',
+            'course_id' => $fixture['course_id'],
+            'material_type' => 'worksheet',
+        ]);
+
+        $response = $this->get('/mobile/education/content/teacher/materials', [], $this->mobileHeaders($fixture['tenant']));
+
+        self::assertSame(ResultCode::SUCCESS->value, $response['code']);
+        self::assertSame(1, $response['data']['total']);
+        self::assertSame($visible['material_id'], (int) $response['data']['list'][0]['id']);
+    }
+
     public function testTeacherMaterialAccessRequiresCourseAuthorization(): void
     {
         $fixture = $this->contentFixture('content_teacher_mobile', 'teacher');

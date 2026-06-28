@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AccountAdjustmentRecord, RollbackResult } from '../../../api/academic/attendanceConsumption.ts'
 import { rollbackAccountAdjustment } from '../../../api/academic/attendanceConsumption.ts'
+import { useMessage } from '@/hooks/useMessage.ts'
 
 defineOptions({ name: 'EducationAccountAdjustmentRollbackDialog' })
 

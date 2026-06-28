@@ -14,6 +14,7 @@ namespace App\Service\Education\Standards;
 
 use App\Repository\Education\Standards\ServicePackageRepository;
 use App\Repository\Education\Standards\StandardVersionRepository;
+use App\Service\Education\Foundation\EducationUserContext;
 
 final class ServicePackageService
 {
@@ -26,13 +27,15 @@ final class ServicePackageService
      * @param array<string, mixed> $data
      * @return array{service_package_id: int, version_no: int, status: string}
      */
-    public function save(array $data): array
+    public function save(array $data, ?EducationUserContext $context = null): array
     {
         $tenantId = (int) $data['tenant_id'];
         $packageId = isset($data['service_package_id']) ? (int) $data['service_package_id'] : null;
 
         if ($packageId !== null) {
-            $existing = $this->packages->findInTenant($tenantId, $packageId);
+            $existing = $context === null
+                ? $this->packages->findInTenant($tenantId, $packageId)
+                : $this->packages->findInContext($context, $packageId);
             if ($this->statusValue($existing->status) === 'published') {
                 unset($data['service_package_id'], $data['id']);
                 $data['version_no'] = $this->packages->nextVersionNo($tenantId, (string) $existing->package_code);
@@ -42,7 +45,7 @@ final class ServicePackageService
             }
         }
 
-        $package = $this->packages->save($data + ['version_no' => 1, 'status' => 'draft', 'guardian_visible' => false]);
+        $package = $this->packages->save($data + ['version_no' => 1, 'status' => 'draft', 'guardian_visible' => false], $context);
         $this->versions->saveSnapshot(
             (int) $package->tenant_id,
             $package->campus_id === null ? null : (int) $package->campus_id,

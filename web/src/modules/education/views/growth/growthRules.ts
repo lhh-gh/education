@@ -1,5 +1,78 @@
 import type { GrowthTagType } from '../../api/growth/types.ts'
 
+export const growthText = {
+  workbenchTitle: '增长工作台',
+  leadScoreTitle: '线索评分',
+  aiScriptTitle: 'AI 话术',
+  followupStrategyTitle: '跟进策略',
+  trialConversionTitle: '试听转化',
+  channelRoiTitle: '渠道 ROI',
+  consultantMetricTitle: '顾问指标',
+  lossReasonTitle: '流失原因',
+  refresh: '刷新',
+  query: '查询',
+  save: '保存',
+  generate: '生成话术',
+  confirm: '确认话术',
+  ignore: '忽略',
+  recalculate: '重新计算',
+  loadConversion: '加载转化链路',
+  saveReason: '保存原因',
+  markLost: '标记流失',
+  noPermission: '暂无操作权限',
+  fields: {
+    owner: '负责人',
+    level: '评分等级',
+    lead: '线索',
+    leadId: '线索 ID',
+    score: '评分',
+    summary: '摘要',
+    scriptType: '话术类型',
+    goal: '目标',
+    draftText: '话术草稿',
+    code: '策略编码',
+    name: '名称',
+    template: '建议模板',
+    status: '状态',
+    source: '渠道',
+    date: '日期范围',
+    converted: '已转化',
+    cost: '成本',
+    revenue: '收入',
+    consultant: '顾问',
+    assigned: '已分配',
+    follows: '跟进数',
+    trials: '试听数',
+    lost: '流失数',
+    conversion: '转化率',
+    reason: '原因',
+    reasonId: '原因 ID',
+    detail: '详情',
+    suggestion: '跟进建议',
+    dueAt: '截止时间',
+    actions: '操作',
+  },
+  levels: {
+    hot: '高意向',
+    high: '重点',
+  },
+  empty: {
+    hotLeads: '暂无高意向线索',
+    suggestions: '暂无跟进建议',
+    scores: '暂无评分记录',
+    strategies: '暂无跟进策略',
+    conversion: '暂无转化链路',
+    channelRoi: '暂无渠道 ROI 数据',
+    consultantMetrics: '暂无顾问指标',
+    lossRecords: '暂无流失记录',
+  },
+  aiBlocked: 'AI 不允许承诺自动优惠',
+  scriptPlaceholder: '请先生成或编辑话术内容',
+  generatedFallback: '请在顾问确认后邀请家长参加试听课。',
+  conversionFlow: '转化链路',
+  ownerPrefix: '负责人',
+} as const
+
 export function growthWorkbenchFilterPayload(input: { tenant_id?: number, campus_id?: number, owner_user_id?: number, score_level?: string }) {
   return {
     tenant_id: input.tenant_id,
@@ -11,13 +84,31 @@ export function growthWorkbenchFilterPayload(input: { tenant_id?: number, campus
 
 export function suggestionActionState(suggestion: { status: string }) {
   if (suggestion.status === 'accepted') {
-    return { disabled: true, label: 'Accepted' }
+    return { disabled: true, label: '已采纳' }
   }
   if (suggestion.status === 'ignored') {
-    return { disabled: true, label: 'Ignored' }
+    return { disabled: true, label: '已忽略' }
   }
 
-  return { disabled: false, label: 'Accept' }
+  return { disabled: false, label: '采纳' }
+}
+
+export function growthStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    saved: '已保存',
+    pending: '待处理',
+    accepted: '已采纳',
+    ignored: '已忽略',
+    enabled: '启用',
+    disabled: '停用',
+    hot: '高意向',
+    high: '重点',
+    warm: '温和',
+    cold: '低意向',
+    lost: '已流失',
+  }
+
+  return labels[status] ?? status
 }
 
 export function containsBlockedAiPromise(text: string): boolean {

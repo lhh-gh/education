@@ -1,4 +1,5 @@
 import type { MinePage, MineResult, PageParams } from '../foundation/types.ts'
+import { educationScopeGetOptions, educationScopeRequestOptions } from '../scope.ts'
 
 export type AttendanceStatus = 'present' | 'late' | 'absent' | 'leave'
 export type ConsumptionPolicy = 'consume' | 'no_consume'
@@ -156,50 +157,46 @@ export interface RollbackResult<T> {
   account?: Record<string, unknown>
 }
 
-function tenantHeaders(tenantId?: number): { headers: Record<string, string> } | undefined {
-  return tenantId && tenantId > 0 ? { headers: { 'X-Tenant-Id': String(tenantId) } } : undefined
-}
-
-function tenantIdFrom(paramsOrPayload: { tenant_id?: number }): number | undefined {
-  return paramsOrPayload.tenant_id
+function scopeOptions(input: { tenant_id?: number, campus_id?: number } | number = {}): { headers?: Record<string, string> } {
+  return educationScopeRequestOptions(typeof input === 'number' ? { tenant_id: input } : input)
 }
 
 export function pageAttendanceLessons(params: AttendanceLessonPageParams): Promise<MineResult<MinePage<AttendanceLessonRecord>>> {
-  return useHttp().get('/admin/education/academic/attendance/lessons/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/attendance/lessons/page', educationScopeGetOptions(params))
 }
 
 export function getAttendanceLesson(lessonId: number, tenantId?: number): Promise<MineResult<AttendanceLessonDetail>> {
-  return useHttp().get(`/admin/education/academic/attendance/lessons/${lessonId}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/attendance/lessons/${lessonId}`, scopeOptions(tenantId))
 }
 
 export function submitAttendance(lessonId: number, payload: { tenant_id?: number, submitted_at?: string | null, records: AttendanceSubmitRecord[] }): Promise<MineResult<AttendanceSubmitResult>> {
-  return useHttp().post(`/admin/education/academic/attendance/lessons/${lessonId}/submit`, payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post(`/admin/education/academic/attendance/lessons/${lessonId}/submit`, payload, scopeOptions(payload))
 }
 
 export function pageConsumptions(params: ConsumptionPageParams): Promise<MineResult<MinePage<ConsumptionRecord>>> {
-  return useHttp().get('/admin/education/academic/consumptions/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/consumptions/page', educationScopeGetOptions(params))
 }
 
 export function getConsumption(id: number, tenantId?: number): Promise<MineResult<ConsumptionRecord>> {
-  return useHttp().get(`/admin/education/academic/consumptions/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/consumptions/${id}`, scopeOptions(tenantId))
 }
 
 export function rollbackConsumption(id: number, reason: string, tenantId?: number): Promise<MineResult<RollbackResult<ConsumptionRecord>>> {
-  return useHttp().post(`/admin/education/academic/consumptions/${id}/rollback`, { reason }, tenantHeaders(tenantId))
+  return useHttp().post(`/admin/education/academic/consumptions/${id}/rollback`, { reason }, scopeOptions(tenantId))
 }
 
 export function pageAccountAdjustments(params: AccountAdjustmentPageParams): Promise<MineResult<MinePage<AccountAdjustmentRecord>>> {
-  return useHttp().get('/admin/education/academic/account-adjustments/page', { params, ...tenantHeaders(tenantIdFrom(params)) })
+  return useHttp().get('/admin/education/academic/account-adjustments/page', educationScopeGetOptions(params))
 }
 
 export function getAccountAdjustment(id: number, tenantId?: number): Promise<MineResult<AccountAdjustmentRecord>> {
-  return useHttp().get(`/admin/education/academic/account-adjustments/${id}`, tenantHeaders(tenantId))
+  return useHttp().get(`/admin/education/academic/account-adjustments/${id}`, scopeOptions(tenantId))
 }
 
 export function createSupplementDeduction(payload: { tenant_id?: number, account_id: number, units: number, reason: string }): Promise<MineResult<{ adjustment: AccountAdjustmentRecord, account: Record<string, unknown> }>> {
-  return useHttp().post('/admin/education/academic/account-adjustments', payload, tenantHeaders(tenantIdFrom(payload)))
+  return useHttp().post('/admin/education/academic/account-adjustments', payload, scopeOptions(payload))
 }
 
 export function rollbackAccountAdjustment(id: number, reason: string, tenantId?: number): Promise<MineResult<RollbackResult<AccountAdjustmentRecord>>> {
-  return useHttp().post(`/admin/education/academic/account-adjustments/${id}/rollback`, { reason }, tenantHeaders(tenantId))
+  return useHttp().post(`/admin/education/academic/account-adjustments/${id}/rollback`, { reason }, scopeOptions(tenantId))
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CommentTemplateRecord } from '../../api/family/comment.ts'
 import { pageCommentTemplates, saveCommentTemplate } from '../../api/family/comment.ts'
-import { familyTagType } from './familyRules.ts'
+import { familyStatusLabel, familyTagType } from './familyRules.ts'
 
 defineOptions({ name: 'EducationFamilyCommentTemplateList' })
 
@@ -36,36 +36,36 @@ onMounted(loadRows)
     <el-card shadow="never">
       <template #header>
         <div class="page-header">
-          <span>Comment Templates</span>
+          <span>评语模板</span>
           <el-button type="primary" @click="createTemplate">
-            Save
+            保存
           </el-button>
         </div>
       </template>
       <el-form inline>
-        <el-form-item label="Code">
+        <el-form-item label="编码">
           <el-input v-model="form.template_code" />
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="名称">
           <el-input v-model="form.template_name" />
         </el-form-item>
-        <el-form-item label="Content">
+        <el-form-item label="内容">
           <el-input v-model="form.content" />
         </el-form-item>
       </el-form>
       <el-table v-loading="loading" :data="rows" row-key="id">
-        <el-table-column prop="template_code" label="Code" width="160" />
-        <el-table-column prop="template_name" label="Name" width="180" />
-        <el-table-column prop="content" label="Content" min-width="240" />
-        <el-table-column label="Status" width="120">
+        <el-table-column prop="template_code" label="编码" width="160" />
+        <el-table-column prop="template_name" label="名称" width="180" />
+        <el-table-column prop="content" label="内容" min-width="240" />
+        <el-table-column label="状态" width="120">
           <template #default="{ row }">
             <el-tag :type="familyTagType(row.status)">
-              {{ row.status }}
+              {{ familyStatusLabel(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
         <template #empty>
-          <el-empty description="No templates" />
+          <el-empty description="暂无评语模板" />
         </template>
       </el-table>
       <el-pagination v-model:current-page="search.page" v-model:page-size="search.pageSize" class="page-pagination" layout="total, sizes, prev, pager, next" :total="total" @change="loadRows" />

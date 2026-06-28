@@ -11,6 +11,6 @@ describe('attendance report page', () => {
 
   it('empty_attendance_report_state', () => {
     expect(reportHasRows(0, 0)).toBe(false)
-    expect(summaryMetricItems({ present_count: 1 }, ['present_count'])).toEqual([{ title: 'Present Count', value: 1 }])
+    expect(summaryMetricItems({ present_count: 1 }, ['present_count'])).toEqual([{ title: '出勤', value: 1 }])
   })
 })

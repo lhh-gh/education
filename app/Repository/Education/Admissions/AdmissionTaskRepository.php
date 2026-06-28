@@ -13,18 +13,14 @@ declare(strict_types=1);
 namespace App\Repository\Education\Admissions;
 
 use App\Model\Education\Admissions\EducationAdmissionTask;
+use App\Service\Education\Foundation\EducationScopeQuery;
 use App\Service\Education\Foundation\EducationUserContext;
 
 final class AdmissionTaskRepository
 {
     public function page(array $filters, EducationUserContext $context): array
     {
-        $query = EducationAdmissionTask::query()->where('tenant_id', $context->tenantId);
-        if (isset($filters['campus_id']) && $filters['campus_id'] !== '') {
-            $query->where('campus_id', (int) $filters['campus_id']);
-        } elseif ($context->campusIds !== []) {
-            $query->whereIn('campus_id', $context->campusIds);
-        }
+        $query = (new EducationScopeQuery())->applyTenantCampus(EducationAdmissionTask::query(), $filters, $context);
         foreach (['lead_id', 'task_type', 'assignee_user_id', 'status'] as $field) {
             if (isset($filters[$field]) && $filters[$field] !== '') {
                 $query->where($field, $filters[$field]);

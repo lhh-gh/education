@@ -14,7 +14,9 @@ namespace HyperfTests\Unit\Education\Standards;
 
 use App\Model\Education\Standards\EducationCourseServicePackage;
 use App\Model\Education\Standards\EducationCourseStandardVersion;
+use App\Model\Enums\Education\Foundation\EducationRoleCode;
 use App\Service\Education\Standards\ServicePackageService;
+use Hyperf\Database\Model\ModelNotFoundException;
 
 /**
  * @internal
@@ -22,6 +24,32 @@ use App\Service\Education\Standards\ServicePackageService;
  */
 final class ServicePackageServiceTest extends StandardsTestCase
 {
+    public function testSaveUsesCurrentCampusScopeForExistingPackage(): void
+    {
+        [$tenant, $campus] = $this->tenantCampus('standards_package_save_scope');
+        $hiddenCampus = $this->campus($tenant, 'hidden-standards-package-save');
+        $service = make(ServicePackageService::class);
+        $hidden = $service->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'package_code' => 'ART-HIDDEN',
+            'package_name' => 'Hidden Package',
+            'course_id' => 301,
+        ]);
+        $context = $this->context((int) $tenant->id, EducationRoleCode::Teacher, [(int) $campus->id], 9911);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $service->save([
+            'tenant_id' => $tenant->id,
+            'campus_id' => $hiddenCampus->id,
+            'service_package_id' => $hidden['service_package_id'],
+            'package_code' => 'ART-HIDDEN',
+            'package_name' => 'Hidden Package Updated',
+            'course_id' => 301,
+        ], $context);
+    }
+
     public function testPublishedPackageEditCreatesNewVersion(): void
     {
         [$tenant, $campus] = $this->tenantCampus('standards_package');
